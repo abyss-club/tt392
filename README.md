@@ -7,7 +7,9 @@
 # 分页面设计
 
 * 使用 react 16, react-router-4 制作的单页面web应用
-* (TODO) SSR
+* SSR
+* browser notification
+* PWA
 
 ## Thread
 
@@ -15,7 +17,7 @@
 
 * url: `/`
 * 展示 Thread 列表，如果用户没有登录，显示默认 tags 的 Thread 首页
-* （TODO）如果用户登录，显示根据用户已订阅 tag 生成的首页
+* 如果用户登录，显示根据用户已订阅 tag 生成的首页
 * 可以在此页面按 tag 过滤
 * 不显示分页，而是连续加载
 * 显示发布 Thread 的输入框
@@ -36,7 +38,7 @@ url参数：
 * 点击引用内容和向下的按钮，可以在引用的帖子和被引用的帖子之间滚动
 * 作者可以修改子 tag
 
-### （TODO）POST 详情
+### POST 详情
 
 * url: `/th/<th:id>/p/<p:id>`
 * 单独展示一个post
@@ -45,7 +47,7 @@ url参数：
 ## 账户
 
 * 账户与token一一关联，代表一个真正的用户。而用户只是指一个发言的身份
-* 只能看到自己账户的信息
+* 只能看到自己账户的信息
 
 ### 账户中心
 
@@ -58,26 +60,26 @@ url参数：
 * url: `/account/thread/` 主贴列表
 * url: `/account/post/` 回复列表
 
-### 通知
+### 通知
 
 * url: `/account/notice/thread/` 主贴被回复的通知
 * url: `/account/notice/post/` 帖子被回复的通知
 * url: `/account/notice/system/` 系统通知（通知各种管理事件）
 
-## (TODO) 用户
+## 用户
 
 用户指一个发言昵称或者一个匿名ID，此昵称全局唯一
 
 * url: `/user/<username>/` 具名用户页
 * url: `/user/a/<anonymous-id>/` 匿名用户页
 
-### 发布的帖子列表
+### 发布的帖子列表
 
 * url: `/user/<username>/thread/` 主贴列表
 * url: `/user/<username>/post/` 回复列表
 * url: `/user/a/<anonymous-id>/post/` 匿名用户回复列表（只可能在一个帖子内）
 
-## (TODO) 标签
+## 标签
 
 * url: `/tag/`
 * 展示所有主 tag 及下属热门子 tag
@@ -86,9 +88,9 @@ url参数：
 
 * url: `/tag/<tag-name>/`
 * 展示 tag 的名称，帖子列表
-* (TODO) 显示 tag 简介，说明
+* 显示 tag 简介，说明
 
-## (TODO) 管理员
+## 管理员
 
 ### Thread 列表，详情
 
@@ -98,9 +100,9 @@ url参数：
 * 下沉、删除、锁定 thread，删除 post
 * 禁止某条post的发言人/IP的发言功能
 
-## 管理页面
+## 管理页面
 
 * url: `/admin/`
-* 下沉、删除、锁定 thread，删除 post 的列表
+* 下沉、删除、锁定 thread，删除 post 的列表
 * 被禁言的用户/IP 列表
 * 上述两个列表均有 撤销按钮
