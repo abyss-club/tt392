@@ -11,6 +11,11 @@
 * browser notification
 * PWA
 
+## GraphiQL 页面
+
+* url: `/graphiql/`
+* GraphiQL 工具
+
 ## Thread
 
 ### Thread 列表
