@@ -1,5 +1,5 @@
 const Config = {
-  apiPrefix: 'http://api.uxkey.com',
+  apiPrefix: 'http://api.uexky.com',
 };
 
 export default Config;

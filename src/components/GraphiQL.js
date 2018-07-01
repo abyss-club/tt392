@@ -10,7 +10,7 @@ function graphQLFetcher(graphQLParams) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(graphQLParams),
     mode: 'cors',
-    // credentials: 'include',
+    credentials: 'include',
   }).then(response => response.json());
 }
 
