@@ -1,8 +1,8 @@
 import React from 'react';
 import GQL from 'graphiql';
-
 import 'graphiql/graphiql.css';
-import Config from '../config';
+
+import Config from 'config';
 
 function graphQLFetcher(graphQLParams) {
   return fetch(`${Config.apiPrefix}/graphql/`, {
