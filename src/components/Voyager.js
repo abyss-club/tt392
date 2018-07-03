@@ -1,7 +1,8 @@
 import React from 'react';
-import { Voyager } from 'graphql-voyager';
 import 'graphql-voyager/dist/voyager.css';
-import Config from '../config';
+import { Voyager } from 'graphql-voyager';
+
+import Config from 'config';
 
 function introspectionProvider(query) {
   return fetch(`${Config.apiPrefix}/graphql/`, {
