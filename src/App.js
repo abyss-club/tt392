@@ -4,6 +4,7 @@ import { Switch, Route, Link } from 'react-router-dom';
 
 import GraphiQL from 'components/GraphiQL';
 import GQLVoyager from 'components/Voyager';
+import Profile from 'components/Profile';
 
 
 const Wrapper = styled.div`
@@ -32,9 +33,9 @@ const Index = () => (
     <Link to="/graphiql/"> GraphiQL </Link>
     <p>你可以点击下面的链接，使用 GraphQL Voyager 探索 API schema。</p>
     <Link to="/voyager/"> GraphQL Voyager </Link>
-    <p>GraphQL API 本身有自省的功能，但如果你想看的话，
-      <a href="https://gitlab.com/abyss.club/abyss/blob/master/api.gql">schema 在此</a>
-    </p>
+    <p>This is your logged in profile page</p>
+    <Link to="/profile"> Profile </Link>
+    <p>GraphQL API 本身具有自省的功能，但如果你想看的话，schema <a href="">在此</a></p>
   </IndexWrapper>
 );
 
@@ -44,6 +45,7 @@ const App = () => (
       <Route path="/" component={Index} exact />
       <Route path="/graphiql/" component={GraphiQL} />
       <Route path="/voyager/" component={GQLVoyager} />
+      <Route path="/profile/" component={Profile} />
     </Switch>
   </Wrapper>
 );
