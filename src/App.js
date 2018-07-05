@@ -2,9 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { Switch, Route, Link } from 'react-router-dom';
 
-import GraphiQL from './components/GraphiQL';
-import GQLVoyager from './components/Voyager';
-import Profile from './components/Profile';
+import GraphiQL from 'components/GraphiQL';
+import GQLVoyager from 'components/Voyager';
+import Profile from 'components/Profile';
 
 
 const Wrapper = styled.div`

@@ -26,8 +26,8 @@
     "whatwg-fetch": "^2.0.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "REACT_APP_ENV=dev NODE_PATH=src/ react-scripts start",
+    "build": "REACT_APP_ENV=prod NODE_PATH=src/ react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
