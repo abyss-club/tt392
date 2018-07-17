@@ -9,6 +9,8 @@ import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
 import { ApolloProvider } from 'react-apollo';
 
+import 'normalize.css';
+
 import App from './App';
 // import registerServiceWorker from './registerServiceWorker';
 
