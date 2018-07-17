@@ -6,6 +6,8 @@ import { Editor } from 'slate-react';
 import { Value } from 'slate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import MDPreview from './MDPreview';
+
 const IconWrapper = styled.button`
 font-size: 1em;
 padding: 1em;
@@ -57,6 +59,7 @@ function insertMarkup(change, type) {
   change.select();
 }
 
+
 // Define our app...
 class TextEditor extends React.Component {
   // Set the initial value when the app is first constructed
@@ -67,11 +70,13 @@ class TextEditor extends React.Component {
 
   state = {
     value: initialValue,
+    texts: [],
   }
 
   // On change, update the app's React state with the new editor value.
   onChange = ({ value }) => {
     this.setState({ value });
+    this.extractText({ value });
   }
 
   onClickLink = () => {
@@ -88,6 +93,11 @@ class TextEditor extends React.Component {
     this.onChange(change);
   }
 
+  extractText({ value }) {
+    const texts = [];
+    value.document.nodes.forEach(val => texts.push(val.text));
+    this.setState({ texts });
+  }
 
   // Render the editor.
   render() {
@@ -101,6 +111,9 @@ class TextEditor extends React.Component {
           value={this.state.value}
           onChange={this.onChange}
           placeholder="Enter some text..."
+        />
+        <MDPreview
+          texts={this.state.texts}
         />
       </div>
     );
