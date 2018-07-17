@@ -4,11 +4,12 @@ import {
   faCoffee,
   faLink,
   faImage,
+  faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
 const faLib = {
   loadFa: () => {
-    library.add(faCheckSquare, faCoffee, faLink, faImage);
+    library.add(faCheckSquare, faCoffee, faLink, faImage, faTimes);
   },
 };
 
