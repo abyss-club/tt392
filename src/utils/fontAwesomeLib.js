@@ -5,11 +5,16 @@ import {
   faLink,
   faImage,
   faTimes,
+  faSpinner,
+  faUser,
+  faPlusSquare,
+  faBars,
 } from '@fortawesome/free-solid-svg-icons';
 
 const faLib = {
   loadFa: () => {
-    library.add(faCheckSquare, faCoffee, faLink, faImage, faTimes);
+    // eslint-disable-next-line max-len
+    library.add(faCheckSquare, faCoffee, faLink, faImage, faTimes, faSpinner, faUser, faPlusSquare, faBars);
   },
 };
 
