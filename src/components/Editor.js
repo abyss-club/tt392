@@ -6,17 +6,63 @@ import { Editor } from 'slate-react';
 import { Value } from 'slate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import colors from 'utils/colors';
 import MDPreview from './MDPreview';
 
+const EditorViewWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+`;
+
 const IconWrapper = styled.button`
-font-size: 1em;
-padding: 1em;
+  color: ${props => (props.topbar ? colors.zircon : colors.vulcan)};
+  font-size: 1em;
+  appearance: none;
+  border: 0;
+  background: none;
+`;
+
+const Topbar = styled.nav`
+  width: 100%;
+  background-color: ${colors.orange};
+  color: ${colors.zircon};
+  padding: .5em .5em;
+  font-family: 'Lato', sans-serif;
+
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+`;
+
+const EditorArea = styled.div`
+  width: 100%;
+  
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
 `;
 
 const Toolbar = styled.div`
-display: flex;
-flex-flow: row nowrap;
+  width: 100%;
+  
+  display: flex;
+  flex-flow: row nowrap;
 `;
+
+const SlateArea = styled.div`
+  border: 1px solid ${colors.aluminium};
+  border-radius: 2px;
+  margin-top: .5em;
+  padding: .5em;
+  width: calc(100% - 2em);
+  
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+`;
+
+const CloseIcon = props => (
+  <IconWrapper topbar onClick={props.onClick}>
+    <FontAwesomeIcon icon="times" />
+  </IconWrapper>
+);
 
 const LinkIcon = props => (
   <IconWrapper onClick={props.onClick}>
@@ -29,6 +75,7 @@ const ImageIcon = props => (
     <FontAwesomeIcon icon="image" />
   </IconWrapper>
 );
+
 
 const initialValue = Value.fromJSON({
   document: {
@@ -55,7 +102,7 @@ function insertMarkup(change, type) {
   if (type === 'image') change.insertText('![Description]()');
 
   if (type === 'link') change.insertText('[Title]()');
-  
+
   change.select();
 }
 
@@ -102,20 +149,28 @@ class TextEditor extends React.Component {
   // Render the editor.
   render() {
     return (
-      <div>
-        <Toolbar>
-          <LinkIcon onClick={this.onClickLink} />
-          <ImageIcon onClick={this.onClickImage} />
-        </Toolbar>
-        <Editor
-          value={this.state.value}
-          onChange={this.onChange}
-          placeholder="Enter some text..."
-        />
-        <MDPreview
-          texts={this.state.texts}
-        />
-      </div>
+      <EditorViewWrapper>
+        <Topbar>
+          <CloseIcon />
+          <span>Posting to...</span>
+        </Topbar>
+        <EditorArea>
+          <Toolbar>
+            <LinkIcon onClick={this.onClickLink} />
+            <ImageIcon onClick={this.onClickImage} />
+          </Toolbar>
+          <SlateArea>
+            <Editor
+              value={this.state.value}
+              onChange={this.onChange}
+              placeholder="Enter some text..."
+            />
+          </SlateArea>
+          <MDPreview
+            texts={this.state.texts}
+          />
+        </EditorArea>
+      </EditorViewWrapper>
     );
   }
 }
