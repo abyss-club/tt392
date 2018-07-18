@@ -1,11 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Switch, Route, Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+import faLib from 'utils/fontAwesomeLib';
 
 import GraphiQL from 'components/GraphiQL';
 import GQLVoyager from 'components/Voyager';
 import Profile from 'components/Profile';
 
+faLib.loadFa();
 
 const Wrapper = styled.div`
   height: 100%;
@@ -22,7 +26,7 @@ const IndexWrapper = styled.div`
 const Index = () => (
   <IndexWrapper>
     <h2>Welcome to Abyss! </h2>
-    <p>本站尚处于开发初期</p>
+    <p><FontAwesomeIcon icon="check-square" />本站尚处于开发初期</p>
     <p>后端由 <a href="https://gitlab.com/abyss.club/uexky">uexky</a> 项目驱动</p>
     <p>前端由 <a href="https://gitlab.com/abyss.club/tt392">tt392</a> 项目驱动</p>
     <br />
