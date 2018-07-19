@@ -1,3 +1,5 @@
+import React from 'react';
+import styled from 'styled-components';
 import Remarkable from 'remarkable';
 import RemarkableReactRenderer from 'remarkable-react';
 
@@ -5,7 +7,7 @@ const md = new Remarkable();
 md.renderer = new RemarkableReactRenderer();
 
 const MDPreview = props => (
-  props.texts.map(text => md.render(text))
+  md.render(props.texts[0])
 );
 
 export default MDPreview;

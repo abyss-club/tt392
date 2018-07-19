@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Prism from 'prismjs';
+import SoftBreak from 'slate-soft-break';
 
 import { Editor } from 'slate-react';
 import { Value } from 'slate';
@@ -11,8 +11,7 @@ import MDPreview from './MDPreview';
 
 const EditorViewWrapper = styled.div`
   width: 100%;
-  display: flex;
-  flex-flow: column nowrap;
+
 `;
 
 const IconWrapper = styled.button`
@@ -35,10 +34,6 @@ const Topbar = styled.nav`
 
 const EditorArea = styled.div`
   width: 100%;
-  
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
 `;
 
 const Toolbar = styled.div`
@@ -57,6 +52,10 @@ const SlateArea = styled.div`
   
   font-family: 'Helvetica Neue', Arial, sans-serif;
 `;
+
+const plugins = [
+  SoftBreak(),
+];
 
 const CloseIcon = props => (
   <IconWrapper topbar onClick={props.onClick}>
@@ -88,7 +87,7 @@ const initialValue = Value.fromJSON({
             object: 'text',
             leaves: [
               {
-                text: 'A line of text in a paragraph.',
+                text: '# A line of text in a paragraph.',
               },
             ],
           },
@@ -164,6 +163,7 @@ class TextEditor extends React.Component {
               value={this.state.value}
               onChange={this.onChange}
               placeholder="Enter some text..."
+              plugins={plugins}
             />
           </SlateArea>
           <MDPreview
