@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import SoftBreak from 'slate-soft-break';
 
@@ -57,24 +58,18 @@ const plugins = [
   SoftBreak(),
 ];
 
-const CloseIcon = props => (
-  <IconWrapper topbar onClick={props.onClick}>
-    <FontAwesomeIcon icon="times" />
+const Icon = ({ name, onClick }) => (
+  <IconWrapper topbar onClick={onClick}>
+    <FontAwesomeIcon icon={name} />
   </IconWrapper>
 );
-
-const LinkIcon = props => (
-  <IconWrapper onClick={props.onClick}>
-    <FontAwesomeIcon icon="link" />
-  </IconWrapper>
-);
-
-const ImageIcon = props => (
-  <IconWrapper onClick={props.onClick}>
-    <FontAwesomeIcon icon="image" />
-  </IconWrapper>
-);
-
+Icon.propTypes = {
+  name: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
+};
+Icon.defaultProps = {
+  onClick: () => {},
+};
 
 const initialValue = Value.fromJSON({
   document: {
@@ -111,7 +106,8 @@ class TextEditor extends React.Component {
   // Set the initial value when the app is first constructed
   constructor(props) {
     super(props);
-    this.onClickLink = this.onClickLink.bind(this);
+    this.handleLinkClick = this.handleLinkClick.bind(this);
+    this.handleImageClick = this.handleImageClick.bind(this);
   }
 
   state = {
@@ -125,14 +121,14 @@ class TextEditor extends React.Component {
     this.extractText({ value });
   }
 
-  onClickLink = () => {
+  handleLinkClick = () => {
     const type = 'link';
     const change = this.state.value.change().call(insertMarkup, type);
 
     this.onChange(change);
   }
 
-  onClickImage = () => {
+  handleImageClick = () => {
     const type = 'image';
     const change = this.state.value.change().call(insertMarkup, type);
 
@@ -150,13 +146,13 @@ class TextEditor extends React.Component {
     return (
       <EditorViewWrapper>
         <Topbar>
-          <CloseIcon />
+          <Icon name="times" />
           <span>Posting to...</span>
         </Topbar>
         <EditorArea>
           <Toolbar>
-            <LinkIcon onClick={this.onClickLink} />
-            <ImageIcon onClick={this.onClickImage} />
+            <Icon name="link" onClick={this.handleLinkClick} />
+            <Icon name="image" onClick={this.handleImageClick} />
           </Toolbar>
           <SlateArea>
             <Editor
