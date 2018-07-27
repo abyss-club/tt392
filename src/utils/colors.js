@@ -1,12 +1,12 @@
 const colors = {
   orange: '#E85031',
-  'orange-light': '#F95C3C',
+  orangeLight: '#F95C3C',
   vulcan: '#363A3E',
-  'vulcan-light': '#43484C',
+  vulcanLight: '#43484C',
   aluminium: '#818890',
-  'aluminium-light': '#979FA7',
+  aluminiumLight: '#979FA7',
   zircon: '#EBEDEE',
-  'zircon-light': '#FAFBFC',
+  zirconLight: '#FAFBFC',
   skyblue: '#12AAFF',
   indigo: '#7D12FF',
 };
