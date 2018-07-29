@@ -8,7 +8,7 @@ import faLib from 'utils/fontAwesomeLib';
 import GraphiQL from 'components/GraphiQL';
 import GQLVoyager from 'components/Voyager';
 import Profile from 'components/Profile';
-import TextEditor from 'components/Editor';
+import Home from 'views/Home';
 
 faLib.loadFa();
 
@@ -48,10 +48,10 @@ const App = () => (
   <Wrapper>
     <Switch>
       <Route path="/" component={Index} exact />
+      <Route path="/home/" component={Home} />
       <Route path="/graphiql/" component={GraphiQL} />
       <Route path="/voyager/" component={GQLVoyager} />
       <Route path="/profile/" component={Profile} />
-      <Route path="/editor/" component={TextEditor} />
     </Switch>
   </Wrapper>
 );
