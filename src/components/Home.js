@@ -1,16 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
 
-import Navbar from 'components/Navbar';
 import ThreadList from 'components/ThreadList';
-
-const HomeWrapper = styled.div`
-
-`;
+import PreviewInfo from 'components/PreviewInfo';
 
 const Home = () => (
   <React.Fragment>
-    <Navbar />
+    <PreviewInfo />
     <ThreadList />
   </React.Fragment>
 );

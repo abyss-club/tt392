@@ -9,10 +9,12 @@ import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
 import { ApolloProvider } from 'react-apollo';
 
+import App from 'App';
+import Modal from 'components/Modal';
+import registerServiceWorker from 'registerServiceWorker';
+
 import 'normalize.css';
 import 'assets/css/fonts.css';
-import App from './App';
-// import registerServiceWorker from './registerServiceWorker';
 
 import './index.css';
 
@@ -26,8 +28,11 @@ const client = new ApolloClient({
       if (networkError) console.log(`[Network error]: ${networkError}`);
     }),
     new HttpLink({
-      uri: 'http://api.uexky.com/graphql',
+      uri: 'http://api.uexky.com/graphql/',
       credentials: 'include',
+      fetchOptions: {
+        mode: 'cors',
+      },
     }),
   ]),
   cache: new InMemoryCache(),
@@ -35,11 +40,13 @@ const client = new ApolloClient({
 
 const Root = () => (
   <BrowserRouter>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <Modal.Provider>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </Modal.Provider>
   </BrowserRouter>
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));
-// registerServiceWorker();
+registerServiceWorker();

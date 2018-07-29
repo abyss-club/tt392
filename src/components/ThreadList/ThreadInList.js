@@ -54,10 +54,12 @@ const ThreadAuthor = ({ anonymous, author }) => (
   </React.Fragment>
 );
 
+const titlePlaceholder = '无题';
+
 const ThreadInList = ({ thread }) => (
   <ThreadWrapper>
     <ThreadFirstRow>
-      <ThreadTitle>{thread.title}</ThreadTitle>
+      <ThreadTitle>{thread.title || titlePlaceholder}</ThreadTitle>
       <CommonTags text={thread.mainTag} />
       <ThreadTime>{timeElapsed(thread.createTime).formatted}</ThreadTime>
     </ThreadFirstRow>
@@ -69,15 +71,7 @@ const ThreadInList = ({ thread }) => (
 );
 
 ThreadInList.propTypes = {
-  thread: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    anonymous: PropTypes.bool.isRequired,
-    title: PropTypes.string.isRequired,
-    author: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    createTime: PropTypes.string.isRequired,
-    mainTag: PropTypes.string.isRequired,
-  }).isRequired,
+  thread: PropTypes.shape({}).isRequired,
 };
 
 ThreadAuthor.propTypes = {

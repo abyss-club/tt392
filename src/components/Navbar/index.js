@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Route } from 'react-router-dom';
 
 import NavUtils from './NavUtils';
 import NavTags from './NavTags';
@@ -32,7 +33,7 @@ const Navbar = () => (
       <NavTitle>Abyss</NavTitle>
       <NavUtils />
     </NavFirstRow>
-    <NavTags />
+    <Route path="/" component={NavTags} exact />
   </NavWrapper>
 );
 
