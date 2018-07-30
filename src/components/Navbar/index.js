@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Route } from 'react-router-dom';
+import { Route, Link } from 'react-router-dom';
 
 import NavUtils from './NavUtils';
 import NavTags from './NavTags';
@@ -25,12 +25,18 @@ const NavFirstRow = styled.div`
   align-items: center;
   width: 100%;
   padding-bottom: .25em;
+  > a {
+    text-decoration: none;
+    color: black;
+  }
 `;
 
 const Navbar = () => (
   <NavWrapper>
     <NavFirstRow>
-      <NavTitle>Abyss</NavTitle>
+      <Link to="/">
+        <NavTitle>abyss</NavTitle>
+      </Link>
       <NavUtils />
     </NavFirstRow>
     <Route path="/" component={NavTags} exact />

@@ -9,6 +9,7 @@ import GQLVoyager from 'components/Voyager';
 import Profile from 'components/Profile';
 import Navbar from 'components/Navbar';
 import Home from 'components/Home';
+import SignIn from 'components/SignIn';
 
 import MainContent from 'styles/MainContent';
 
@@ -27,6 +28,7 @@ const App = () => (
         <Route path="/graphiql/" component={GraphiQL} />
         <Route path="/voyager/" component={GQLVoyager} />
         <Route path="/profile/" component={Profile} />
+        <Route path="/sign_in/" component={SignIn} />
       </Switch>
     </MainContent>
   </Wrapper>
