@@ -1,9 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Route, Link } from 'react-router-dom';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 
-import NavUtils from './NavUtils';
 import NavTags from './NavTags';
+import SignInBtn from './SignInBtn';
 
 const NavWrapper = styled.nav`
   display: flex;
@@ -23,6 +25,7 @@ const NavFirstRow = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
   padding-bottom: .25em;
   > a {
@@ -31,16 +34,29 @@ const NavFirstRow = styled.div`
   }
 `;
 
+const PROFILE = gql`
+  query {
+    profile {
+      name
+      email
+      tags
+    }
+}`;
+
 const Navbar = () => (
-  <NavWrapper>
-    <NavFirstRow>
-      <Link to="/">
-        <NavTitle>abyss</NavTitle>
-      </Link>
-      <NavUtils />
-    </NavFirstRow>
-    <Route path="/" component={NavTags} exact />
-  </NavWrapper>
+  <Query query={PROFILE}>
+    {({ data }) => (
+      <NavWrapper>
+        <NavFirstRow>
+          <Link to="/">
+            <NavTitle>abyss</NavTitle>
+          </Link>
+          <SignInBtn profile={(data || {}).profile || {}} />
+        </NavFirstRow>
+        <Route path="/" component={NavTags} exact />
+      </NavWrapper>
+    )}
+  </Query>
 );
 
 export default Navbar;

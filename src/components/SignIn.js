@@ -78,11 +78,17 @@ class SignIn extends React.Component {
     );
     return (
       <Wrapper>
-        <h3>登录</h3>
+        <h3>进入</h3>
         <Title>abyss</Title>
         {(status !== 'COMPLETE') && (
         <form onSubmit={this.handleSubmit}>
-          <p><EmailInput type="email" ref={(input) => { this.input = input; }} placeholder="邮箱地址" /></p>
+          <p>
+            <EmailInput
+              type="email"
+              placeholder="邮箱地址"
+              innerRef={(input) => { this.input = input; }}
+            />
+          </p>
           <p><NextBtn type="submit" disabled={disabled}>下一步</NextBtn></p>
           {(status === 'ERROR') && (
             <p>发生了错误，请重试</p>
