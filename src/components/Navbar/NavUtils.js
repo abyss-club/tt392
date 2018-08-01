@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import colors from 'utils/colors';
 
+import Modal from 'components/Modal';
+
 const NavUtilWrapper = styled.nav`
   margin-left: auto;
 
@@ -40,7 +42,11 @@ Icon.defaultProps = {
 const NavUtils = () => (
   <NavUtilWrapper>
     <Icon name="plus-square" />
-    <Icon name="user" />
+    <Modal.Consumer>
+      {({ openModal }) => (
+        <Icon name="user" onClick={() => { openModal('SIGN_IN'); }} />
+      )}
+    </Modal.Consumer>
     <Icon name="bars" />
   </NavUtilWrapper>
 );
