@@ -8,7 +8,8 @@ import colors from 'utils/colors';
 const TAGS_QUERY = gql`
   query {
     tags {
-      mainTags
+      mainTags,
+      tree {mainTag, subTags}
     }
 }`;
 
