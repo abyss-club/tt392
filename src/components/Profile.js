@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import colors from 'utils/colors';
 
 const PROFILE_QUERY = gql`
-  query {
+  query FetchProfile {
     profile {
       email
       name
@@ -77,7 +77,7 @@ const Profile = () => (
           {data.profile.name ? (<p>Your current name is {data.profile.name}.</p>) : (
             <React-Fragment>
               <p>Your name is not set.</p>
-              <Mutation mutation={UPDATE_NAME}>
+              <Mutation mutation={UPDATE_NAME} refetchQueries={['FetchProfile']}>
                 {(setName, { data }) => (
                   <NameForm setName={setName} data={data} />
                 )}
