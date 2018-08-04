@@ -1,13 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
-import Remarkable from 'remarkable';
-import RemarkableReactRenderer from 'remarkable-react';
+import PropTypes from 'prop-types';
+import ReactMarkdown from 'react-markdown';
 
-const md = new Remarkable();
-md.renderer = new RemarkableReactRenderer();
 
-const MDPreview = ({ texts }) => (
-  md.render(texts[0])
+const MDPreview = ({ text }) => (
+  <ReactMarkdown source={text} />
 );
+MDPreview.propTypes = {
+  text: PropTypes.string.isRequired,
+};
 
 export default MDPreview;
