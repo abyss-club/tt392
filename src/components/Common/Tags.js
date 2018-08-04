@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import colors from 'utils/colors';
+import fontFamilies from 'utils/fontFamilies';
 
 const TagWrapper = styled.button`
   color: white;
-  background-color: ${colors.orange};
+  background-color: ${props => (props.type === 'main' ? colors.orange : colors.aluminium)} ;
   font-size: 1em;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: ${fontFamilies.system};
   border: 0;
   border-radius: 5px;
   height: 2em;
@@ -16,12 +17,13 @@ const TagWrapper = styled.button`
   line-height: 1.5;
 `;
 
-const CommonTags = ({ text }) => (
-  <TagWrapper>{text}</TagWrapper>
+const CommonTags = ({ type, text }) => (
+  <TagWrapper type={type}>{text}</TagWrapper>
 );
 
 CommonTags.propTypes = {
   text: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export default CommonTags;
