@@ -6,14 +6,19 @@ import gql from 'graphql-tag';
 import ThreadInList from './ThreadInList';
 
 const ThreadListWrapper = styled.div`
-  padding: .5em;
+  margin: .5em 0;
 `;
 
 const THREADSLICE_QUERY = gql`
   query {
     threadSlice(query: { after: "", limit: 10 }) {
       threads {
-        id, anonymous, title, author, content, createTime, mainTag
+        id, anonymous, title, author, content, createTime, mainTag, subTags,
+        replies(query: { before: "", limit: 5}) {
+          posts {
+            id, anonymous, author, content, createTime
+          }
+        }
       }
     }
 }`;
