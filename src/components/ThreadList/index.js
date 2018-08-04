@@ -13,7 +13,7 @@ const THREADSLICE_QUERY = gql`
   query {
     threadSlice(query: { after: "", limit: 10 }) {
       threads {
-        id, anonymous, title, author, content, createTime, mainTag
+        id, anonymous, title, author, content, createTime, mainTag, subTags
       }
     }
 }`;

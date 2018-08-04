@@ -12,7 +12,9 @@ const Text = styled.p`
 const SignInBtn = ({ profile }) => {
   if ((profile.email || '') !== '') {
     return (
-      <p><small>{profile.email}</small></p>
+      <Link to="/profile">
+        <Text>{profile.email}</Text>
+      </Link>
     );
   }
   return (

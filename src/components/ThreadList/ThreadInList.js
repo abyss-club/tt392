@@ -46,6 +46,19 @@ const AuthorWrapper = styled.span`
   font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
 `;
 
+const SubTags = ({ subTags }) => {
+  if (subTags) {
+    return (
+      <React.Fragment>
+        {subTags.map(subTag => (
+          <CommonTags type="sub" text={subTag} key={subTag} />
+        ))}
+      </React.Fragment>
+    );
+  }
+  return null;
+};
+
 const ThreadAuthor = ({ anonymous, author }) => (
   <React.Fragment>
     {(anonymous) ? (
@@ -60,7 +73,8 @@ const ThreadInList = ({ thread }) => (
   <ThreadWrapper>
     <ThreadFirstRow>
       <ThreadTitle>{thread.title || titlePlaceholder}</ThreadTitle>
-      <CommonTags text={thread.mainTag} />
+      <CommonTags type="main" text={thread.mainTag} />
+      <SubTags subTags={thread.subTags} />
       <ThreadTime>{timeElapsed(thread.createTime).formatted}</ThreadTime>
     </ThreadFirstRow>
     <ThreadContent>{thread.content}</ThreadContent>
