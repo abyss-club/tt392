@@ -73,13 +73,13 @@ const Profile = () => (
 
       return (
         <div>
-          <p>Fetching name for {data.profile.email} ...</p>
-          {data.profile.name ? (<p>Your current name is {data.profile.name}.</p>) : (
+          <p>欢迎{data.profile.name && `，${data.profile.name}`}</p>
+          {data.profile.name || (
             <React-Fragment>
               <p>Your name is not set.</p>
               <Mutation mutation={UPDATE_NAME} refetchQueries={['FetchProfile']}>
-                {(setName, { data }) => (
-                  <NameForm setName={setName} data={data} />
+                {(setName, { innerData }) => (
+                  <NameForm setName={setName} data={innerData} />
                 )}
               </Mutation>
             </React-Fragment>
