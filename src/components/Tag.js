@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import colors from 'utils/colors';
+import fontFamilies from 'utils/fontFamilies';
 
 const TagWrapper = styled.button`
   ${props => (props.isMain ? `
@@ -17,7 +18,7 @@ const TagWrapper = styled.button`
   height: 2em;
   padding: .25em .5em;
   margin: 0 .125em;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: ${fontFamilies.system};
 `;
 
 const Tag = ({ text, isMain }) => (
