@@ -12,7 +12,7 @@ const Text = styled.p`
 const SignInBtn = ({ profile }) => {
   if ((profile.email || '') !== '') {
     return (
-      <Link to="/profile">
+      <Link to="/profile/">
         {profile.name ? (<Text>{profile.name}</Text>) : (<Text>设置用户名</Text>)}
       </Link>
     );

@@ -66,7 +66,7 @@ const SubTags = ({ tree }) => {
   });
   return (
     [...flattened].map(subTag => (
-      <Tag type="sub" text={subTag} key={subTag} />
+      <Tag text={subTag} key={subTag} />
     )));
 };
 
@@ -114,7 +114,7 @@ class NavTags extends React.Component {
                   <SelectableTagWrapper>
                     <TagRow>
                       {data.tags.mainTags.map(tag => (
-                        <Tag type="main" text={tag} key={tag} />
+                        <Tag isMain text={tag} key={tag} />
                       ))}
                     </TagRow>
                     <TagRow>

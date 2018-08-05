@@ -57,7 +57,7 @@ const Post = ({
         <PublicTime>{timeElapsed(createTime).formatted}</PublicTime>
       </TitleRow>
       <PostContent>
-        <MDPreview context={content} />
+        <MDPreview text={content} />
       </PostContent>
     </Wrapper>
   );
