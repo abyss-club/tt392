@@ -10,6 +10,7 @@ import Profile from 'components/Profile';
 import Navbar from 'components/Navbar';
 import Home from 'components/Home';
 import SignIn from 'components/SignIn';
+import ThreadView from 'components/ThreadView';
 
 import MainContent from 'styles/MainContent';
 
@@ -25,12 +26,15 @@ const App = () => (
     <MainContent>
       <Switch>
         <Route path="/" component={Home} exact />
-        <Route path="/graphiql/" component={GraphiQL} />
-        <Route path="/voyager/" component={GQLVoyager} />
-        <Route path="/profile/" component={Profile} />
         <Route path="/sign_in/" component={SignIn} />
+        <Route path="/profile/" component={Profile} />
+        <Route path="/thread/:id" component={ThreadView} />
       </Switch>
     </MainContent>
+    <Switch>
+      <Route path="/graphiql/" component={GraphiQL} />
+      <Route path="/voyager/" component={GQLVoyager} />
+    </Switch>
   </Wrapper>
 );
 

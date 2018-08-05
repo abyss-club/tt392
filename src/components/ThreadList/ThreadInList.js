@@ -1,82 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import CommonTags from 'components/Common/Tags';
+import { withRouter } from 'react-router-dom';
+
+import Tag from 'components/Tag';
+import Post from 'components/Post';
 import colors from 'utils/colors';
-import fontFamilies from 'utils/fontFamilies';
-import timeElapsed from 'utils/calculateTime';
 
 const ThreadWrapper = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-
-  border-bottom: .5px solid #A7A7A7;
+  padding: .5rem 0;
+  cursor: pointer;
 `;
 
-const ThreadTitle = styled.h2`
-  font-family: ${fontFamilies.system};
+const TagsRow = styled.div`
+  font-size: .75rem;
+  margin: 0;
 `;
 
-const ThreadTime = styled.span`
-  margin-left: auto;
-  font-family: 'Merriweather Sans', sans-serif;
+const ViewThread = styled.p`
+  color: ${colors.orange};
 `;
 
-const ThreadFirstRow = styled.div`
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-`;
-
-const ThreadContent = styled.div`
-  width: 100%;
-  padding-bottom: 1em;
-
-  font-family: ${fontFamilies.system};
-`;
-
-const ThreadMeta = styled.div`
-  display: flex;
-  padding-bottom: 1em;
-`;
-
-const AuthorWrapper = styled.span`
-  color: ${props => (props.anonymous ? colors.vulcan : colors.orangeLight)};
-  font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
-`;
-
-const ThreadAuthor = ({ anonymous, author }) => (
-  <React.Fragment>
-    {(anonymous) ? (
-      <AuthorWrapper anonymous>{author}</AuthorWrapper>) : (<AuthorWrapper>{author}</AuthorWrapper>
-      )}
-  </React.Fragment>
-);
-
-const titlePlaceholder = '无题';
-
-const ThreadInList = ({ thread }) => (
-  <ThreadWrapper>
-    <ThreadFirstRow>
-      <ThreadTitle>{thread.title || titlePlaceholder}</ThreadTitle>
-      <CommonTags text={thread.mainTag} />
-      <ThreadTime>{timeElapsed(thread.createTime).formatted}</ThreadTime>
-    </ThreadFirstRow>
-    <ThreadContent>{thread.content}</ThreadContent>
-    <ThreadMeta>
-      <ThreadAuthor anonymous={thread.anonymous} author={thread.author} />
-    </ThreadMeta>
-  </ThreadWrapper>
-);
+const ThreadInList = ({ thread, history }) => {
+  const replies = (thread.replies || []).posts || [];
+  return (
+    <ThreadWrapper onClick={() => { history.push(`/thread/${thread.id}/`); }}>
+      <TagsRow>
+        <Tag text={thread.mainTag} isMain />
+        {(thread.subTags || []).map(t => <Tag key={t} text={t} />)}
+      </TagsRow>
+      <Post isThread {...thread} />
+      <ViewThread>查看整串</ViewThread>
+      {replies.map(post => <Post key={post.id} {...post} />)}
+    </ThreadWrapper>
+  );
+};
 
 ThreadInList.propTypes = {
   thread: PropTypes.shape({}).isRequired,
+  history: PropTypes.shape({}).isRequired,
 };
 
-ThreadAuthor.propTypes = {
-  anonymous: PropTypes.bool.isRequired,
-  author: PropTypes.string.isRequired,
-};
-
-export default ThreadInList;
+export default withRouter(ThreadInList);
