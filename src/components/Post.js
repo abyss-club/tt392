@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
+import MDPreview from 'components/MDPreview';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
@@ -55,7 +56,9 @@ const Post = ({
         {authorText}
         <PublicTime>{timeElapsed(createTime).formatted}</PublicTime>
       </TitleRow>
-      <PostContent>{content}</PostContent>
+      <PostContent>
+        <MDPreview context={content} />
+      </PostContent>
     </Wrapper>
   );
 };

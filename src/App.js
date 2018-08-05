@@ -11,6 +11,7 @@ import Navbar from 'components/Navbar';
 import Home from 'components/Home';
 import SignIn from 'components/SignIn';
 import ThreadView from 'components/ThreadView';
+import Draft from 'components/Draft';
 
 import MainContent from 'styles/MainContent';
 
@@ -29,6 +30,7 @@ const App = () => (
         <Route path="/sign_in/" component={SignIn} />
         <Route path="/profile/" component={Profile} />
         <Route path="/thread/:id" component={ThreadView} />
+        <Route path="/draft/:mode" component={Draft} />
       </Switch>
     </MainContent>
     <Switch>
