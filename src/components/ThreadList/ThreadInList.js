@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import CommonTags from 'components/Common/Tags';
+import Tag from 'components/Tag';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
@@ -51,7 +51,7 @@ const SubTags = ({ subTags }) => {
     return (
       <React.Fragment>
         {subTags.map(subTag => (
-          <CommonTags type="sub" text={subTag} key={subTag} />
+          <Tag type="sub" text={subTag} key={subTag} />
         ))}
       </React.Fragment>
     );
@@ -73,7 +73,7 @@ const ThreadInList = ({ thread }) => (
   <ThreadWrapper>
     <ThreadFirstRow>
       <ThreadTitle>{thread.title || titlePlaceholder}</ThreadTitle>
-      <CommonTags type="main" text={thread.mainTag} />
+      <Tag type="main" text={thread.mainTag} />
       <SubTags subTags={thread.subTags} />
       <ThreadTime>{timeElapsed(thread.createTime).formatted}</ThreadTime>
     </ThreadFirstRow>

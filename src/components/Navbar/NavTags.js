@@ -5,7 +5,7 @@ import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import colors from 'utils/colors';
-import CommonTags from 'components/Common/Tags';
+import Tag from 'components/Tag';
 import fontFamilies from 'utils/fontFamilies';
 
 
@@ -66,7 +66,7 @@ const SubTags = ({ tree }) => {
   });
   return (
     [...flattened].map(subTag => (
-      <CommonTags type="sub" text={subTag} key={subTag} />
+      <Tag type="sub" text={subTag} key={subTag} />
     )));
 };
 
@@ -114,7 +114,7 @@ class NavTags extends React.Component {
                   <SelectableTagWrapper>
                     <TagRow>
                       {data.tags.mainTags.map(tag => (
-                        <CommonTags type="main" text={tag} key={tag} />
+                        <Tag type="main" text={tag} key={tag} />
                       ))}
                     </TagRow>
                     <TagRow>
