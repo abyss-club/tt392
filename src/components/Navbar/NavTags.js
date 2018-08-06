@@ -81,6 +81,7 @@ class NavTags extends React.Component {
       expanded: false,
     };
     this.expandNav = this.expandNav.bind(this);
+    this.props.setMainTags(props.data.tags.mainTags);
   }
 
   expandNav() {
@@ -90,7 +91,41 @@ class NavTags extends React.Component {
   }
 
   render() {
+    const { data } = this.props;
+    const selectedTags = data.profile.tags || data.tags.recommended;
     return (
+      <NavTagsWrapper>
+        <TagRow>
+          <SubscribedTags tags={selectedTags} />
+          <ExpandBtnWrapper onClick={this.expandNav}>
+            {this.state.expanded ? (<FontAwesomeIcon icon="chevron-down" />) : (
+              <FontAwesomeIcon icon="chevron-up" />)}
+          </ExpandBtnWrapper>
+        </TagRow>
+        {this.state.expanded && (
+        <SelectableTagWrapper>
+          <TagRow>
+            {data.tags.mainTags.map(tag => (
+              <Tag isMain text={tag} key={tag} />
+                      ))}
+          </TagRow>
+          <TagRow>
+            <SubTags tree={data.tags.tree} />
+          </TagRow>
+        </SelectableTagWrapper>
+              )}
+      </NavTagsWrapper>
+    );
+  }
+}
+NavTags.propTypes = {
+  setMainTags: PropTypes.func.isRequired,
+  data: PropTypes.shape().isRequired,
+};
+
+export default () => (
+  <Store.Consumer>
+    {({ setMainTags }) => (
       <Query query={TAGS_QUERY}>
         {({ loading, error, data }) => {
           if (loading) return <p>Loading...</p>;
@@ -103,46 +138,9 @@ class NavTags extends React.Component {
               </pre>
             );
           }
-          // if not signed in, use recommend tags.
-          const selectedTags = data.profile.tags || data.tags.recommended;
-          this.props.setMainTags(data.tags.mainTags);
-          console.log('store', this.props.setMainTags);
-          return (
-            <NavTagsWrapper>
-              <TagRow>
-                <SubscribedTags tags={selectedTags} />
-                <ExpandBtnWrapper onClick={this.expandNav}>
-                  {this.state.expanded ? (<FontAwesomeIcon icon="chevron-down" />) : (
-                    <FontAwesomeIcon icon="chevron-up" />)}
-                </ExpandBtnWrapper>
-              </TagRow>
-              {this.state.expanded && (
-              <SelectableTagWrapper>
-                <TagRow>
-                  {data.tags.mainTags.map(tag => (
-                    <Tag isMain text={tag} key={tag} />
-                      ))}
-                </TagRow>
-                <TagRow>
-                  <SubTags tree={data.tags.tree} />
-                </TagRow>
-              </SelectableTagWrapper>
-              )}
-            </NavTagsWrapper>
-          );
+          return <NavTags setMainTags={setMainTags} data={data} />;
         }}
       </Query>
-    );
-  }
-}
-NavTags.propTypes = {
-  setMainTags: PropTypes.func.isRequired,
-};
-
-export default () => (
-  <Store.Consumer>
-    {({ setMainTags }) => (
-      <NavTags setMainTags={setMainTags} />
     )}
   </Store.Consumer>
 );
