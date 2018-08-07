@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import colors from 'utils/colors';
 import Tag from 'components/Tag';
 import fontFamilies from 'utils/fontFamilies';
+import Store from 'providers/Store';
 
 
 const TAGS_QUERY = gql`
@@ -52,8 +53,10 @@ const ExpandBtnWrapper = styled.button`
   line-height: 1.5;
 `;
 
-const SubscribedTags = () => (
-  <span>No tags subscribed</span>
+const SubscribedTags = ({ tags }) => (
+  tags.map(tag => (
+    <Tag text={tag} key={tag} />
+  ))
 );
 
 const SubTags = ({ tree }) => {
@@ -102,6 +105,8 @@ class NavTags extends React.Component {
           }
           // if not signed in, use recommend tags.
           const selectedTags = data.profile.tags || data.tags.recommended;
+          this.props.setMainTags(data.tags.mainTags);
+          console.log('store', this.props.setMainTags);
           return (
             <NavTagsWrapper>
               <TagRow>
@@ -111,20 +116,18 @@ class NavTags extends React.Component {
                     <FontAwesomeIcon icon="chevron-up" />)}
                 </ExpandBtnWrapper>
               </TagRow>
-              {this.state.expanded ?
-                (
-                  <SelectableTagWrapper>
-                    <TagRow>
-                      {data.tags.mainTags.map(tag => (
-                        <Tag isMain text={tag} key={tag} />
+              {this.state.expanded && (
+              <SelectableTagWrapper>
+                <TagRow>
+                  {data.tags.mainTags.map(tag => (
+                    <Tag isMain text={tag} key={tag} />
                       ))}
-                    </TagRow>
-                    <TagRow>
-                      <SubTags tree={data.tags.tree} />
-                    </TagRow>
-                  </SelectableTagWrapper>
-                ) : (<div />)
-              }
+                </TagRow>
+                <TagRow>
+                  <SubTags tree={data.tags.tree} />
+                </TagRow>
+              </SelectableTagWrapper>
+              )}
             </NavTagsWrapper>
           );
         }}
@@ -132,5 +135,14 @@ class NavTags extends React.Component {
     );
   }
 }
+NavTags.propTypes = {
+  setMainTags: PropTypes.func.isRequired,
+};
 
-export default NavTags;
+export default () => (
+  <Store.Consumer>
+    {({ setMainTags }) => (
+      <NavTags setMainTags={setMainTags} />
+    )}
+  </Store.Consumer>
+);
