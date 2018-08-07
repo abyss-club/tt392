@@ -12,10 +12,11 @@ import fontFamilies from 'utils/fontFamilies';
 const TAGS_QUERY = gql`
   query {
     profile {
-      subscribedTags: tags
+      tags
     }
     tags {
       mainTags,
+      recommend,
       tree {mainTag, subTags}
     }
 }`;
@@ -99,7 +100,8 @@ class NavTags extends React.Component {
               </pre>
             );
           }
-
+          // if not signed in, use recommend tags.
+          const selectedTags = data.profile.tags || data.tags.recommend;
           return (
             <NavTagsWrapper>
               <TagRow>

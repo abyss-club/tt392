@@ -16,8 +16,12 @@ const ModalContainer = ({ name, close }) => {
   }
   return <Elem close={close} />;
 };
+ModalContainer.propTypes = {
+  name: PropTypes.string.isRequired,
+  close: PropTypes.func.isRequired,
+};
 
-class ModalProvider extends React.Component {
+class FeedbackProvider extends React.Component {
   constructor(props) {
     super(props);
     this.state = { name: '' };
@@ -38,7 +42,7 @@ class ModalProvider extends React.Component {
     const { children } = this.props;
     const data = {
       name,
-      openModal: this.open,
+      openFeedback: this.open,
       close: this.close,
     };
     return (
@@ -49,17 +53,11 @@ class ModalProvider extends React.Component {
     );
   }
 }
-
-ModalContainer.propTypes = {
-  name: PropTypes.string.isRequired,
-  close: PropTypes.func.isRequired,
-};
-
-ModalProvider.propTypes = {
+FeedbackProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
 export default {
-  Provider: ModalProvider,
+  Provider: FeedbackProvider,
   Consumer,
 };
