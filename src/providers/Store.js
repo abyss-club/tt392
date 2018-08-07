@@ -5,7 +5,7 @@ const { Provider, Consumer } = React.createContext();
 const store = {
   tags: {
     mainTags: [],
-    subscribled: [],
+    subscribed: [],
   },
 };
 

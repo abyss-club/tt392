@@ -16,7 +16,7 @@ const TAGS_QUERY = gql`
     }
     tags {
       mainTags,
-      recommend,
+      recommended,
       tree {mainTag, subTags}
     }
 }`;
@@ -101,11 +101,11 @@ class NavTags extends React.Component {
             );
           }
           // if not signed in, use recommend tags.
-          const selectedTags = data.profile.tags || data.tags.recommend;
+          const selectedTags = data.profile.tags || data.tags.recommended;
           return (
             <NavTagsWrapper>
               <TagRow>
-                <SubscribedTags />
+                <SubscribedTags tags={selectedTags} />
                 <ExpandBtnWrapper onClick={this.expandNav}>
                   {this.state.expanded ? (<FontAwesomeIcon icon="chevron-down" />) : (
                     <FontAwesomeIcon icon="chevron-up" />)}
