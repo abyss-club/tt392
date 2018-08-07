@@ -53,11 +53,27 @@ const ExpandBtnWrapper = styled.button`
   line-height: 1.5;
 `;
 
-const SubscribedTags = ({ tags }) => (
-  tags.map(tag => (
-    <Tag text={tag} key={tag} />
-  ))
-);
+const SubscribedTags = ({ tags, recommended }) => {
+  if (tags) {
+    return (
+      <React-Fragment>
+        {tags.main.map(tag => (
+          <Tag isMain text={tag} key={tag} />
+        ))}
+        {tags.sub.map(tag => (
+          <Tag text={tag} key={tag} />
+        ))}
+      </React-Fragment>
+    );
+  }
+  return (
+    <React-Fragment>
+      {recommended.map(tag => (
+        <Tag isMain text={tag} key={tag} />
+      ))}
+    </React-Fragment>
+  );
+};
 
 const SubTags = ({ tree }) => {
   const flattened = new Set();
@@ -82,6 +98,7 @@ class NavTags extends React.Component {
     };
     this.expandNav = this.expandNav.bind(this);
     this.props.setMainTags(props.data.tags.mainTags);
+    this.props.setSubscribed(props.data.profile.tags);
   }
 
   expandNav() {
@@ -92,14 +109,17 @@ class NavTags extends React.Component {
 
   render() {
     const { data } = this.props;
-    const selectedTags = data.profile.tags || data.tags.recommended;
     return (
       <NavTagsWrapper>
         <TagRow>
-          <SubscribedTags tags={selectedTags} />
+          <Store.Consumer>
+            {({ tags }) => (
+              <SubscribedTags tags={tags.subscribed} recommended={data.tags.recommended} />
+            )}
+          </Store.Consumer>
           <ExpandBtnWrapper onClick={this.expandNav}>
-            {this.state.expanded ? (<FontAwesomeIcon icon="chevron-down" />) : (
-              <FontAwesomeIcon icon="chevron-up" />)}
+            {this.state.expanded ? (<FontAwesomeIcon icon="chevron-up" />) : (
+              <FontAwesomeIcon icon="chevron-down" />)}
           </ExpandBtnWrapper>
         </TagRow>
         {this.state.expanded && (
@@ -125,7 +145,7 @@ NavTags.propTypes = {
 
 export default () => (
   <Store.Consumer>
-    {({ setMainTags }) => (
+    {({ setMainTags, setSubscribed }) => (
       <Query query={TAGS_QUERY}>
         {({ loading, error, data }) => {
           if (loading) return <p>Loading...</p>;
@@ -138,7 +158,7 @@ export default () => (
               </pre>
             );
           }
-          return <NavTags setMainTags={setMainTags} data={data} />;
+          return <NavTags setMainTags={setMainTags} setSubscribed={setSubscribed} data={data} />;
         }}
       </Query>
     )}
