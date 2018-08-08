@@ -87,15 +87,9 @@ function insertMarkup(change, type) {
 // Define our app...
 class TextEditor extends React.Component {
   // Set the initial value when the app is first constructed
-  constructor(props) {
-    super(props);
-    this.handleLinkClick = this.handleLinkClick.bind(this);
-    this.handleImageClick = this.handleImageClick.bind(this);
-    this.state = {
-      value: initialValue(props.text),
-    };
-  }
-
+  state = {
+    value: initialValue(this.props.text),
+  };
 
   // On change, update the app's React state with the new editor value.
   onChange = ({ value }) => {
