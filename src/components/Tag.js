@@ -21,16 +21,18 @@ const TagWrapper = styled.button`
   font-family: ${fontFamilies.system};
 `;
 
-const Tag = ({ text, isMain }) => (
-  <TagWrapper isMain={isMain}>{text}</TagWrapper>
+const Tag = ({ text, isMain, onClick }) => (
+  <TagWrapper isMain={isMain} onClick={onClick}>{text}</TagWrapper>
 );
 
 Tag.propTypes = {
+  onClick: PropTypes.func,
   isMain: PropTypes.bool,
   text: PropTypes.string.isRequired,
 };
 Tag.defaultProps = {
   isMain: false,
+  onClick: () => {},
 };
 
 export default Tag;

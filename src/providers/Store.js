@@ -19,12 +19,13 @@ class StoreProvider extends React.Component {
       tags: {
         mainTags: [],
         subscribed: {
-          main: [],
-          sub: [],
+          main: new Set(),
+          sub: new Set(),
         },
       },
       setMainTags: this.setMainTags,
       setSubscribed: this.setSubscribed,
+      setSubbedDirectly: this.setSubbedDirectly,
     };
   }
 
@@ -34,18 +35,24 @@ class StoreProvider extends React.Component {
     this.setState({ tags });
   }
 
+  setSubbedDirectly = (subscribed) => {
+    const { tags } = this.state;
+    tags.subscribed = subscribed;
+    this.setState({ tags });
+  }
+
   setSubscribed = (subscribedTags) => {
     const { tags } = this.state;
-    const main = [];
-    const sub = [];
+    const main = new Set();
+    const sub = new Set();
     if (subscribedTags) {
       const newSubscribedTags = [...subscribedTags];
       tags.mainTags.forEach((mainTag) => {
         newSubscribedTags.forEach((subsTag, idx) => {
           if (mainTag === subsTag) {
-            main.push(newSubscribedTags.splice(idx, 1)[0]);
+            main.add(newSubscribedTags.splice(idx, 1)[0]);
           } else {
-            sub.push(newSubscribedTags.splice(idx, 1)[0]);
+            sub.add(newSubscribedTags.splice(idx, 1)[0]);
           }
         });
       });

@@ -8,7 +8,7 @@ import colors from 'utils/colors';
 import Tag from 'components/Tag';
 import fontFamilies from 'utils/fontFamilies';
 import Store from 'providers/Store';
-
+import SubscribedTags from './SubbedTags';
 
 const TAGS_QUERY = gql`
   query {
@@ -21,6 +21,14 @@ const TAGS_QUERY = gql`
       tree {mainTag, subTags}
     }
 }`;
+
+const UPDATE_SUBBED_TAGS = gql`
+  mutation updateSubbedTags($tags: Array!) {
+    syncTags(tags: $tags) {
+      name
+    }
+  }
+`;
 
 const NavTagsWrapper = styled.div`
   width: 100%;
@@ -40,40 +48,18 @@ const TagRow = styled.div`
   width: 100%;
 `;
 
-const ExpandBtnWrapper = styled.button`
-  color: white;
-  background-color: ${colors.orange};
-  font-size: 1em;
-  font-family: ${fontFamilies.system};
-  border: 0;
-  border-radius: 5px;
-  height: 2em;
-  padding: .25em .5em;
-  margin: 0 .125em;
-  line-height: 1.5;
-`;
-
-const SubscribedTags = ({ tags, recommended }) => {
-  if (tags) {
-    return (
-      <React-Fragment>
-        {tags.main.map(tag => (
-          <Tag isMain text={tag} key={tag} />
-        ))}
-        {tags.sub.map(tag => (
-          <Tag text={tag} key={tag} />
-        ))}
-      </React-Fragment>
-    );
-  }
-  return (
-    <React-Fragment>
-      {recommended.map(tag => (
-        <Tag isMain text={tag} key={tag} />
-      ))}
-    </React-Fragment>
-  );
-};
+// const ExpandBtnWrapper = styled.button`
+//   color: white;
+//   background-color: ${colors.orange};
+//   font-size: 1em;
+//   font-family: ${fontFamilies.system};
+//   border: 0;
+//   border-radius: 5px;
+//   height: 2em;
+//   padding: .25em .5em;
+//   margin: 0 .125em;
+//   line-height: 1.5;
+// `;
 
 const SubTags = ({ tree }) => {
   const flattened = new Set();
@@ -114,20 +100,22 @@ class NavTags extends React.Component {
         <TagRow>
           <Store.Consumer>
             {({ tags }) => (
-              <SubscribedTags tags={tags.subscribed} recommended={data.tags.recommended} />
+              <SubscribedTags
+                tags={tags.subscribed}
+                recommended={data.tags.recommended}
+                isExpanded={this.state.expanded}
+                expandNav={this.expandNav}
+                setSubbedDirectly={this.props.setSubscribed}
+              />
             )}
           </Store.Consumer>
-          <ExpandBtnWrapper onClick={this.expandNav}>
-            {this.state.expanded ? (<FontAwesomeIcon icon="chevron-up" />) : (
-              <FontAwesomeIcon icon="chevron-down" />)}
-          </ExpandBtnWrapper>
         </TagRow>
         {this.state.expanded && (
         <SelectableTagWrapper>
           <TagRow>
             {data.tags.mainTags.map(tag => (
               <Tag isMain text={tag} key={tag} />
-                      ))}
+            ))}
           </TagRow>
           <TagRow>
             <SubTags tree={data.tags.tree} />
@@ -145,7 +133,7 @@ NavTags.propTypes = {
 
 export default () => (
   <Store.Consumer>
-    {({ setMainTags, setSubscribed }) => (
+    {({ setMainTags, setSubscribed, setSubbedDirectly }) => (
       <Query query={TAGS_QUERY}>
         {({ loading, error, data }) => {
           if (loading) return <p>Loading...</p>;
@@ -158,7 +146,7 @@ export default () => (
               </pre>
             );
           }
-          return <NavTags setMainTags={setMainTags} setSubscribed={setSubscribed} data={data} />;
+          return <NavTags setMainTags={setMainTags} setSubscribed={setSubscribed} setSubbedDirectly={setSubbedDirectly} data={data} />;
         }}
       </Query>
     )}
