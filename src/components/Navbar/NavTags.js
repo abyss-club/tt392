@@ -79,18 +79,8 @@ const SubTags = ({ tree }) => {
 class NavTags extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      expanded: false,
-    };
-    this.expandNav = this.expandNav.bind(this);
-    this.props.setMainTags(props.data.tags.mainTags);
+    this.props.setTagsByTree(props.data.tags.tree);
     this.props.setSubscribed(props.data.profile.tags);
-  }
-
-  expandNav() {
-    this.setState(prevState => ({
-      expanded: !prevState.expanded,
-    }));
   }
 
   render() {
@@ -99,41 +89,29 @@ class NavTags extends React.Component {
       <NavTagsWrapper>
         <TagRow>
           <Store.Consumer>
-            {({ tags }) => (
+            {({ tags, setSubscribed, setSubbedDirectly }) => (
               <SubscribedTags
-                tags={tags.subscribed}
-                recommended={data.tags.recommended}
-                isExpanded={this.state.expanded}
-                expandNav={this.expandNav}
+                data={data}
+                tags={tags}
+                setSubscribed={this.props.setSubscribed}
                 setSubbedDirectly={this.props.setSubscribed}
               />
             )}
           </Store.Consumer>
         </TagRow>
-        {this.state.expanded && (
-        <SelectableTagWrapper>
-          <TagRow>
-            {data.tags.mainTags.map(tag => (
-              <Tag isMain text={tag} key={tag} />
-            ))}
-          </TagRow>
-          <TagRow>
-            <SubTags tree={data.tags.tree} />
-          </TagRow>
-        </SelectableTagWrapper>
-              )}
       </NavTagsWrapper>
     );
   }
 }
 NavTags.propTypes = {
-  setMainTags: PropTypes.func.isRequired,
   data: PropTypes.shape().isRequired,
 };
 
 export default () => (
   <Store.Consumer>
-    {({ setMainTags, setSubscribed, setSubbedDirectly }) => (
+    {({
+      tags, setTagsByTree, setSubscribed, setSubbedDirectly
+    }) => (
       <Query query={TAGS_QUERY}>
         {({ loading, error, data }) => {
           if (loading) return <p>Loading...</p>;
@@ -146,7 +124,8 @@ export default () => (
               </pre>
             );
           }
-          return <NavTags setMainTags={setMainTags} setSubscribed={setSubscribed} setSubbedDirectly={setSubbedDirectly} data={data} />;
+          return <NavTags
+           setTagsByTree={setTagsByTree} setSubscribed={setSubscribed} data={data} />;
         }}
       </Query>
     )}

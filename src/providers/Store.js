@@ -18,20 +18,32 @@ class StoreProvider extends React.Component {
     this.state = {
       tags: {
         mainTags: [],
+        subTags: [],
         subscribed: {
           main: new Set(),
           sub: new Set(),
         },
       },
-      setMainTags: this.setMainTags,
+      setTagsByTree: this.setTagsByTree,
       setSubscribed: this.setSubscribed,
       setSubbedDirectly: this.setSubbedDirectly,
     };
   }
 
-  setMainTags = (mainTags) => {
+  setTagsByTree = (tree) => {
     const { tags } = this.state;
+    const subTags = new Set();
+    const mainTags = new Set();
+    tree.forEach((mainTag) => {
+      mainTags.add(mainTag.mainTag);
+      if (mainTag.subTags) {
+        mainTag.subTags.forEach((tag) => {
+          subTags.add(tag);
+        });
+      }
+    });
     tags.mainTags = mainTags;
+    tags.subTags = subTags;
     this.setState({ tags });
   }
 
@@ -43,21 +55,23 @@ class StoreProvider extends React.Component {
 
   setSubscribed = (subscribedTags) => {
     const { tags } = this.state;
-    const main = new Set();
-    const sub = new Set();
     if (subscribedTags) {
-      const newSubscribedTags = [...subscribedTags];
+      const main = new Set();
+      const newSubscribedTags = new Set([...subscribedTags]);
+      console.log(newSubscribedTags);
       tags.mainTags.forEach((mainTag) => {
+        // console.log({ mainTag });
         newSubscribedTags.forEach((subsTag, idx) => {
+          // console.log({ mainTag, subsTag });
           if (mainTag === subsTag) {
-            main.add(newSubscribedTags.splice(idx, 1)[0]);
-          } else {
-            sub.add(newSubscribedTags.splice(idx, 1)[0]);
+            main.add(mainTag);
+            newSubscribedTags.delete(mainTag);
           }
         });
       });
+      console.log({ main, newSubscribedTags });
       tags.subscribed.main = main;
-      tags.subscribed.sub = sub;
+      tags.subscribed.sub = newSubscribedTags;
     } else {
       tags.subscribed = null;
     }
