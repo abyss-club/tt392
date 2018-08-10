@@ -13,8 +13,6 @@ import SignIn from 'components/SignIn';
 import ThreadView from 'components/ThreadView';
 import Draft from 'components/Draft';
 
-import MainContent from 'styles/MainContent';
-
 faLib.loadFa();
 
 const Wrapper = styled.div`
@@ -24,16 +22,12 @@ const Wrapper = styled.div`
 const App = () => (
   <Wrapper>
     <Navbar />
-    <MainContent>
-      <Switch>
-        <Route path="/" component={Home} exact />
-        <Route path="/sign_in/" component={SignIn} />
-        <Route path="/profile/" component={Profile} />
-        <Route path="/thread/:id" component={ThreadView} />
-        <Route path="/draft/:mode" component={Draft} />
-      </Switch>
-    </MainContent>
     <Switch>
+      <Route path="/" component={Home} exact />
+      <Route path="/sign_in/" component={SignIn} />
+      <Route path="/profile/" component={Profile} />
+      <Route path="/thread/:id" component={ThreadView} />
+      <Route path="/draft/:mode" component={Draft} />
       <Route path="/graphiql/" component={GraphiQL} />
       <Route path="/voyager/" component={GQLVoyager} />
     </Switch>

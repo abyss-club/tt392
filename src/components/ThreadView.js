@@ -4,6 +4,7 @@ import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import Post from 'components/Post';
+import MainContent from 'styles/MainContent';
 
 const THREAD_VIEW = gql`
   query Thread($id: String!) {
@@ -31,10 +32,10 @@ const ThreadView = ({ match }) => (
       const { thread } = data;
       const replies = (thread.replies || []).posts || [];
       return (
-        <div>
+        <MainContent>
           <Post isThread {...thread} />
           {replies.map(post => <Post key={post.id} {...post} />)}
-        </div>
+        </MainContent>
       );
     }}
   </Query>
