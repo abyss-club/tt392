@@ -67,7 +67,8 @@ class Navbar extends React.Component {
     setStore({
       profile: {
         isSignedIn: (profile.email || '') !== '',
-        email: profile.email,
+        email: profile.email || '',
+        name: profile.name || '',
       },
       tags: parseTags(profile, tags),
     });
