@@ -113,8 +113,8 @@ const SIGN_IN = gql`
 
 export default () => (
   <Mutation mutation={SIGN_IN}>
-    {(auth, { data }) => (
-      <SignIn auth={auth} data={data} />
+    {auth => (
+      <SignIn auth={auth} />
     )}
   </Mutation>
 );

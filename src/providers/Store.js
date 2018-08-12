@@ -10,6 +10,7 @@ class StoreProvider extends React.Component {
     this.state = {
       profile: {
         isSignedIn: false,
+        name: '',
         email: '',
       },
       tags: {
