@@ -3,6 +3,7 @@ import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
+import config from 'config';
 
 export default new ApolloClient({
   link: ApolloLink.from([
@@ -14,7 +15,7 @@ export default new ApolloClient({
       if (networkError) console.log(`[Network error]: ${networkError}`);
     }),
     new HttpLink({
-      uri: 'http://api.uexky.com/graphql/',
+      uri: `${config.apiPrefix}/graphql/`,
       credentials: 'include',
       fetchOptions: {
         mode: 'cors',
