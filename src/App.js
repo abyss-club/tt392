@@ -1,23 +1,35 @@
 import React from 'react';
 import styled from 'styled-components';
+import Loadable from 'react-loadable';
 import { Switch, Route } from 'react-router-dom';
 
 import faLib from 'utils/fontAwesomeLib';
 
-import GraphiQL from 'components/GraphiQL';
-import GQLVoyager from 'components/Voyager';
 import Profile from 'components/Profile';
 import Navbar from 'components/Navbar';
 import Home from 'components/Home';
 import SignIn from 'components/SignIn';
 import ThreadView from 'components/ThreadView';
 import Draft from 'components/Draft';
+import MainContent from 'styles/MainContent';
+
 
 faLib.loadFa();
 
 const Wrapper = styled.div`
   height: 100%;
 `;
+
+const Loading = () => <MainContent>loading...</MainContent>;
+
+const GraphiQL = Loadable({
+  loader: () => import('components/GraphiQL'),
+  loading: Loading,
+});
+const GQLVoyager = Loadable({
+  loader: () => import('components/Voyager'),
+  loading: Loading,
+});
 
 const App = () => (
   <Wrapper>
