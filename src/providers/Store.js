@@ -2,18 +2,42 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const { Provider, Consumer } = React.createContext();
-const store = {
-  tags: {
-    mainTags: [],
-    subscribled: [],
-  },
-};
 
-const StoreProvider = ({ children }) => (
-  <Provider value={store}>
-    {children}
-  </Provider>
-);
+class StoreProvider extends React.Component {
+  constructor(props) {
+    super(props);
+    /* eslint-disable */
+    this.state = {
+      profile: {
+        isSignedIn: false,
+        email: '',
+      },
+      tags: {
+        mainTags: new Set(),
+        subscribed: {
+          main: new Set(),
+          sub: new Set(),
+        },
+      },
+      setStore: this.setStore,
+    };
+    /* eslint-enable */
+  }
+
+  // superpower function, just for early in devlopment
+  setStore = (change) => {
+    this.setState(change);
+  }
+
+  render() {
+    return (
+      <Provider value={this.state} >
+        {this.props.children}
+      </Provider>
+    );
+  }
+}
+
 StoreProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };

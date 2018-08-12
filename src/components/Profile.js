@@ -4,6 +4,8 @@ import gql from 'graphql-tag';
 import styled from 'styled-components';
 import colors from 'utils/colors';
 
+import MainContent from 'styles/MainContent';
+
 const PROFILE_QUERY = gql`
   query FetchProfile {
     profile {
@@ -55,8 +57,11 @@ const SubmitBtn = styled.input`
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
   height: 2.5em;
   margin-top: 1em;
+  outline: none;
+  border: none;
 `;
 
+// TODO: use Store will be clear
 const Profile = () => (
   <Query query={PROFILE_QUERY}>
     {({ loading, error, data }) => {
@@ -72,11 +77,11 @@ const Profile = () => (
       }
 
       return (
-        <div>
+        <MainContent>
           <p>欢迎{data.profile.name && `，${data.profile.name}`}</p>
           {data.profile.name || (
             <React-Fragment>
-              <p>Your name is not set.</p>
+              <p>尚未设置用户名</p>
               <Mutation mutation={UPDATE_NAME} refetchQueries={['FetchProfile']}>
                 {(setName, { innerData }) => (
                   <NameForm setName={setName} data={innerData} />
@@ -84,7 +89,7 @@ const Profile = () => (
               </Mutation>
             </React-Fragment>
           )}
-        </div>
+        </MainContent>
       );
     }}
   </Query>
@@ -115,8 +120,8 @@ class NameForm extends React.Component {
 
   render = () => (
     <form onSubmit={this.handleSubmit}>
-      <NameInput type="text" name="name" placeholder="Set your name here ..." innerRef={(input) => { this.input = input; }} />
-      <SubmitBtn type="submit" value="Submit" />
+      <NameInput type="text" name="name" placeholder="用户名" innerRef={(input) => { this.input = input; }} />
+      <SubmitBtn type="submit" value="提交" />
     </form>
   );
 }

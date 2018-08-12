@@ -1,42 +1,28 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
+import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import colors from 'utils/colors';
-import Tag from 'components/Tag';
 import fontFamilies from 'utils/fontFamilies';
+import Store from 'providers/Store';
+import Tag from 'components/Tag';
 
-
-const TAGS_QUERY = gql`
-  query {
-    profile {
-      tags
-    }
-    tags {
-      mainTags,
-      recommend,
-      tree {mainTag, subTags}
-    }
-}`;
+import TagSelector from './TagSelector';
 
 const NavTagsWrapper = styled.div`
   width: 100%;
-
+  font-size: .75rem;
   display: flex;
   flex-flow: row wrap;
-`;
-
-const SelectableTagWrapper = styled.div`
-  width: 100%;
-
-  display: flex;
-  flex-flow: row wrap;
+  margin: .5rem -.125rem;
 `;
 
 const TagRow = styled.div`
   width: 100%;
+  margin: 0 -.125rem;
 `;
 
 const ExpandBtnWrapper = styled.button`
@@ -52,85 +38,127 @@ const ExpandBtnWrapper = styled.button`
   line-height: 1.5;
 `;
 
-const SubscribedTags = () => (
-  <span>No tags subscribed</span>
+const ExpandBtn = ({ expanded, onClick }) => (
+  <ExpandBtnWrapper onClick={onClick} >
+    <FontAwesomeIcon icon={`chevron-${expanded ? 'up' : 'down'}`} />
+  </ExpandBtnWrapper>
 );
-
-const SubTags = ({ tree }) => {
-  const flattened = new Set();
-  tree.forEach((mainTag) => {
-    if (mainTag.subTags) {
-      mainTag.subTags.forEach((tag) => {
-        flattened.add(tag);
-      });
-    }
-  });
-  return (
-    [...flattened].map(subTag => (
-      <Tag text={subTag} key={subTag} />
-    )));
+ExpandBtn.propTypes = {
+  expanded: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 class NavTags extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      expanded: false,
-    };
-    this.expandNav = this.expandNav.bind(this);
+  state = {
+    expanded: false,
+    main: new Set(),
+    sub: new Set(),
   }
 
-  expandNav() {
-    this.setState(prevState => ({
-      expanded: !prevState.expanded,
+  expand = () => {
+    const { main, sub } = this.props.tags.subscribed;
+    this.setState({ expanded: true, main, sub });
+  }
+
+  collapse = () => {
+    const { profile, setStore, syncTags } = this.props;
+    const { main, sub } = this.state;
+    setStore(prevState => ({
+      tags: {
+        ...prevState.tags,
+        subscribed: { main, sub },
+      },
     }));
+    this.setState({ expanded: false });
+    setTimeout(() => {
+      if (profile.isSignedIn) {
+        syncTags({ variables: { tags: [...main, ...sub] } });
+      }
+    }, 0);
+  }
+
+  subcribeTag = (tag, isMain = false) => {
+    if (this.state.expanded) {
+      if (isMain) {
+        this.setState(prevState => ({ main: prevState.main.add(tag) }));
+      } else {
+        this.setState(prevState => ({ sub: prevState.sub.add(tag) }));
+      }
+    }
+  }
+
+  unsubscribeTag = (tag, isMain = false) => {
+    if (this.state.expanded) {
+      if (isMain) {
+        this.setState((prevState) => {
+          prevState.main.delete(tag);
+          return { main: prevState.main };
+        });
+      } else {
+        this.setState((prevState) => {
+          prevState.sub.delete(tag);
+          return { sub: prevState.sub };
+        });
+      }
+    }
   }
 
   render() {
+    const { expanded } = this.state;
+    const { mainTags } = this.props.tags;
+    const { main, sub } = expanded ? this.state : this.props.tags.subscribed;
+    const SubbedTag = (tag, isMain = false) => (
+      <Tag
+        key={tag}
+        text={tag}
+        isMain={isMain}
+        onClick={() => { this.unsubscribeTag(tag, isMain); }}
+      />
+    );
     return (
-      <Query query={TAGS_QUERY}>
-        {({ loading, error, data }) => {
-          if (loading) return <p>Loading...</p>;
-          if (error) {
-            return (
-              <pre>
-                {error.graphQLErrors.map(({ message }) => (
-                  <span key={message}>{message}</span>
-                ))}
-              </pre>
-            );
-          }
-          // if not signed in, use recommend tags.
-          const selectedTags = data.profile.tags || data.tags.recommend;
-          return (
-            <NavTagsWrapper>
-              <TagRow>
-                <SubscribedTags />
-                <ExpandBtnWrapper onClick={this.expandNav}>
-                  {this.state.expanded ? (<FontAwesomeIcon icon="chevron-down" />) : (
-                    <FontAwesomeIcon icon="chevron-up" />)}
-                </ExpandBtnWrapper>
-              </TagRow>
-              {this.state.expanded ?
-                (
-                  <SelectableTagWrapper>
-                    <TagRow>
-                      {data.tags.mainTags.map(tag => (
-                        <Tag isMain text={tag} key={tag} />
-                      ))}
-                    </TagRow>
-                    <TagRow>
-                      <SubTags tree={data.tags.tree} />
-                    </TagRow>
-                  </SelectableTagWrapper>
-                ) : (<div />)
-              }
-            </NavTagsWrapper>
-          );
-        }}
-      </Query>
+      <NavTagsWrapper>
+        <TagRow>
+          {([...main]).map(tag => SubbedTag(tag, true))}
+          {([...sub]).map(tag => SubbedTag(tag))}
+          <ExpandBtn
+            expanded={expanded}
+            onClick={expanded ? this.collapse : this.expand}
+          />
+        </TagRow>
+        {expanded && (
+          <TagSelector
+            mainTags={mainTags}
+            subscribed={{ main, sub }}
+            subscribeTag={this.subcribeTag}
+          />
+        )}
+      </NavTagsWrapper>
     );
   }
 }
+NavTags.propTypes = {
+  profile: PropTypes.shape().isRequired,
+  tags: PropTypes.shape().isRequired,
+  setStore: PropTypes.func.isRequired,
+  syncTags: PropTypes.func.isRequired,
+};
 
-export default NavTags;
+const UPDATE_SUBBED_TAGS = gql`
+  mutation updateSubbedTags($tags: [String]!) {
+    syncTags(tags: $tags) {
+      name
+    }
+  }
+`;
+
+export default () => (
+  <Store.Consumer>
+    {({ profile, tags, setStore }) => (
+      <Mutation mutation={UPDATE_SUBBED_TAGS}>
+        {syncTags => (
+          <NavTags profile={profile} tags={tags} setStore={setStore} syncTags={syncTags} />
+        )}
+      </Mutation>
+     )}
+  </Store.Consumer>
+);

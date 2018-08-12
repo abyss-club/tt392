@@ -23,6 +23,7 @@ export default new ApolloClient({
   ]),
   cache: new InMemoryCache({
     dataIdFormObject: (object) => {
+      // eslint-disable-next-line no-underscore-dangle
       switch (object.__typename) {
         case 'User': return object.email;
         case 'Thread': return object.id;
