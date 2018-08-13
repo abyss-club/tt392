@@ -22,6 +22,7 @@ const TitleRow = styled.div`
 const Title = styled.h3`
   font-family: ${fontFamilies.system};
   margin: 0 0.5rem 0 0;
+  font-size: 1.5rem;
 `;
 
 const PublicTime = styled.span`
