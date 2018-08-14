@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 
 import colors from 'utils/colors';
+import Store from 'providers/Store';
 
 import ThreadInList from './ThreadInList';
 
@@ -14,8 +15,8 @@ const ThreadListWrapper = styled.div`
 `;
 
 const THREADSLICE_QUERY = gql`
-  query {
-    threadSlice(query: { after: "", limit: 10 }) {
+  query getThreadSlice($subscribedTags: [String!]) {
+    threadSlice(tags: $subscribedTags, query: { after: "", limit: 10 }) {
       threads {
         id, anonymous, title, author, content, createTime, mainTag, subTags,
         replies(query: { before: "", limit: 5}) {
@@ -46,30 +47,34 @@ const WritePost = styled.button`
 
 const ThreadList = ({ history }) => (
   <ThreadListWrapper>
-    <Query query={THREADSLICE_QUERY}>
-      {({ loading, error, data }) => {
-      if (loading) return <p>Loading...</p>;
-      if (error) {
-       return (
-         <pre>
-           {error.graphQLErrors.map(({ message }) => (
-             <span key={message}>{message}</span>
-           ))}
-         </pre>
-        );
-      }
+    <Store.Consumer>
+      {({ tags }) => (
+        <Query query={THREADSLICE_QUERY} variables={{ subscribedTags: [...tags.subscribed.main].concat([...tags.subscribed.sub]) }}>
+          {({ loading, error, data }) => {
+            if (loading) return <p>Loading...</p>;
+            if (error) {
+              return (
+                <pre>
+                  {error.graphQLErrors.map(({ message }) => (
+                    <span key={message}>{message}</span>
+                  ))}
+                </pre>
+              );
+            }
 
-      const addThread = () => { history.push('/draft/thread/'); };
-      return (
-        <React-Fragment>
-          {data.threadSlice.threads.map(thread => (
-            <ThreadInList key={thread.id} thread={thread} />
-          ))}
-          <WritePost onClick={addThread}>+</WritePost>
-        </React-Fragment>
-      );
-      }}
-    </Query>
+            const addThread = () => { history.push('/draft/thread/'); };
+            return (
+              <React-Fragment>
+                {data.threadSlice.threads.map(thread => (
+                  <ThreadInList key={thread.id} thread={thread} />
+                ))}
+                <WritePost onClick={addThread}>+</WritePost>
+              </React-Fragment>
+            );
+          }}
+        </Query>
+      )}
+    </Store.Consumer>
   </ThreadListWrapper>
 );
 
