@@ -49,7 +49,10 @@ const ThreadList = ({ history }) => (
   <ThreadListWrapper>
     <Store.Consumer>
       {({ tags }) => (
-        <Query query={THREADSLICE_QUERY} variables={{ subscribedTags: [...tags.subscribed.main].concat([...tags.subscribed.sub]) }}>
+        <Query
+          query={THREADSLICE_QUERY}
+          variables={{ subscribedTags: [...tags.subscribed.main, ...tags.subscribed.sub] }}
+        >
           {({ loading, error, data }) => {
             if (loading) return <p>Loading...</p>;
             if (error) {
