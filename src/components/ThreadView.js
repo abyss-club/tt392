@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Store from 'providers/Store';
 
 // TODO: duplicated to ThreadList/index.js
-const WritePost = styled.button`
+const FloatBtn = styled.button`
   position: fixed;
   right: 1rem;
   bottom: 1rem;
@@ -35,7 +35,7 @@ const THREAD_VIEW = gql`
       id, anonymous, title, author, content, createTime, mainTag, subTags,
       replies(query: { after: "", limit: 100}) {
         posts {
-          id, anonymous, author, content, createTime
+          id, anonymous, author, content, createTime, refers { id, author }
         }
         sliceInfo {
           firstCursor
@@ -46,32 +46,50 @@ const THREAD_VIEW = gql`
   }
 `;
 
-const ThreadView = ({ match, history, location }) => (
-  <Query query={THREAD_VIEW} variables={{ id: match.params.id }}>
-    {({
-      loading, error, data, refetch,
-    }) => {
-      if (loading) return <p>Loading...</p>;
-      if (error) return <p>Error...</p>;
+class ThreadView extends React.Component {
+  constructor(props) {
+    super(props);
+    this.props.setStore({
+      quotedPosts: new Set(),
+    });
+  }
 
-      if ((location.state || {}).reload) {
-        refetch();
-      }
-      const { thread } = data;
-      const replies = (thread.replies || []).posts || [];
-      const addReply = () => {
-        history.push(`/draft/post/?reply=${match.params.id}`);
-      };
-      return (
-        <MainContent>
-          <Post isThread {...thread} />
-          {replies.map(post => <Post key={post.id} {...post} />)}
-          <WritePost onClick={addReply}>+</WritePost>
-        </MainContent>
-      );
-    }}
-  </Query>
-);
+  render() {
+    return (
+      <Query query={THREAD_VIEW} variables={{ id: this.props.match.params.id }}>
+        {({
+          loading, error, data, refetch,
+        }) => {
+          if (loading) return <p>Loading...</p>;
+          if (error) return <p>Error...</p>;
+
+          if ((this.props.location.state || {}).reload) {
+            refetch();
+          }
+          const { thread } = data;
+          const replies = (thread.replies || []).posts || [];
+          const addReply = (quotedPosts) => {
+            const quotedQs = qs.stringify({ p: [...quotedPosts] }, { indices: false });
+            this.props.history.push(`/draft/post/?reply=${this.props.match.params.id}&${quotedQs}`);
+          };
+          return (
+            <Store.Consumer>
+              {({ quotedPosts }) => (
+                <MainContent>
+                  <Post isThread {...thread} />
+                  {replies.map(post => <Post key={post.id} {...post} quotable postid={post.id} />)}
+                  <FloatBtn onClick={() => addReply(quotedPosts)}>
+                    <FontAwesomeIcon icon="reply" />
+                  </FloatBtn>
+                </MainContent>
+              )}
+            </Store.Consumer>
+          );
+        }}
+      </Query>
+    );
+  }
+}
 
 ThreadView.propTypes = {
   match: PropTypes.shape({
@@ -83,6 +101,13 @@ ThreadView.propTypes = {
     push: PropTypes.func,
   }).isRequired,
   location: PropTypes.shape().isRequired,
+  setStore: PropTypes.func.isRequired,
 };
 
-export default ThreadView;
+export default props => (
+  <Store.Consumer>
+    {({ setStore }) => (
+      <ThreadView {...props} setStore={setStore} />
+    )}
+  </Store.Consumer>
+);

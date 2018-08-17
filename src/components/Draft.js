@@ -53,6 +53,23 @@ const Input = styled.input`
   }
 `;
 
+const QuotedContentWrapper = styled.div`
+  margin-top: .5em;
+  width: 100%;
+`;
+
+const QuotedContentBtn = styled.button`
+  background-color: ${colors.skyblue};
+  color: white;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: .5em .5em;
+  margin-right: .25em;
+  border-radius: 5px;
+  font-size: .8em;
+`;
+
 class Draft extends React.Component {
   constructor(props) {
     super(props);
@@ -74,7 +91,11 @@ class Draft extends React.Component {
 
       // for post: reply
       replyTo: params.reply,
+
+      // for quoted
+      quoted: {},
     };
+    this.initQuoted();
   }
 
   setSubTag = idx => (
@@ -91,6 +112,19 @@ class Draft extends React.Component {
     this.setState({ title: event.target.value });
   }
 
+  initQuoted = () => {
+    const params = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    let quotedObj = {};
+    if (!params.p) quotedObj = null;
+    else if (Array.isArray(params.p)) {
+      params.p.forEach((post) => {
+        quotedObj[post] = true;
+      });
+    } else quotedObj = { [params.p]: true };
+
+    this.state.quoted = quotedObj;
+  }
+
   selectMainTag = (event) => {
     event.preventDefault();
     this.setState({ mainTag: event.target.value });
@@ -101,6 +135,15 @@ class Draft extends React.Component {
   togglePreview = () => {
     const { preview } = this.state;
     this.setState({ preview: !preview });
+  }
+
+  toggleQuoted = ({ id }) => {
+    this.setState(prevState => ({
+      quoted: {
+        ...prevState.quoted,
+        [id]: !prevState.quoted[id],
+      },
+    }));
   }
 
   pubThread = (anonymous) => {
@@ -130,12 +173,17 @@ class Draft extends React.Component {
   }
 
   pubPost = (anonymous) => {
-    const { replyTo, text } = this.state;
+    const { replyTo, text, quoted } = this.state;
     const { pubPost, history } = this.props;
+    const refers = quoted && Object.keys(quoted).reduce((acc, id) => {
+      if (quoted[id]) acc.push(id);
+      return acc;
+    }, []);
     const post = {
       threadID: replyTo,
       anonymous,
       content: text,
+      refers,
     };
     if (text === '') {
       this.setState({ error: '内容不能为空' });
@@ -156,7 +204,7 @@ class Draft extends React.Component {
       return <p>404 not found</p>;
     }
     const {
-      preview, error, text, title, mainTag, subTags,
+      preview, error, text, title, mainTag, subTags, quoted,
     } = this.state;
     const threadSetting = (mode === 'thread') && (
       <div>
@@ -182,6 +230,16 @@ class Draft extends React.Component {
         </TagRow>
       </div>
     );
+    const quotedContent = (quoted) && (
+      <QuotedContentWrapper>
+        {Object.keys(quoted).map(id => (
+          <QuotedContentBtn key={id} onClick={() => this.toggleQuoted({ id })}>
+            {quoted[id] ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="square" />)}
+            <span> {id}</span>
+          </QuotedContentBtn>
+        ))}
+      </QuotedContentWrapper>
+    );
     const publish = anonymous => (() => {
       if (mode === 'thread') {
         this.pubThread(anonymous);
@@ -191,6 +249,7 @@ class Draft extends React.Component {
     });
     return (
       <MainContent>
+        { quotedContent }
         { preview ? (
           <MDPreview text={text} />
         ) : (
