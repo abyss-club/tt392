@@ -20,6 +20,7 @@ class StoreProvider extends React.Component {
           sub: new Set(),
         },
       },
+      quotedPosts: new Set(),
       setStore: this.setStore,
     };
     /* eslint-enable */
