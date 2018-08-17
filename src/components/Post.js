@@ -8,7 +8,7 @@ import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
 
 const Wrapper = styled.div`
-  padding: .5rem 0;
+  padding: 1rem 0 0 0;
   border-bottom: .5px solid #A7A7A7;
 `;
 
