@@ -10,6 +10,7 @@ import MDPreview from 'components/MDPreview';
 import Store from 'providers/Store';
 import MainContent from 'styles/MainContent';
 import colors from 'utils/colors';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // import { Mutation } from 'react-apollo'
 

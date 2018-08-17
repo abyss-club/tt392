@@ -6,6 +6,8 @@ import MDPreview from 'components/MDPreview';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Store from 'providers/Store';
 
 const Wrapper = styled.div`
   padding: 1rem 0 0 0;

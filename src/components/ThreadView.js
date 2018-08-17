@@ -3,10 +3,13 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
+import qs from 'qs';
 
 import Post from 'components/Post';
 import MainContent from 'styles/MainContent';
 import colors from 'utils/colors';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Store from 'providers/Store';
 
 // TODO: duplicated to ThreadList/index.js
 const WritePost = styled.button`
