@@ -19,11 +19,11 @@ const WritePost = styled.button`
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  background: ${colors.orange};
+  background: ${colors.skyblue};
   color: white;
   border: none;
   outline: none;
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
   box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14),0 1px 18px 0 rgba(0,0,0,0.12),0 3px 5px -1px rgba(0,0,0,0.2);
