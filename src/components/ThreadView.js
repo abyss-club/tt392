@@ -35,7 +35,7 @@ const THREAD_VIEW = gql`
       id, anonymous, title, author, content, createTime, mainTag, subTags,
       replies(query: { after: "", limit: 100}) {
         posts {
-          id, anonymous, author, content, createTime, refers { id, author }
+          id, anonymous, author, content, createTime, refers { id, author, content, createTime }
         }
         sliceInfo {
           firstCursor
