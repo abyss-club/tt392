@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import MDPreview from 'components/MDPreview';
+import QuotedContent from 'components/QuotedContent';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
@@ -17,7 +18,7 @@ const Wrapper = styled.div`
 const TitleRow = styled.div`
   width: 100%;
   display: flex;
-  align-items: end;
+  align-items: center;
   margin: .5rem 0;
 `;
 
@@ -48,32 +49,6 @@ const QuoteSelectorBtn = styled.button`
 
 const PublicTime = styled.span`
   font-family: 'Merriweather Sans', sans-serif;
-`;
-
-const QuotedContentRow = styled.div`
-  width: 100%;
-`;
-
-const QuotedContentWrapper = styled.div`
-  display: inline-block;
-  font-size: .8em;
-  background-color: ${colors.zircon};
-  padding: 0 1em;
-  border-radius: 5px;
-`;
-
-const QuotedContentBtn = styled.button`
-  background-color: unset;
-  color: ${colors.vulcanLight};
-  border: none
-  cursor: pointer;
-  outline: none;
-  padding: .75em 0 .75em .5em;
-  margin: 0 .25em;
-  border-radius: 5px;
-
-  font-family: 'PT Mono', monospace;
-  text-decoration: underline;
 `;
 
 const PostContent = styled.div`
@@ -109,7 +84,7 @@ const QuoteSelectorWrapper = ({
           <IconWrapper>
             {quotedPosts.has(postid) ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="quote-left" />)}
           </IconWrapper>
-          引用 {postid}
+          引用
         </QuoteSelectorBtn>
       </React.Fragment>
     )}
@@ -121,22 +96,6 @@ QuoteSelectorWrapper.propTypes = {
 };
 QuoteSelectorWrapper.defaultProps = {
   quotable: false,
-};
-
-const QuotedContent = ({ refers }) => (refers) && (
-  <QuotedContentRow>
-    <QuotedContentWrapper>
-      <FontAwesomeIcon icon="quote-left" />
-      {refers.map(refer => (
-        <QuotedContentBtn key={refer.id} >
-          <span>{refer.id}</span>
-        </QuotedContentBtn>
-      ))}
-    </QuotedContentWrapper>
-  </QuotedContentRow>
-);
-QuotedContent.propTypes = {
-  refers: PropTypes.arrayOf(PropTypes.shape()),
 };
 
 const titlePlaceholder = '无题';
