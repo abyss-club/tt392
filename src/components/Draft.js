@@ -88,7 +88,6 @@ const QuotedContentArea = ({ threadid, quoted }) => (
           if (quoted[quote] && quote === post.id) refers.push(post);
         });
       });
-      console.log(refers);
       return (
         <QuotedContent refers={refers} />
       );
