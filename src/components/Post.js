@@ -76,9 +76,12 @@ const QuoteSelectorWrapper = ({
   </QuoteSelectorBtn>
 );
 QuoteSelectorWrapper.propTypes = {
-  postID: PropTypes.string.isRequired,
+  postID: PropTypes.string,
   onQuoteToggle: PropTypes.func.isRequired,
   quotedPosts: PropTypes.shape().isRequired,
+};
+QuoteSelectorWrapper.defaultProps = {
+  postID: null,
 };
 
 const titlePlaceholder = '无题';
