@@ -75,8 +75,8 @@ const QuotedContentWrapper = styled.div`
   margin: .5em 0;
 `;
 
-const QuotedContentArea = ({ threadid, quoted }) => (
-  <Query query={QUERY_REFERS} variables={{ id: threadid }}>
+const QuotedContentArea = ({ threadID, quoted }) => (
+  <Query query={QUERY_REFERS} variables={{ id: threadID }}>
     {({
       loading, error, data,
     }) => {
@@ -95,7 +95,7 @@ const QuotedContentArea = ({ threadid, quoted }) => (
   </Query>
 );
 QuotedContentArea.propTypes = {
-  threadid: PropTypes.string.isRequired,
+  threadID: PropTypes.string.isRequired,
   quoted: PropTypes.shape().isRequired,
 };
 
@@ -268,7 +268,7 @@ class Draft extends React.Component {
           </QuotedBtn>
         ))}
         <QuotedContentWrapper>
-          <QuotedContentArea threadid={this.state.replyTo} quoted={quoted} />
+          <QuotedContentArea threadID={this.state.replyTo} quoted={quoted} />
         </QuotedContentWrapper>
       </QuotedWrapper>
     );
