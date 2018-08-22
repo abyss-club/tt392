@@ -49,8 +49,20 @@ const THREAD_VIEW = gql`
 class ThreadView extends React.Component {
   constructor(props) {
     super(props);
-    this.props.setStore({
+    this.state = {
       quotedPosts: new Set(),
+    };
+    this.handleQuoteToggle = this.handleQuoteToggle.bind(this);
+  }
+
+  handleQuoteToggle({ postID }) {
+    this.setState((prevState) => {
+      const newQuotedPosts = new Set(prevState.quotedPosts);
+      if (newQuotedPosts.has(postID)) newQuotedPosts.delete(postID);
+      else newQuotedPosts.add(postID);
+      return {
+        quotedPosts: newQuotedPosts,
+      };
     });
   }
 
@@ -73,17 +85,21 @@ class ThreadView extends React.Component {
             this.props.history.push(`/draft/post/?reply=${this.props.match.params.id}&${quotedQs}`);
           };
           return (
-            <Store.Consumer>
-              {({ quotedPosts }) => (
-                <MainContent>
-                  <Post isThread {...thread} />
-                  {replies.map(post => <Post key={post.id} {...post} quotable postid={post.id} />)}
-                  <FloatBtn onClick={() => addReply(quotedPosts)}>
-                    <FontAwesomeIcon icon="reply" />
-                  </FloatBtn>
-                </MainContent>
-              )}
-            </Store.Consumer>
+            <MainContent>
+              <Post isThread {...thread} />
+              {replies.map(post =>
+                (<Post
+                  key={post.id}
+                  isThread={false}
+                  postID={post.id}
+                  onQuoteToggle={this.handleQuoteToggle}
+                  quotedPosts={this.state.quotedPosts}
+                  {...post}
+                />))}
+              <FloatBtn onClick={() => addReply(this.state.quotedPosts)}>
+                <FontAwesomeIcon icon="reply" />
+              </FloatBtn>
+            </MainContent>
           );
         }}
       </Query>

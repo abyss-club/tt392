@@ -8,7 +8,6 @@ import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Store from 'providers/Store';
 
 const Wrapper = styled.div`
   padding: 1rem 0 0 0;
@@ -37,8 +36,8 @@ const IconWrapper = styled.span`
 `;
 
 const QuoteSelectorBtn = styled.button`
-  color: ${props => (props.quotedPosts.has(props.postid) ? 'white' : 'unset')};
-  background-color: ${props => (props.quotedPosts.has(props.postid) ? colors.skyblue : 'unset')};
+  color: ${props => (props.quotedPosts.has(props.postID) ? 'white' : 'unset')};
+  background-color: ${props => (props.quotedPosts.has(props.postID) ? colors.skyblue : 'unset')};
   border: none;
   cursor: pointer;
   outline: none;
@@ -61,46 +60,30 @@ const AuthorWrapper = styled.span`
   font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
 `;
 
-const toggleQuote = ({ quotedPosts, postid, setStore }) => {
-  const newQuotedPosts = new Set(quotedPosts);
-  if (newQuotedPosts.has(postid)) newQuotedPosts.delete(postid);
-  else newQuotedPosts.add(postid);
-  setStore(() => ({
-    quotedPosts: newQuotedPosts,
-  }));
-};
-
 const QuoteSelectorWrapper = ({
-  quotable, postid,
-}) => (quotable) && (
-  <Store.Consumer>
-    {({ quotedPosts, setStore }) => (
-      <React.Fragment>
-        <QuoteSelectorBtn
-          quotedPosts={quotedPosts}
-          postid={postid}
-          onClick={() => toggleQuote({ postid, setStore, quotedPosts })}
-        >
-          <IconWrapper>
-            {quotedPosts.has(postid) ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="quote-left" />)}
-          </IconWrapper>
-          引用
-        </QuoteSelectorBtn>
-      </React.Fragment>
-    )}
-  </Store.Consumer>
+  postID, onQuoteToggle, quotedPosts,
+}) => (
+  <QuoteSelectorBtn
+    quotedPosts={quotedPosts}
+    postID={postID}
+    isSelected={postID}
+    onClick={() => onQuoteToggle({ postID })}
+  >
+    <IconWrapper>
+      {quotedPosts.has(postID) ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="quote-left" />)}
+    </IconWrapper>
+    引用
+  </QuoteSelectorBtn>
 );
 QuoteSelectorWrapper.propTypes = {
-  quotable: PropTypes.bool,
-  postid: PropTypes.string,
-};
-QuoteSelectorWrapper.defaultProps = {
-  quotable: false,
+  postID: PropTypes.string.isRequired,
+  onQuoteToggle: PropTypes.func.isRequired,
+  quotedPosts: PropTypes.shape().isRequired,
 };
 
 const titlePlaceholder = '无题';
 const Post = ({
-  isThread, title, anonymous, author, createTime, content, quotable, postid, refers,
+  isThread, title, anonymous, author, createTime, content, refers, postID, onQuoteToggle, quotedPosts,
 }) => {
   const titleText = isThread ? (<Title>{title || titlePlaceholder}</Title>) : null;
   const authorText = anonymous ? (
@@ -108,13 +91,16 @@ const Post = ({
   ) : (
     <AuthorWrapper>{author}</AuthorWrapper>
   );
+  const quoteSelector = !isThread ? (
+    <QuoteSelectorWrapper postID={postID} onQuoteToggle={onQuoteToggle} quotedPosts={quotedPosts} />
+  ) : null;
   return (
     <Wrapper>
       <TitleRow>
         {titleText}
         {authorText}
         <TitleRight>
-          <QuoteSelectorWrapper quotable={quotable} postid={postid} />
+          {quoteSelector}
           <PublicTime>{timeElapsed(createTime).formatted}</PublicTime>
         </TitleRight>
       </TitleRow>
@@ -133,14 +119,16 @@ Post.propTypes = {
   author: PropTypes.string.isRequired,
   createTime: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
-  quotable: PropTypes.bool,
-  postid: PropTypes.string,
+  postID: PropTypes.string,
   refers: PropTypes.arrayOf(PropTypes.shape()),
+  quotedPosts: PropTypes.shape(),
+  onQuoteToggle: PropTypes.func,
 };
 Post.defaultProps = {
+  quotedPosts: new Set(),
+  onQuoteToggle: () => {},
   isThread: false,
-  quotable: false,
-  postid: null,
+  postID: null,
   refers: null,
   title: '',
 };
