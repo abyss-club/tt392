@@ -122,9 +122,11 @@ class Draft extends React.Component {
       replyTo: params.reply,
 
       // for quoted
-      quoted: {},
+      quoted: params.p ? params.p.reduce((acc, postID) => {
+        acc[postID] = true;
+        return acc;
+      }, {}) : null,
     };
-    this.initQuoted();
   }
 
   setSubTag = idx => (
@@ -139,19 +141,6 @@ class Draft extends React.Component {
   setTitle = (event) => {
     event.preventDefault();
     this.setState({ title: event.target.value });
-  }
-
-  initQuoted = () => {
-    const params = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
-    let quotedObj = {};
-    if (!params.p) quotedObj = null;
-    else if (Array.isArray(params.p)) {
-      params.p.forEach((post) => {
-        quotedObj[post] = true;
-      });
-    } else quotedObj = { [params.p]: true };
-
-    this.state.quoted = quotedObj;
   }
 
   selectMainTag = (event) => {

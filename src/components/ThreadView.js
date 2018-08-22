@@ -81,7 +81,7 @@ class ThreadView extends React.Component {
           const { thread } = data;
           const replies = (thread.replies || []).posts || [];
           const addReply = (quotedPosts) => {
-            const quotedQs = qs.stringify({ p: [...quotedPosts] }, { indices: false });
+            const quotedQs = qs.stringify({ p: [...quotedPosts] });
             this.props.history.push(`/draft/post/?reply=${this.props.match.params.id}&${quotedQs}`);
           };
           return (
