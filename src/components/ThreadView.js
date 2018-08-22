@@ -97,7 +97,7 @@ class ThreadView extends React.Component {
                   {...post}
                 />))}
               <FloatBtn onClick={() => addReply(this.state.quotedPosts)}>
-                <FontAwesomeIcon icon="reply" />
+                <FontAwesomeIcon icon="comment" />
               </FloatBtn>
             </MainContent>
           );

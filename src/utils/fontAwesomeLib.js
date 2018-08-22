@@ -14,7 +14,7 @@ import {
   faChevronDown,
   faChevronUp,
   faQuoteLeft,
-  faReply,
+  faComment,
   faDiceOne,
   faDiceTwo,
   faDiceThree,
@@ -23,7 +23,7 @@ import {
 const faLib = {
   loadFa: () => {
     // eslint-disable-next-line max-len
-    library.add(faCheckSquare, faSquare, faCoffee, faLink, faImage, faTimes, faSpinner, faUser, faPlus, faPlusSquare, faBars, faChevronDown, faChevronUp, faQuoteLeft, faReply, faDiceOne, faDiceTwo, faDiceThree);
+    library.add(faCheckSquare, faSquare, faCoffee, faLink, faImage, faTimes, faSpinner, faUser, faPlus, faPlusSquare, faBars, faChevronDown, faChevronUp, faQuoteLeft, faComment, faDiceOne, faDiceTwo, faDiceThree);
   },
 };
 
