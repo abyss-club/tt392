@@ -2,12 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import MDPreview from 'components/MDPreview';
 import colors from 'utils/colors';
-import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Store from 'providers/Store';
 
 const QuotedContentArea = styled.div`
   width: 100%;
@@ -58,28 +55,22 @@ const QuotedText = styled.p`
   text-overflow: ellipsis;
 `;
 
-const QuotedContent = ({ refers }) => (refers) && (
-  <React.Fragment>
-    {refers.map(refer => (
-      <React.Fragment key={refer.id}>
-        <QuotedContentArea>
-          <QuotedContentWrapper>
-            <QuotedContentRow>
-              <FontAwesomeIcon icon="quote-left" />
-              <QuotedContentBtn>
-                {refer.author}
-              </QuotedContentBtn>
-              <QuotedContentTime>
-                {timeElapsed(refer.createTime).formatted}
-              </QuotedContentTime>
-            </QuotedContentRow>
-            <QuotedText>{refer.content}</QuotedText>
-          </QuotedContentWrapper>
-        </QuotedContentArea>
-      </React.Fragment>
-    ))}
-  </React.Fragment>
-);
+const QuotedContent = ({ refers }) => (refers) && refers.map(refer => (
+  <QuotedContentArea key={refer.id}>
+    <QuotedContentWrapper>
+      <QuotedContentRow>
+        <FontAwesomeIcon icon="quote-left" />
+        <QuotedContentBtn>
+          {refer.author}
+        </QuotedContentBtn>
+        <QuotedContentTime>
+          {timeElapsed(refer.createTime).formatted}
+        </QuotedContentTime>
+      </QuotedContentRow>
+      <QuotedText>{refer.content}</QuotedText>
+    </QuotedContentWrapper>
+  </QuotedContentArea>
+));
 QuotedContent.propTypes = {
   refers: PropTypes.arrayOf(PropTypes.shape()),
 };
