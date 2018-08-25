@@ -1,8 +1,15 @@
 import React from 'react';
+import styled from 'styled-components';
 import 'graphql-voyager/dist/voyager.css';
 import { Voyager } from 'graphql-voyager';
 
 import Config from 'config';
+
+/* because Nav's height is 3rem, TODO: not use hard code */
+const Wrapper = styled.div`
+  height: calc(100% - 3rem);
+  overflow-y: hidden;
+`;
 
 function introspectionProvider(query) {
   return fetch(`${Config.apiPrefix}/graphql/`, {
@@ -32,10 +39,12 @@ function introspectionProvider(query) {
 // }
 
 const GQLVoyager = () => (
-  <Voyager
-    workerURI={`${process.env.PUBLIC_URL}/voyager.worker.js`}
-    introspection={introspectionProvider}
-  />
+  <Wrapper>
+    <Voyager
+      workerURI={`${process.env.PUBLIC_URL}/voyager.worker.js`}
+      introspection={introspectionProvider}
+    />
+  </Wrapper>
 );
 
 export default GQLVoyager;

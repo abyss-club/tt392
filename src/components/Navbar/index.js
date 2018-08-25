@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Route, Link } from 'react-router-dom';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 
 import Store from 'providers/Store';
 import MainContent from 'styles/MainContent';
@@ -43,92 +41,32 @@ const NavTitle = styled.div`
   transform: translateY(-0.25rem);
 `;
 
-const parseTags = (profile, tags) => {
-  const subscribedTags = profile.tags || tags.recommended || [];
-  const mainTags = new Set(tags.mainTags);
-  const subscribed = {
-    main: new Set(),
-    sub: new Set(),
-  };
-  subscribedTags.forEach((tag) => {
-    if (mainTags.has(tag)) {
-      subscribed.main.add(tag);
-    } else {
-      subscribed.sub.add(tag);
-    }
-  });
-  return { mainTags, subscribed };
-};
-
-class Navbar extends React.Component {
-  constructor(props) {
-    super(props);
-    const { setStore, profile, tags } = this.props;
-    setStore({
-      profile: {
-        isSignedIn: (profile.email || '') !== '',
-        email: profile.email || '',
-        name: profile.name || '',
-      },
-      tags: parseTags(profile, tags),
-    });
-  }
-
-  render() {
-    const { profile } = this.props;
-    return (
-      <Wrapper>
-        <MainContent>
-          <NavWrapper>
-            <NavFirstRow>
-              <Link to="/">
-                <NavTitle>abyss</NavTitle>
-              </Link>
-              <SignInBtn profile={profile || {}} />
-            </NavFirstRow>
-            <Route path="/" exact component={NavTags} />
-          </NavWrapper>
-        </MainContent>
-      </Wrapper>
-    );
-  }
-}
+const Navbar = ({ profile }) => (
+  <Wrapper>
+    <MainContent>
+      <NavWrapper>
+        <NavFirstRow>
+          <Link to="/">
+            <NavTitle>abyss</NavTitle>
+          </Link>
+          <SignInBtn profile={profile || {}} />
+        </NavFirstRow>
+        <Route path="/" exact component={NavTags} />
+      </NavWrapper>
+    </MainContent>
+  </Wrapper>
+);
 Navbar.propTypes = {
   profile: PropTypes.shape().isRequired,
-  tags: PropTypes.shape().isRequired,
-  setStore: PropTypes.func.isRequired,
 };
-
-const INITIAL = gql`
-  query {
-    profile {
-      name
-      email
-      tags
-    }
-    tags {
-      mainTags
-      recommended
-    }
-  }
-`;
 
 export default () => (
   <Store.Consumer>
-    {({ setStore }) => (
-      <Query query={INITIAL}>
-        {({ loading, error, data }) => {
-          if (loading) return <p>Loading...</p>;
-          if (error) return <p>error...</p>;
-          return (
-            <Navbar
-              profile={data.profile}
-              tags={data.tags}
-              setStore={setStore}
-            />
-          );
-        }}
-      </Query>
+    {({ profile, tags }) => (
+      <Navbar
+        profile={profile}
+        tags={tags}
+      />
     )}
   </Store.Consumer>
 );

@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 
 import colors from 'utils/colors';
+import Query from 'components/Query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Store from 'providers/Store';
 
@@ -54,18 +54,7 @@ const ThreadList = ({ history }) => (
           query={THREADSLICE_QUERY}
           variables={{ subscribedTags: [...tags.subscribed.main, ...tags.subscribed.sub] }}
         >
-          {({ loading, error, data }) => {
-            if (loading) return <p>Loading...</p>;
-            if (error) {
-              return (
-                <pre>
-                  {error.graphQLErrors.map(({ message }) => (
-                    <span key={message}>{message}</span>
-                  ))}
-                </pre>
-              );
-            }
-
+      {({ data }) => {
             const addThread = () => { history.push('/draft/thread/'); };
             return (
               <React-Fragment>
