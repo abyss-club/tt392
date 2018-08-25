@@ -58,8 +58,11 @@ class ThreadView extends React.Component {
   handleQuoteToggle({ postID }) {
     this.setState((prevState) => {
       const newQuotedPosts = new Set(prevState.quotedPosts);
-      if (newQuotedPosts.has(postID)) newQuotedPosts.delete(postID);
-      else newQuotedPosts.add(postID);
+      if (newQuotedPosts.has(postID)) {
+        newQuotedPosts.delete(postID);
+      } else {
+        newQuotedPosts.add(postID);
+      }
       return {
         quotedPosts: newQuotedPosts,
       };
@@ -79,8 +82,9 @@ class ThreadView extends React.Component {
             refetch();
           }
           const { thread } = data;
+          const { quotedPosts } = this.state;
           const replies = (thread.replies || []).posts || [];
-          const addReply = (quotedPosts) => {
+          const addReply = () => {
             const quotedQs = qs.stringify({ p: [...quotedPosts] });
             this.props.history.push(`/draft/post/?reply=${this.props.match.params.id}&${quotedQs}`);
           };
@@ -93,10 +97,11 @@ class ThreadView extends React.Component {
                   isThread={false}
                   postID={post.id}
                   onQuoteToggle={this.handleQuoteToggle}
-                  quotedPosts={this.state.quotedPosts}
+                  isQuoted={quotedPosts.has(post.id)}
+                  quotable={quotedPosts.size < 3}
                   {...post}
                 />))}
-              <FloatBtn onClick={() => addReply(this.state.quotedPosts)}>
+              <FloatBtn onClick={addReply}>
                 <FontAwesomeIcon icon="comment" />
               </FloatBtn>
             </MainContent>

@@ -36,14 +36,17 @@ const IconWrapper = styled.span`
 `;
 
 const QuoteSelectorBtn = styled.button`
-  color: ${props => (props.quotedPosts.has(props.postID) ? 'white' : 'unset')};
-  background-color: ${props => (props.quotedPosts.has(props.postID) ? colors.skyblue : 'unset')};
+  color: ${props => (props.isQuoted ? 'white' : 'unset')};
+  background-color: ${props => (props.isQuoted ? colors.skyblue : 'unset')};
   border: none;
   cursor: pointer;
   outline: none;
   padding: .5em .5em;
   margin-right: .25em;
   border-radius: 5px;
+  :disabled {
+    color: ${colors.aluminiumLight};
+  }
 `;
 
 const PublicTime = styled.span`
@@ -61,24 +64,27 @@ const AuthorWrapper = styled.span`
 `;
 
 const QuoteSelectorWrapper = ({
-  postID, onQuoteToggle, quotedPosts,
-}) => (
-  <QuoteSelectorBtn
-    quotedPosts={quotedPosts}
-    postID={postID}
-    isSelected={postID}
-    onClick={() => onQuoteToggle({ postID })}
-  >
-    <IconWrapper>
-      {quotedPosts.has(postID) ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="quote-left" />)}
-    </IconWrapper>
-    引用
-  </QuoteSelectorBtn>
-);
+  postID, onQuoteToggle, isQuoted, quotable,
+}) => {
+  const disabled = (!isQuoted) && (!quotable);
+  return (
+    <QuoteSelectorBtn
+      isQuoted={isQuoted}
+      onClick={() => onQuoteToggle({ postID })}
+      disabled={disabled}
+    >
+      <IconWrapper>
+        {isQuoted ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="quote-left" />)}
+      </IconWrapper>
+      引用
+    </QuoteSelectorBtn>
+  );
+};
 QuoteSelectorWrapper.propTypes = {
   postID: PropTypes.string,
   onQuoteToggle: PropTypes.func.isRequired,
-  quotedPosts: PropTypes.shape().isRequired,
+  isQuoted: PropTypes.bool.isRequired,
+  quotable: PropTypes.bool.isRequired,
 };
 QuoteSelectorWrapper.defaultProps = {
   postID: null,
@@ -86,7 +92,8 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 const Post = ({
-  isThread, title, anonymous, author, createTime, content, refers, postID, onQuoteToggle, quotedPosts,
+  isThread, title, anonymous, author, createTime, content, refers, postID,
+  onQuoteToggle, isQuoted, quotable,
 }) => {
   const titleText = isThread ? (<Title>{title || titlePlaceholder}</Title>) : null;
   const authorText = anonymous ? (
@@ -94,9 +101,12 @@ const Post = ({
   ) : (
     <AuthorWrapper>{author}</AuthorWrapper>
   );
-  const quoteSelector = !isThread ? (
-    <QuoteSelectorWrapper postID={postID} onQuoteToggle={onQuoteToggle} quotedPosts={quotedPosts} />
-  ) : null;
+  const quoteSelector = (!isThread) && onQuoteToggle && (
+    <QuoteSelectorWrapper {...{
+        postID, onQuoteToggle, isQuoted, quotable,
+      }}
+    />
+  );
   return (
     <Wrapper>
       <TitleRow>
@@ -122,16 +132,16 @@ Post.propTypes = {
   author: PropTypes.string.isRequired,
   createTime: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
-  postID: PropTypes.string,
   refers: PropTypes.arrayOf(PropTypes.shape()),
-  quotedPosts: PropTypes.shape(),
+  postID: PropTypes.string,
   onQuoteToggle: PropTypes.func,
+  isQuoted: PropTypes.bool.isRequired,
+  quotable: PropTypes.bool.isRequired,
 };
 Post.defaultProps = {
-  quotedPosts: new Set(),
-  onQuoteToggle: () => {},
-  isThread: false,
   postID: null,
+  onQuoteToggle: null,
+  isThread: false,
   refers: null,
   title: '',
 };
