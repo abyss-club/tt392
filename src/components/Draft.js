@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import qs from 'qs';
-import { Mutation } from 'react-apollo';
+import { Query, Mutation } from 'react-apollo';
 
 import Editor from 'components/Editor';
 import MDPreview from 'components/MDPreview';
+import QuotedContent from 'components/QuotedContent';
 import Store from 'providers/Store';
 import MainContent from 'styles/MainContent';
 import colors from 'utils/colors';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // import { Mutation } from 'react-apollo'
 
@@ -52,6 +54,51 @@ const Input = styled.input`
   }
 `;
 
+const QuotedWrapper = styled.div`
+  margin-top: .5em;
+  width: 100%;
+`;
+
+const QuotedBtn = styled.button`
+  background-color: ${colors.skyblue};
+  color: white;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: .5em .5em;
+  margin-right: .25em;
+  border-radius: 5px;
+  font-size: .8em;
+`;
+
+const QuotedContentWrapper = styled.div`
+  margin: .5em 0;
+`;
+
+const QuotedContentArea = ({ threadID, quoted }) => (
+  <Query query={QUERY_REFERS} variables={{ id: threadID }}>
+    {({
+      loading, error, data,
+    }) => {
+      if (loading) return <p>Loading...</p>;
+      if (error) return <p>Error...</p>;
+      const refers = [];
+      data.thread.replies.posts.forEach((post) => {
+        Object.keys(quoted).forEach((quote) => {
+          if (quoted[quote] && quote === post.id) refers.push(post);
+        });
+      });
+      return (
+        <QuotedContent refers={refers} />
+      );
+    }}
+  </Query>
+);
+QuotedContentArea.propTypes = {
+  threadID: PropTypes.string.isRequired,
+  quoted: PropTypes.shape().isRequired,
+};
+
 class Draft extends React.Component {
   constructor(props) {
     super(props);
@@ -73,6 +120,12 @@ class Draft extends React.Component {
 
       // for post: reply
       replyTo: params.reply,
+
+      // for quoted
+      quoted: params.p ? params.p.reduce((acc, postID) => {
+        acc[postID] = true;
+        return acc;
+      }, {}) : null,
     };
   }
 
@@ -102,6 +155,15 @@ class Draft extends React.Component {
     this.setState({ preview: !preview });
   }
 
+  toggleQuoted = ({ id }) => {
+    this.setState(prevState => ({
+      quoted: {
+        ...prevState.quoted,
+        [id]: !prevState.quoted[id],
+      },
+    }));
+  }
+
   pubThread = (anonymous) => {
     const { pubThread, history } = this.props;
     const {
@@ -129,12 +191,17 @@ class Draft extends React.Component {
   }
 
   pubPost = (anonymous) => {
-    const { replyTo, text } = this.state;
+    const { replyTo, text, quoted } = this.state;
     const { pubPost, history } = this.props;
+    const refers = quoted && Object.keys(quoted).reduce((acc, id) => {
+      if (quoted[id]) acc.push(id);
+      return acc;
+    }, []);
     const post = {
       threadID: replyTo,
       anonymous,
       content: text,
+      refers,
     };
     if (text === '') {
       this.setState({ error: '内容不能为空' });
@@ -155,7 +222,7 @@ class Draft extends React.Component {
       return <p>404 not found</p>;
     }
     const {
-      preview, error, text, title, mainTag, subTags,
+      preview, error, text, title, mainTag, subTags, quoted,
     } = this.state;
     const threadSetting = (mode === 'thread') && (
       <div>
@@ -181,6 +248,19 @@ class Draft extends React.Component {
         </TagRow>
       </div>
     );
+    const quotedContent = (quoted) && (
+      <QuotedWrapper>
+        {Object.keys(quoted).map(id => (
+          <QuotedBtn key={id} onClick={() => this.toggleQuoted({ id })}>
+            {quoted[id] ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="square" />)}
+            <span> {id}</span>
+          </QuotedBtn>
+        ))}
+        <QuotedContentWrapper>
+          <QuotedContentArea threadID={this.state.replyTo} quoted={quoted} />
+        </QuotedContentWrapper>
+      </QuotedWrapper>
+    );
     const publish = anonymous => (() => {
       if (mode === 'thread') {
         this.pubThread(anonymous);
@@ -190,6 +270,7 @@ class Draft extends React.Component {
     });
     return (
       <MainContent>
+        { quotedContent }
         { preview ? (
           <MDPreview text={text} />
         ) : (
@@ -232,6 +313,18 @@ const PUB_POST = gql`
   mutation PubPost($post: PostInput!) {
     pubPost(post: $post) {
       id
+    }
+  }
+`;
+
+const QUERY_REFERS = gql`
+  query Thread($id: String!) {
+    thread(id: $id) {
+      replies(query: { after: "", limit: 100}) {
+        posts {
+          id, author, content, createTime
+        }
+      }
     }
   }
 `;

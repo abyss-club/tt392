@@ -1,22 +1,29 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faCheckSquare,
+  faSquare,
   faCoffee,
   faLink,
   faImage,
   faTimes,
   faSpinner,
   faUser,
+  faPlus,
   faPlusSquare,
   faBars,
   faChevronDown,
   faChevronUp,
+  faQuoteLeft,
+  faComment,
+  faDiceOne,
+  faDiceTwo,
+  faDiceThree,
 } from '@fortawesome/free-solid-svg-icons';
 
 const faLib = {
   loadFa: () => {
     // eslint-disable-next-line max-len
-    library.add(faCheckSquare, faCoffee, faLink, faImage, faTimes, faSpinner, faUser, faPlusSquare, faBars, faChevronDown, faChevronUp);
+    library.add(faCheckSquare, faSquare, faCoffee, faLink, faImage, faTimes, faSpinner, faUser, faPlus, faPlusSquare, faBars, faChevronDown, faChevronUp, faQuoteLeft, faComment, faDiceOne, faDiceTwo, faDiceThree);
   },
 };
 
