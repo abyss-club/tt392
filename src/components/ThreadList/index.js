@@ -54,7 +54,7 @@ const ThreadList = ({ history }) => (
           query={THREADSLICE_QUERY}
           variables={{ subscribedTags: [...tags.subscribed.main, ...tags.subscribed.sub] }}
         >
-      {({ data }) => {
+          {({ data }) => {
             const addThread = () => { history.push('/draft/thread/'); };
             return (
               <React-Fragment>
