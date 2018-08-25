@@ -22,7 +22,7 @@ const THREADSLICE_QUERY = gql`
         id, anonymous, title, author, content, createTime, mainTag, subTags,
         replies(query: { before: "", limit: 5}) {
           posts {
-            id, anonymous, author, content, createTime
+            id, anonymous, author, content, createTime, refers { id, author, content, createTime }
           }
         }
       }
