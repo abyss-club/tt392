@@ -135,12 +135,14 @@ Post.propTypes = {
   refers: PropTypes.arrayOf(PropTypes.shape()),
   postID: PropTypes.string,
   onQuoteToggle: PropTypes.func,
-  isQuoted: PropTypes.bool.isRequired,
-  quotable: PropTypes.bool.isRequired,
+  isQuoted: PropTypes.bool,
+  quotable: PropTypes.bool,
 };
 Post.defaultProps = {
   postID: null,
   onQuoteToggle: null,
+  isQuoted: false,
+  quotable: false,
   isThread: false,
   refers: null,
   title: '',
