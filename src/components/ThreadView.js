@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
+import Query from 'components/Query';
 import gql from 'graphql-tag';
 import qs from 'qs';
 
