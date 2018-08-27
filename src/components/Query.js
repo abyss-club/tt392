@@ -26,7 +26,7 @@ class InQuery extends React.Component {
     if (error) {
       return null;
     }
-    return children({ ...apolloProps, ...queryProps });
+    return children({ loading, ...apolloProps, ...queryProps });
   }
 }
 InQuery.propTypes = {
