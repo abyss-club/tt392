@@ -11,8 +11,9 @@ import Home from 'components/Home';
 import SignIn from 'components/SignIn';
 import ThreadView from 'components/ThreadView';
 import Draft from 'components/Draft';
-import MainContent from 'styles/MainContent';
-
+import Init from 'components/Init';
+import { Loading, LoadingContainer } from 'utils/loading';
+import { ModalContainer } from 'utils/modal';
 
 faLib.loadFa();
 
@@ -20,12 +21,11 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-const Loading = () => <MainContent>loading...</MainContent>;
-
 const GraphiQL = Loadable({
   loader: () => import('components/GraphiQL'),
   loading: Loading,
 });
+
 const GQLVoyager = Loadable({
   loader: () => import('components/Voyager'),
   loading: Loading,
@@ -33,6 +33,9 @@ const GQLVoyager = Loadable({
 
 const App = () => (
   <Wrapper>
+    <LoadingContainer />
+    <ModalContainer />
+    <Init />
     <Navbar />
     <Switch>
       <Route path="/" component={Home} exact />

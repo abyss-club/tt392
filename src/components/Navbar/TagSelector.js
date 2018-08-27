@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
+import Query from 'components/Query';
 import Tag from 'components/Tag';
 
 const Wrapper = styled.div`
@@ -81,12 +81,8 @@ const TAG_TREE = gql`
 
 export default props => (
   <Query query={TAG_TREE}>
-    {({ loading, error, data }) => {
-      if (loading) return <p>Loading...</p>;
-      if (error) return <p>error...</p>;
-      return (
-        <TagSelector tree={data.tags.tree} {...props} />
-      );
-    }}
+    {({ data }) => (
+      <TagSelector tree={data.tags.tree} {...props} />
+    )}
   </Query>
 );

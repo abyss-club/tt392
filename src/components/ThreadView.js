@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import qs from 'qs';
-
-import Post from 'components/Post';
-import MainContent from 'styles/MainContent';
-import colors from 'utils/colors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import MainContent from 'styles/MainContent';
+import Post from 'components/Post';
+import Query from 'components/Query';
 import Store from 'providers/Store';
+import colors from 'utils/colors';
 
 // TODO: duplicated to ThreadList/index.js
 const FloatBtn = styled.button`
@@ -73,11 +73,8 @@ class ThreadView extends React.Component {
     return (
       <Query query={THREAD_VIEW} variables={{ id: this.props.match.params.id }}>
         {({
-          loading, error, data, refetch,
+          data, refetch,
         }) => {
-          if (loading) return <p>Loading...</p>;
-          if (error) return <p>Error...</p>;
-
           if ((this.props.location.state || {}).reload) {
             refetch();
           }

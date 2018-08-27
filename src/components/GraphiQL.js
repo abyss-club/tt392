@@ -1,8 +1,15 @@
 import React from 'react';
+import styled from 'styled-components';
 import GQL from 'graphiql';
 import 'graphiql/graphiql.css';
 
 import Config from 'config';
+
+/* because Nav's height is 3rem, TODO: not use hard code */
+const Wrapper = styled.div`
+  height: calc(100% - 3rem);
+  overflow-y: hidden;
+`;
 
 function graphQLFetcher(graphQLParams) {
   return fetch(`${Config.apiPrefix}/graphql/`, {
@@ -15,7 +22,9 @@ function graphQLFetcher(graphQLParams) {
 }
 
 const GraphiQL = () => (
-  <GQL fetcher={graphQLFetcher} />
+  <Wrapper>
+    <GQL fetcher={graphQLFetcher} />
+  </Wrapper>
 );
 
 export default GraphiQL;

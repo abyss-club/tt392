@@ -13,8 +13,6 @@ import MainContent from 'styles/MainContent';
 import colors from 'utils/colors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-// import { Mutation } from 'react-apollo'
-
 const TitleRow = styled.div`
   display: flex;
   margin: .5rem 0;

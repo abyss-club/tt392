@@ -5,7 +5,6 @@ import { ApolloProvider } from 'react-apollo';
 
 import App from 'App';
 import client from 'providers/client';
-import Feedback from 'providers/Feedback';
 import Store from 'providers/Store';
 import registerServiceWorker from 'registerServiceWorker';
 
@@ -18,11 +17,9 @@ import './index.css';
 const Root = () => (
   <BrowserRouter>
     <Store.Provider>
-      <Feedback.Provider>
-        <ApolloProvider client={client}>
-          <App />
-        </ApolloProvider>
-      </Feedback.Provider>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
     </Store.Provider>
   </BrowserRouter>
 );
