@@ -18,12 +18,13 @@ import {
   faDiceOne,
   faDiceTwo,
   faDiceThree,
+  faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 
 const faLib = {
   loadFa: () => {
     // eslint-disable-next-line max-len
-    library.add(faCheckSquare, faSquare, faCoffee, faLink, faImage, faTimes, faSpinner, faUser, faPlus, faPlusSquare, faBars, faChevronDown, faChevronUp, faQuoteLeft, faComment, faDiceOne, faDiceTwo, faDiceThree);
+    library.add(faCheckSquare, faSquare, faCoffee, faLink, faImage, faTimes, faSpinner, faUser, faPlus, faPlusSquare, faBars, faChevronDown, faChevronUp, faQuoteLeft, faComment, faDiceOne, faDiceTwo, faDiceThree, faCheck);
   },
 };
 
