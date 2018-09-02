@@ -16,7 +16,6 @@ const Wrapper = styled.div`
 const SelectableTagWrapper = styled.div`
   margin: -0.125rem;
   margin-top: .5rem;
-  width: 100%;
   display: flex;
   flex-flow: row wrap;
 `;
@@ -41,24 +40,31 @@ class TagSelector extends React.Component {
     };
   }
   render() {
-    const { mainTags, subscribed, subscribeTag } = this.props;
+    const { mainTags, subscribed, setTagStatus } = this.props;
     const { subTags } = this.state;
-    const main = [...mainTags].filter(tag => !subscribed.main.has(tag));
-    const sub = [...subTags].filter(tag => !subscribed.sub.has(tag));
-    const UnSubbedTag = (tag, isMain = false) => (
+    // const main = [...mainTags].filter(tag => !subscribed.main.has(tag));
+    // const sub = [...subTags].filter(tag => !subscribed.sub.has(tag));
+    const SelectableTag = ({ tag, isMain = false, selected = false }) => (
       <TagInList
         key={tag}
         text={tag}
         isMain={isMain}
-        onClick={() => { subscribeTag(tag, isMain); }}
+        selected={selected}
+        onClick={() => { setTagStatus({ tag, isMain, isAdd: !selected }); }}
       />
     );
     return (
       <Wrapper>
-        <p>点击下列标签订阅，点击上述标签取消</p>
+        {/* <p>点击下列标签订阅，点击上述标签取消</p> */}
         <SelectableTagWrapper>
-          {main.map(tag => UnSubbedTag(tag, true))}
-          {sub.map(tag => UnSubbedTag(tag))}
+          {/* {main.map(tag => UnSubbedTag(tag, true))}
+          {sub.map(tag => UnSubbedTag(tag))} */}
+          {[...mainTags].map(tag => (subscribed.main.has(tag) ?
+            SelectableTag({ tag, isMain: true, selected: true }) :
+            SelectableTag({ tag, isMain: true }))) }
+          {[...subTags].map(tag => (subscribed.sub.has(tag) ?
+            SelectableTag({ tag, selected: true }) :
+            SelectableTag({ tag }))) }
         </SelectableTagWrapper>
       </Wrapper>
     );
@@ -68,7 +74,7 @@ TagSelector.propTypes = {
   tree: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   mainTags: PropTypes.shape().isRequired,
   subscribed: PropTypes.shape().isRequired,
-  subscribeTag: PropTypes.func.isRequired,
+  setTagStatus: PropTypes.func.isRequired,
 };
 
 const TAG_TREE = gql`

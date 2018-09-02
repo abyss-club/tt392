@@ -40,7 +40,7 @@ const ExpandBtnWrapper = styled.button`
 
 const ExpandBtn = ({ expanded, onClick }) => (
   <ExpandBtnWrapper onClick={onClick} >
-    <FontAwesomeIcon icon={`chevron-${expanded ? 'up' : 'down'}`} />
+    <FontAwesomeIcon icon={`${expanded ? 'check' : 'plus'}`} />
   </ExpandBtnWrapper>
 );
 ExpandBtn.propTypes = {
@@ -53,6 +53,22 @@ class NavTags extends React.Component {
     expanded: false,
     main: new Set(),
     sub: new Set(),
+  }
+
+  setTagStatus = ({ tag, isMain = false, isAdd }) => {
+    if (isMain) {
+      this.setState((prevState) => {
+        if (isAdd) prevState.main.add(tag);
+        else prevState.main.delete(tag);
+        return { main: prevState.main };
+      });
+    } else {
+      this.setState((prevState) => {
+        if (isAdd) prevState.sub.add(tag);
+        else prevState.sub.delete(tag);
+        return { sub: prevState.sub };
+      });
+    }
   }
 
   expand = () => {
@@ -77,31 +93,31 @@ class NavTags extends React.Component {
     }, 0);
   }
 
-  subcribeTag = (tag, isMain = false) => {
-    if (this.state.expanded) {
-      if (isMain) {
-        this.setState(prevState => ({ main: prevState.main.add(tag) }));
-      } else {
-        this.setState(prevState => ({ sub: prevState.sub.add(tag) }));
-      }
-    }
-  }
-
-  unsubscribeTag = (tag, isMain = false) => {
-    if (this.state.expanded) {
-      if (isMain) {
-        this.setState((prevState) => {
-          prevState.main.delete(tag);
-          return { main: prevState.main };
-        });
-      } else {
-        this.setState((prevState) => {
-          prevState.sub.delete(tag);
-          return { sub: prevState.sub };
-        });
-      }
-    }
-  }
+  // subcribeTag = (tag, isMain = false) => {
+  //   if (this.state.expanded) {
+  //     if (isMain) {
+  //       this.setState(prevState => ({ main: prevState.main.add(tag) }));
+  //     } else {
+  //       this.setState(prevState => ({ sub: prevState.sub.add(tag) }));
+  //     }
+  //   }
+  // }
+  //
+  // unsubscribeTag = (tag, isMain = false) => {
+  //   if (this.state.expanded) {
+  //     if (isMain) {
+  //       this.setState((prevState) => {
+  //         prevState.main.delete(tag);
+  //         return { main: prevState.main };
+  //       });
+  //     } else {
+  //       this.setState((prevState) => {
+  //         prevState.sub.delete(tag);
+  //         return { sub: prevState.sub };
+  //       });
+  //     }
+  //   }
+  // }
 
   render() {
     const { expanded } = this.state;
@@ -112,24 +128,27 @@ class NavTags extends React.Component {
         key={tag}
         text={tag}
         isMain={isMain}
-        onClick={() => { this.unsubscribeTag(tag, isMain); }}
       />
     );
     return (
       <NavTagsWrapper>
         <TagRow>
-          {([...main]).map(tag => SubbedTag(tag, true))}
-          {([...sub]).map(tag => SubbedTag(tag))}
           <ExpandBtn
             expanded={expanded}
             onClick={expanded ? this.collapse : this.expand}
           />
+          {!expanded && (
+            <React.Fragment>
+              {([...main]).map(tag => SubbedTag(tag, true))}
+              {([...sub]).map(tag => SubbedTag(tag))}
+            </React.Fragment>
+          )}
         </TagRow>
         {expanded && (
           <TagSelector
             mainTags={mainTags}
             subscribed={{ main, sub }}
-            subscribeTag={this.subcribeTag}
+            setTagStatus={this.setTagStatus}
           />
         )}
       </NavTagsWrapper>
