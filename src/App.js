@@ -13,6 +13,7 @@ import ThreadView from 'components/ThreadView';
 import Draft from 'components/Draft';
 import Init from 'components/Init';
 import TagPage from 'components/TagPage';
+import TagView from 'components/TagPage/TagView';
 import { Loading, LoadingContainer } from 'utils/loading';
 import { ModalContainer } from 'utils/modal';
 
@@ -43,6 +44,7 @@ const App = () => (
       <Route path="/sign_in/" component={SignIn} />
       <Route path="/profile/" component={Profile} />
       <Route path="/tags/" component={TagPage} />
+      <Route path="/tag/:slug" component={TagView} />
       <Route path="/thread/:id" component={ThreadView} />
       <Route path="/draft/:mode" component={Draft} />
       <Route path="/graphiql/" component={GraphiQL} />
