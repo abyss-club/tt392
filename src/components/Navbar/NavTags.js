@@ -1,16 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Mutation } from 'react-apollo';
-import gql from 'graphql-tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { withRouter } from 'react-router-dom';
 
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import Store from 'providers/Store';
 import Tag from 'components/Tag';
-
-import TagSelector from './TagSelector';
 
 const NavTagsWrapper = styled.div`
   width: 100%;
@@ -25,7 +22,7 @@ const TagRow = styled.div`
   margin: 0 -.125rem;
 `;
 
-const ExpandBtnWrapper = styled.button`
+const AddBtnWrapper = styled.button`
   color: white;
   background-color: ${colors.orange};
   font-size: 1em;
@@ -38,146 +35,49 @@ const ExpandBtnWrapper = styled.button`
   line-height: 1.5;
 `;
 
-const ExpandBtn = ({ expanded, onClick }) => (
-  <ExpandBtnWrapper onClick={onClick} >
-    <FontAwesomeIcon icon={`${expanded ? 'check' : 'plus'}`} />
-  </ExpandBtnWrapper>
+const AddBtn = ({ onClick }) => (
+  <AddBtnWrapper onClick={onClick}>
+    <FontAwesomeIcon icon="plus" />
+  </AddBtnWrapper>
 );
-ExpandBtn.propTypes = {
-  expanded: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
+AddBtn.propTypes = {
+  onClick: PropTypes.shape({}).isRequired,
 };
 
-class NavTags extends React.Component {
-  state = {
-    expanded: false,
-    main: new Set(),
-    sub: new Set(),
-  }
-
-  setTagStatus = ({ tag, isMain = false, isAdd }) => {
-    if (isMain) {
-      this.setState((prevState) => {
-        if (isAdd) prevState.main.add(tag);
-        else prevState.main.delete(tag);
-        return { main: prevState.main };
-      });
-    } else {
-      this.setState((prevState) => {
-        if (isAdd) prevState.sub.add(tag);
-        else prevState.sub.delete(tag);
-        return { sub: prevState.sub };
-      });
-    }
-  }
-
-  expand = () => {
-    const { main, sub } = this.props.tags.subscribed;
-    this.setState({ expanded: true, main, sub });
-  }
-
-  collapse = () => {
-    const { profile, setStore, syncTags } = this.props;
-    const { main, sub } = this.state;
-    setStore(prevState => ({
-      tags: {
-        ...prevState.tags,
-        subscribed: { main, sub },
-      },
-    }));
-    this.setState({ expanded: false });
-    setTimeout(() => {
-      if (profile.isSignedIn) {
-        syncTags({ variables: { tags: [...main, ...sub] } });
-      }
-    }, 0);
-  }
-
-  // subcribeTag = (tag, isMain = false) => {
-  //   if (this.state.expanded) {
-  //     if (isMain) {
-  //       this.setState(prevState => ({ main: prevState.main.add(tag) }));
-  //     } else {
-  //       this.setState(prevState => ({ sub: prevState.sub.add(tag) }));
-  //     }
-  //   }
-  // }
-  //
-  // unsubscribeTag = (tag, isMain = false) => {
-  //   if (this.state.expanded) {
-  //     if (isMain) {
-  //       this.setState((prevState) => {
-  //         prevState.main.delete(tag);
-  //         return { main: prevState.main };
-  //       });
-  //     } else {
-  //       this.setState((prevState) => {
-  //         prevState.sub.delete(tag);
-  //         return { sub: prevState.sub };
-  //       });
-  //     }
-  //   }
-  // }
-
-  render() {
-    const { expanded } = this.state;
-    const { mainTags } = this.props.tags;
-    const { main, sub } = expanded ? this.state : this.props.tags.subscribed;
-    const SubbedTag = (tag, isMain = false) => (
-      <Tag
-        key={tag}
-        text={tag}
-        isMain={isMain}
-      />
-    );
-    return (
-      <NavTagsWrapper>
-        <TagRow>
-          <ExpandBtn
-            expanded={expanded}
-            onClick={expanded ? this.collapse : this.expand}
-          />
-          {!expanded && (
-            <React.Fragment>
-              {([...main]).map(tag => SubbedTag(tag, true))}
-              {([...sub]).map(tag => SubbedTag(tag))}
-            </React.Fragment>
-          )}
-        </TagRow>
-        {expanded && (
-          <TagSelector
-            mainTags={mainTags}
-            subscribed={{ main, sub }}
-            setTagStatus={this.setTagStatus}
-          />
-        )}
-      </NavTagsWrapper>
-    );
-  }
-}
+const NavTags = ({ tags, history }) => {
+  const { main, sub } = tags.subscribed;
+  const SubbedTag = (tag, isMain = false) => (
+    <Tag
+      key={tag}
+      text={tag}
+      isMain={isMain}
+      onClick={() => { history.push(`/tag/${tag}/`); }}
+    />
+  );
+  return (
+    <NavTagsWrapper>
+      <TagRow>
+        <AddBtn onClick={() => { history.push('/tags/'); }} />
+        <React.Fragment>
+          {([...main]).map(tag => SubbedTag(tag, true))}
+          {([...sub]).map(tag => SubbedTag(tag))}
+        </React.Fragment>
+      </TagRow>
+    </NavTagsWrapper>
+  );
+};
 NavTags.propTypes = {
-  profile: PropTypes.shape().isRequired,
+  // profile: PropTypes.shape().isRequired,
   tags: PropTypes.shape().isRequired,
-  setStore: PropTypes.func.isRequired,
-  syncTags: PropTypes.func.isRequired,
+  history: PropTypes.shape({}).isRequired,
 };
 
-const UPDATE_SUBBED_TAGS = gql`
-  mutation updateSubbedTags($tags: [String]!) {
-    syncTags(tags: $tags) {
-      name
-    }
-  }
-`;
+const NavTagsWithRouter = withRouter(NavTags);
 
 export default () => (
   <Store.Consumer>
-    {({ profile, tags, setStore }) => (
-      <Mutation mutation={UPDATE_SUBBED_TAGS}>
-        {syncTags => (
-          <NavTags profile={profile} tags={tags} setStore={setStore} syncTags={syncTags} />
-        )}
-      </Mutation>
+    {({ profile, tags }) => (
+      <NavTagsWithRouter profile={profile} tags={tags} />
      )}
   </Store.Consumer>
 );
