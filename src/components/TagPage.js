@@ -84,10 +84,13 @@ class TagSelector extends React.Component {
         return { subscribed: prevState.subscribed };
       });
     }
+    this.save({ isAdd, tag });
   }
 
-  save = () => {
-    const { profile, setStore, syncTags } = this.props;
+  save = ({ isAdd, tag }) => {
+    const {
+      profile, setStore, addSubbedTags, delSubbedTags,
+    } = this.props;
     const { main, sub } = this.state.subscribed;
     setStore(prevState => ({
       tags: {
@@ -97,7 +100,8 @@ class TagSelector extends React.Component {
     }));
     setTimeout(() => {
       if (profile.isSignedIn) {
-        syncTags({ variables: { tags: [...main, ...sub] } });
+        if (isAdd) addSubbedTags({ variables: { tags: [tag] } });
+        else delSubbedTags({ variables: { tags: [tag] } });
       }
     }, 0);
   }
@@ -119,7 +123,6 @@ class TagSelector extends React.Component {
     );
     return (
       <Wrapper>
-        <SaveBtn onClick={this.save} />
         <SelectableTagWrapper>
           {[...mainTags].map(tag => (subscribed.main.has(tag) ?
             SelectableTag({ tag, isMain: true, selected: true }) :
@@ -137,13 +140,22 @@ TagSelector.propTypes = {
   profile: PropTypes.shape().isRequired,
   tags: PropTypes.shape().isRequired,
   setStore: PropTypes.func.isRequired,
-  syncTags: PropTypes.func.isRequired,
+  delSubbedTags: PropTypes.func.isRequired,
+  addSubbedTags: PropTypes.func.isRequired,
 };
 
-const UPDATE_SUBBED_TAGS = gql`
-  mutation updateSubbedTags($tags: [String]!) {
-    syncTags(tags: $tags) {
-      name
+const ADD_TAGS = gql`
+  mutation addSubbedTags($tags: [String!]!) {
+    addSubbedTags(tags: $tags) {
+      tags
+    }
+  }
+`;
+
+const DEL_TAGS = gql`
+  mutation delSubbedTags($tags: [String!]!) {
+    delSubbedTags(tags: $tags) {
+      tags
     }
   }
 `;
@@ -161,15 +173,20 @@ export default () => (
     {({ profile, tags, setStore }) => (
       <Query query={TAG_TREE}>
         {({ data }) => (
-          <Mutation mutation={UPDATE_SUBBED_TAGS}>
-            {syncTags => (
-              <TagSelector
-                tree={data.tags.tree}
-                profile={profile}
-                tags={tags}
-                setStore={setStore}
-                syncTags={syncTags}
-              />
+          <Mutation mutation={ADD_TAGS}>
+            {addSubbedTags => (
+              <Mutation mutation={DEL_TAGS}>
+                {delSubbedTags => (
+                  <TagSelector
+                    tree={data.tags.tree}
+                    profile={profile}
+                    tags={tags}
+                    setStore={setStore}
+                    addSubbedTags={addSubbedTags}
+                    delSubbedTags={delSubbedTags}
+                  />
+                )}
+              </Mutation>
             )}
           </Mutation>
         )}
