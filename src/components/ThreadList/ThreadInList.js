@@ -3,34 +3,38 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 
-import Tag from 'components/Tag';
 import Post from 'components/Post';
-import colors from 'utils/colors';
 
 const ThreadWrapper = styled.div`
-  padding: .5rem 0;
+  background-color: white;
+  border-radius: 16px;
+  margin: 1rem;
+  padding: 0;
   cursor: pointer;
 `;
 
-const TagsRow = styled.div`
-  font-size: .75rem;
-  margin: 0;
-`;
+// const TagsRow = styled.div`
+//   font-size: .75rem;
+//   margin: 0;
+// `;
 
-const ViewThread = styled.p`
-  color: ${colors.orange};
-`;
+// const ViewThread = styled.p`
+//   margin: 1.775rem 2rem 0;
+//   font-size: .75em;
+//   color: ${colors.accentBlue};
+// `;
 
 const ThreadInList = ({ thread, history }) => {
   const replies = (thread.replies || []).posts || [];
   return (
     <ThreadWrapper onClick={() => { history.push(`/thread/${thread.id}/`); }}>
-      <TagsRow>
+      {/* <TagsRow>
         <Tag text={thread.mainTag} isMain />
         {(thread.subTags || []).map(t => <Tag key={t} text={t} />)}
-      </TagsRow>
-      <Post isThread {...thread} />
-      <ViewThread>查看整串</ViewThread>
+      </TagsRow> */}
+      <Post isThread {...thread} hasReplies={replies.length > 0} />
+      {/* Border Hack */}
+      {/* <div /> */}
       {replies.map(post => <Post key={post.id} {...post} />)}
     </ThreadWrapper>
   );

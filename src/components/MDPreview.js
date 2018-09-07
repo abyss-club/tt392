@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
+import colors from 'utils/colors';
 
 const PreviewWrapper = styled.div`
   * {
@@ -31,13 +32,17 @@ const PreviewWrapper = styled.div`
   }
 `;
 
-const MDPreview = ({ text }) => (
-  <PreviewWrapper>
+const MDPreview = ({ text, isThread }) => (
+  <PreviewWrapper isThread={isThread}>
     <ReactMarkdown source={text} />
   </PreviewWrapper>
 );
 MDPreview.propTypes = {
   text: PropTypes.string.isRequired,
+  isThread: PropTypes.bool,
+};
+MDPreview.defaultProps = {
+  isThread: false,
 };
 
 export default MDPreview;

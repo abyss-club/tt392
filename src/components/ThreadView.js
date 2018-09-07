@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import qs from 'qs';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MainContent from 'styles/MainContent';
 import Post from 'components/Post';
 import Query from 'components/Query';
 import Store from 'providers/Store';
 import colors from 'utils/colors';
+
+import ChatBubble from 'components/icons/ChatBubble';
 
 // TODO: duplicated to ThreadList/index.js
 const FloatBtn = styled.button`
@@ -19,14 +20,19 @@ const FloatBtn = styled.button`
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  background: ${colors.skyblue};
+  background: ${colors.buttonBg};
   color: white;
   border: none;
   outline: none;
-  font-size: 1.5rem;
-  line-height: 1;
+  font-size: 1em;
+  line-height: 0;
   cursor: pointer;
   box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14),0 1px 18px 0 rgba(0,0,0,0.12),0 3px 5px -1px rgba(0,0,0,0.2);
+`;
+
+const ThreadViewWrapper = styled.div`
+  background-color: white;
+  border-radius: 16px;
 `;
 
 const THREAD_VIEW = gql`
@@ -87,20 +93,22 @@ class ThreadView extends React.Component {
           };
           return (
             <MainContent>
-              <Post isThread {...thread} />
-              {replies.map(post =>
-                (<Post
-                  key={post.id}
-                  isThread={false}
-                  postID={post.id}
-                  onQuoteToggle={this.handleQuoteToggle}
-                  isQuoted={quotedPosts.has(post.id)}
-                  quotable={quotedPosts.size < 3}
-                  {...post}
-                />))}
-              <FloatBtn onClick={addReply}>
-                <FontAwesomeIcon icon="comment" />
-              </FloatBtn>
+              <ThreadViewWrapper>
+                <Post isThread {...thread} />
+                {replies.map(post =>
+                  (<Post
+                    key={post.id}
+                    isThread={false}
+                    postID={post.id}
+                    onQuoteToggle={this.handleQuoteToggle}
+                    isQuoted={quotedPosts.has(post.id)}
+                    quotable={quotedPosts.size < 3}
+                    {...post}
+                  />))}
+                <FloatBtn onClick={addReply}>
+                  <ChatBubble />
+                </FloatBtn>
+              </ThreadViewWrapper>
             </MainContent>
           );
         }}
