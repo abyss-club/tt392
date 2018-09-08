@@ -2,7 +2,6 @@ import React from 'react';
 
 const More = props => (
   <svg viewBox="0 0 24 24" fill="none" width="1em" height="1em" {...props}>
-    <path fill="#D8D8D8" fillOpacity={0.00} d="M0 0h24v24H0z" />
     <path
       fillRule="evenodd"
       clipRule="evenodd"
