@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const MainContent = styled.div`
   margin: 0;
   border-radius: 16px;
-  padding: 1em 0;
+  padding: ${props => (props.isNav ? '0' : '0 0 1rem 0')};
   /* (960 + 16 * 2) / 16 = 62; */
   @media (min-width: 62em) {
     max-width: 720px;
