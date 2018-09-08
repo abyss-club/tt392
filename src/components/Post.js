@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MDPreview from 'components/MDPreview';
@@ -15,7 +16,7 @@ import More from 'components/icons/More';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : colors.bgGrey)};
-  padding: 1rem 2rem 0;
+  padding: 1rem 1rem 0;
   :not(:last-of-type):after {
     content: "";
     display: block;
@@ -25,7 +26,7 @@ const Wrapper = styled.div`
     border-bottom: ${props => (props.hasReplies ? '0' : '1px')} solid ${colors.borderGrey};
   }
   :last-of-type {
-    padding: 1rem 2rem;
+    padding: 1rem;
     border-radius: 0 0 16px 16px;
   }
 `;
@@ -47,21 +48,27 @@ const MetaRow = styled.div`
 `;
 
 const MoreBtn = styled.button`
-  margin-left: auto;
+  margin: 0 0 0 auto;
   background-color: unset;
   border: none;
   cursor: pointer;
   outline: none;
+  padding: 0;
   font-size: 1.5em;
   line-height: 0;
 `;
 
-const Title = styled.h3`
+const Title = styled.p`
   width: 100%;
   font-family: ${fontFamilies.system};
   margin: .5rem 0;
   font-size: 1.25rem;
   font-weight: 700;
+  padding: 0.575rem 0 0.475rem 0;
+  > a {
+    color: ${colors.titleBlack};
+    text-decoration: none;
+  }
 `;
 
 const QuoteSelectorBtn = styled.button`
@@ -94,6 +101,10 @@ const ViewThread = styled.p`
   margin-top: 1.775rem;
   font-size: .75em;
   color: ${colors.accentBlue};
+  > a {
+    color: ${colors.accentBlue};
+    text-decoration: none;
+  }
 `;
 
 const AuthorWrapper = styled.span`
@@ -132,10 +143,10 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 const Post = ({
-  isThread, title, anonymous, author, createTime, content, refers, postID,
+  isThread, title, anonymous, author, createTime, content, refers, postID, threadID,
   onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies,
 }) => {
-  const titleRow = isThread ? (<Title>{title || titlePlaceholder}</Title>) : null;
+  const titleRow = isThread ? (<Title><Link to={`/thread/${threadID}`}>{title || titlePlaceholder}</Link></Title>) : null;
   const authorText = anonymous ? (
     <AuthorWrapper anonymous>匿名{author}</AuthorWrapper>
   ) : (
@@ -147,7 +158,7 @@ const Post = ({
       }}
     />
   );
-  const viewThread = (isThread) && (<ViewThread>查看整串</ViewThread>);
+  const viewThread = (isThread) && (<ViewThread><Link to={`/thread/${threadID}`}>查看整串</Link></ViewThread>);
   const topRow = isThread ? (
     <TopRowWrapper>
       <MetaRow>
@@ -189,6 +200,7 @@ Post.propTypes = {
   content: PropTypes.string.isRequired,
   refers: PropTypes.arrayOf(PropTypes.shape()),
   postID: PropTypes.string,
+  threadID: PropTypes.string,
   onQuoteToggle: PropTypes.func,
   isQuoted: PropTypes.bool,
   quotable: PropTypes.bool,
@@ -198,6 +210,7 @@ Post.propTypes = {
 };
 Post.defaultProps = {
   postID: null,
+  threadID: null,
   onQuoteToggle: null,
   isQuoted: false,
   quotable: false,

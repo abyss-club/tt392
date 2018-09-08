@@ -31,7 +31,7 @@ const ThreadInList = ({ thread }) => {
         <Tag text={thread.mainTag} isMain />
         {(thread.subTags || []).map(t => <Tag key={t} text={t} />)}
       </TagsRow> */}
-      <Post isThread {...thread} hasReplies={replies.length > 0} />
+      <Post isThread {...thread} hasReplies={replies.length > 0} threadID={thread.id} />
       {/* Border Hack */}
       {/* <div /> */}
       {replies.map(post => <Post key={post.id} {...post} />)}
