@@ -8,36 +8,41 @@ import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import Store from 'providers/Store';
 import Tag from 'components/Tag';
+import Plus from 'components/icons/Plus';
 
 const NavTagsWrapper = styled.div`
   width: 100%;
   font-size: .75rem;
   display: flex;
   flex-flow: row wrap;
-  margin: .5rem -.125rem;
+  align-items: center;
+  margin-left: 2rem;
 `;
 
-const TagRow = styled.div`
-  width: 100%;
-  margin: 0 -.125rem;
-`;
+// const TagRow = styled.div`
+//   width: 100%;
+//   margin: 0;
+// `;
 
 const AddBtnWrapper = styled.button`
   color: white;
-  background-color: ${colors.orange};
+  background-color: ${colors.iconGrey};
   font-size: 1em;
   font-family: ${fontFamilies.system};
   border: 0;
-  border-radius: 5px;
-  height: 2em;
-  padding: .25em .5em;
-  margin: 0 .125em;
-  line-height: 1.5;
+  outline: 0;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  margin: 0 .4em .5em 0;
+  line-height: 0;
+  cursor: pointer;
 `;
 
 const AddBtn = ({ onClick }) => (
   <AddBtnWrapper onClick={onClick}>
-    <FontAwesomeIcon icon="plus" />
+    <Plus />
   </AddBtnWrapper>
 );
 AddBtn.propTypes = {
@@ -56,13 +61,11 @@ const NavTags = ({ tags, history }) => {
   );
   return (
     <NavTagsWrapper>
-      <TagRow>
-        <AddBtn onClick={() => { history.push('/tags/'); }} />
-        <React.Fragment>
-          {([...main]).map(tag => SubbedTag(tag, true))}
-          {([...sub]).map(tag => SubbedTag(tag))}
-        </React.Fragment>
-      </TagRow>
+      <AddBtn onClick={() => { history.push('/tags/'); }} />
+      <React.Fragment>
+        {([...main]).map(tag => SubbedTag(tag, true))}
+        {([...sub]).map(tag => SubbedTag(tag))}
+      </React.Fragment>
     </NavTagsWrapper>
   );
 };
