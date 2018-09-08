@@ -7,7 +7,7 @@ import MainContent from 'styles/MainContent';
 const Home = () => (
   <MainContent>
     <PreviewInfo />
-    <ThreadList />
+    <ThreadList type="home" />
   </MainContent>
 );
 
