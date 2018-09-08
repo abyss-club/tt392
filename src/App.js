@@ -12,6 +12,7 @@ import SignIn from 'components/SignIn';
 import ThreadView from 'components/ThreadView';
 import Draft from 'components/Draft';
 import Init from 'components/Init';
+import TagPage from 'components/TagPage';
 import { Loading, LoadingContainer } from 'utils/loading';
 import { ModalContainer } from 'utils/modal';
 
@@ -41,6 +42,7 @@ const App = () => (
       <Route path="/" component={Home} exact />
       <Route path="/sign_in/" component={SignIn} />
       <Route path="/profile/" component={Profile} />
+      <Route path="/tags/" component={TagPage} />
       <Route path="/thread/:id" component={ThreadView} />
       <Route path="/draft/:mode" component={Draft} />
       <Route path="/graphiql/" component={GraphiQL} />
