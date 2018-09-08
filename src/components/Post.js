@@ -15,7 +15,7 @@ import More from 'components/icons/More';
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : colors.bgGrey)};
   padding: 1rem 2rem 0;
-  :not(:last-child):after {
+  :not(:last-of-type):after {
     content: "";
     display: block;
     margin: 0 auto;
@@ -23,7 +23,7 @@ const Wrapper = styled.div`
     padding-top: 1em;
     border-bottom: ${props => (props.hasReplies ? '0' : '1px')} solid ${colors.borderGrey};
   }
-  :last-child {
+  :last-of-type {
     padding: 1rem 2rem;
     border-radius: 0 0 16px 16px;
   }
