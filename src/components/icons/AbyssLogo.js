@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AbyssLogo = props => (
-  <svg viewBox="0 0 92 16" fill="none" width="1em" height="1em" {...props}>
+  <svg viewBox="0 0 92 16" fill="none" width="5.75em" height="1em" {...props}>
     <path
       fillRule="evenodd"
       clipRule="evenodd"
