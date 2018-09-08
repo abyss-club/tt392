@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
@@ -27,6 +28,10 @@ const Wrapper = styled.div`
     padding: 1rem 2rem;
     border-radius: 0 0 16px 16px;
   }
+`;
+
+const IconWrapper = styled.span`
+  padding-right: .5em;
 `;
 
 const TopRowWrapper = styled.div`
@@ -109,6 +114,9 @@ const QuoteSelectorWrapper = ({
       disabled={disabled}
     >
       引用
+      <IconWrapper>
+        {isQuoted ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="reply" />)}
+      </IconWrapper>
     </QuoteSelectorBtn>
   );
 };
