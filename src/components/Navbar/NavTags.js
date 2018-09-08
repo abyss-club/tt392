@@ -41,7 +41,7 @@ const AddBtn = ({ onClick }) => (
   </AddBtnWrapper>
 );
 AddBtn.propTypes = {
-  onClick: PropTypes.shape({}).isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 const NavTags = ({ tags, history }) => {
