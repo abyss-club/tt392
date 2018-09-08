@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { withRouter } from 'react-router-dom';
+// import { withRouter } from 'react-router-dom';
 
 import Post from 'components/Post';
 
@@ -10,7 +10,6 @@ const ThreadWrapper = styled.div`
   border-radius: 16px;
   margin: 1rem;
   padding: 0;
-  cursor: pointer;
 `;
 
 // const TagsRow = styled.div`
@@ -24,10 +23,10 @@ const ThreadWrapper = styled.div`
 //   color: ${colors.accentBlue};
 // `;
 
-const ThreadInList = ({ thread, history }) => {
+const ThreadInList = ({ thread }) => {
   const replies = (thread.replies || []).posts || [];
   return (
-    <ThreadWrapper onClick={() => { history.push(`/thread/${thread.id}/`); }}>
+    <ThreadWrapper>
       {/* <TagsRow>
         <Tag text={thread.mainTag} isMain />
         {(thread.subTags || []).map(t => <Tag key={t} text={t} />)}
@@ -42,7 +41,7 @@ const ThreadInList = ({ thread, history }) => {
 
 ThreadInList.propTypes = {
   thread: PropTypes.shape({}).isRequired,
-  history: PropTypes.shape({}).isRequired,
+  // history: PropTypes.shape({}).isRequired,
 };
 
-export default withRouter(ThreadInList);
+export default ThreadInList;
