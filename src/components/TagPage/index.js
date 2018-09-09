@@ -4,8 +4,9 @@ import styled from 'styled-components';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { withRouter } from 'react-router-dom';
 
-import colors from 'utils/colors';
+// import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import Store from 'providers/Store';
 import Query from 'components/Query';
@@ -19,7 +20,6 @@ const Wrapper = styled.div`
 `;
 
 const SelectableTagWrapper = styled.div`
-  margin: -0.125rem;
   margin-top: .5rem;
   display: flex;
   flex-flow: row wrap;
@@ -29,12 +29,12 @@ const TagInList = styled(Tag)`
   margin: .125rem;
 `;
 
-const SaveBtnWrapper = styled.button`
-  color: white;
-  background-color: ${colors.orange};
+const BackBtnWrapper = styled.button`
+  color: black;
+  background-color: white;
   font-size: 1em;
   font-family: ${fontFamilies.system};
-  border: 0;
+  border: 1px solid #43484C;
   border-radius: 5px;
   height: 2em;
   padding: .25em .5em;
@@ -42,12 +42,12 @@ const SaveBtnWrapper = styled.button`
   line-height: 1.5;
 `;
 
-const SaveBtn = ({ onClick }) => (
-  <SaveBtnWrapper onClick={onClick} >
-    <FontAwesomeIcon icon="check" />
-  </SaveBtnWrapper>
+const BackBtn = ({ onClick }) => (
+  <BackBtnWrapper onClick={onClick} >
+    <FontAwesomeIcon icon="chevron-left" />返回
+  </BackBtnWrapper>
 );
-SaveBtn.propTypes = {
+BackBtn.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
@@ -110,8 +110,7 @@ class TagSelector extends React.Component {
     const {
       mainTags, subTags, subscribed,
     } = this.state;
-    // const main = [...mainTags].filter(tag => !subscribed.main.has(tag));
-    // const sub = [...subTags].filter(tag => !subscribed.sub.has(tag));
+    const { history } = this.props;
     const SelectableTag = ({ tag, isMain = false, selected = false }) => (
       <TagInList
         key={tag}
@@ -123,6 +122,7 @@ class TagSelector extends React.Component {
     );
     return (
       <Wrapper>
+        <BackBtn onClick={() => { history.goBack(); }} />
         <SelectableTagWrapper>
           {[...mainTags].map(tag => (subscribed.main.has(tag) ?
             SelectableTag({ tag, isMain: true, selected: true }) :
@@ -142,6 +142,7 @@ TagSelector.propTypes = {
   setStore: PropTypes.func.isRequired,
   delSubbedTags: PropTypes.func.isRequired,
   addSubbedTags: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
 };
 
 const ADD_TAGS = gql`
@@ -168,6 +169,8 @@ const TAG_TREE = gql`
   }
 `;
 
+const TagSelectorWithRouter = withRouter(TagSelector);
+
 export default () => (
   <Store.Consumer>
     {({ profile, tags, setStore }) => (
@@ -177,7 +180,7 @@ export default () => (
             {addSubbedTags => (
               <Mutation mutation={DEL_TAGS}>
                 {delSubbedTags => (
-                  <TagSelector
+                  <TagSelectorWithRouter
                     tree={data.tags.tree}
                     profile={profile}
                     tags={tags}
