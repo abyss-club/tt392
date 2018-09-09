@@ -18,10 +18,11 @@ const NavWrapper = styled.nav`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
+  padding: 0 1rem;
 `;
 
 const NavFirstRow = styled.div`
-  height: 3rem;
+  height: 3.5rem;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -35,12 +36,11 @@ const NavFirstRow = styled.div`
 
 const NavTitle = styled(AbyssLogo)`
   font-size: 1em;
-  margin-left: 2rem;
 `;
 
 const Navbar = ({ profile }) => (
   <Wrapper>
-    <MainContent isNav>
+    <MainContent>
       <NavWrapper>
         <NavFirstRow>
           <Link to="/">

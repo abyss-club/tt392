@@ -12,10 +12,6 @@ import Pen from 'components/icons/Pen';
 
 import ThreadInList from './ThreadInList';
 
-const ThreadListWrapper = styled.div`
-  margin: 0;
-`;
-
 const THREADSLICE_QUERY = gql`
   query getThreadSlice($tags: [String!]) {
     threadSlice(tags: $tags, query: { after: "", limit: 10 }) {
@@ -52,26 +48,24 @@ const ThreadList = ({
 }) => {
   const filterByTags = type === 'home' ? [...tags.subscribed.main, ...tags.subscribed.sub] : [slug];
   return (
-    <ThreadListWrapper>
-      <Query
-        query={THREADSLICE_QUERY}
-        variables={{ tags: filterByTags }}
-      >
-        {({ data }) => {
-            const addThread = () => { history.push('/draft/thread/'); };
-            return (
-              <React-Fragment>
-                {data.threadSlice.threads.map(thread => (
-                  <ThreadInList key={thread.id} thread={thread} />
-                ))}
-                <FloatBtn onClick={addThread}>
-                  <Pen />
-                </FloatBtn>
-              </React-Fragment>
-            );
-          }}
-      </Query>
-    </ThreadListWrapper>
+    <Query
+      query={THREADSLICE_QUERY}
+      variables={{ tags: filterByTags }}
+    >
+      {({ data }) => {
+        const addThread = () => { history.push('/draft/thread/'); };
+        return (
+          <React-Fragment>
+            {data.threadSlice.threads.map(thread => (
+              <ThreadInList key={thread.id} thread={thread} />
+            ))}
+            <FloatBtn onClick={addThread}>
+              <Pen />
+            </FloatBtn>
+          </React-Fragment>
+        );
+      }}
+    </Query>
   );
 };
 

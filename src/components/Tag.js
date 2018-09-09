@@ -21,7 +21,7 @@ const TagWrapper = styled.button`
   border-radius: 16px;
   height: 2rem;
   padding: .25em 1.5em;
-  margin: 0 .4em .5em .4em;
+  margin: .25rem;
   font-family: ${fontFamilies.system};
   cursor: pointer;
 `;
@@ -30,7 +30,7 @@ const CompactTag = styled(Link)`
   margin-right: .25em;
 
   font-size: .75em;
-  color: ${colors.accentBlue};
+  color: ${props => (props.isMain ? colors.accentRed : colors.textGrey)};
   text-decoration: none;
   :hover {
     text-decoration: underline;
@@ -41,7 +41,7 @@ const Tag = ({
   text, isMain, onClick, className, selected, isCompact,
 }) => (
   isCompact ? (
-    <CompactTag to={`/tag/${text}`}>#{text}</CompactTag>
+    <CompactTag isMain={isMain} to={`/tag/${text}`}>#{text}</CompactTag>
   ) : (
     <TagWrapper isMain={isMain} onClick={onClick} className={className}>
       {selected ? <FontAwesomeIcon icon="check-square" /> : null}

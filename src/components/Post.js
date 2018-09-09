@@ -23,11 +23,11 @@ const Wrapper = styled.div`
     margin: 0 auto;
     width: 100%;
     padding-top: 1em;
-    border-bottom: ${props => (props.hasReplies ? '0' : '1px')} solid ${colors.borderGrey};
+    ${props => props.isThread || `border-bottom: 1px solid ${colors.borderGrey};`}
   }
   :last-of-type {
     padding: 1rem;
-    border-radius: 0 0 16px 16px;
+    border-bottom: none;
   }
 `;
 
@@ -37,14 +37,20 @@ const IconWrapper = styled.span`
 
 const TopRowWrapper = styled.div`
   width: 100%;
+`;
+
+const TagsRow = styled.div`
+  width: 100%;
   display: flex;
-  flex-flow: row wrap;
   align-items: center;
+  margin-bottom: 1rem;
 `;
 
 const MetaRow = styled.div`
   width: 100%;
   display: flex;
+  align-items: center;
+  margin-bottom: .5rem;
 `;
 
 const MoreBtn = styled.button`
@@ -63,8 +69,8 @@ const Title = styled.p`
   font-family: ${fontFamilies.system};
   margin: .5rem 0;
   font-size: 1.25rem;
+  line-height: 1.5;
   font-weight: 700;
-  padding: 0.575rem 0 0.475rem 0;
   > a {
     color: ${colors.titleBlack};
     text-decoration: none;
@@ -98,11 +104,12 @@ const PostContent = styled.div`
 `;
 
 const ViewThread = styled.p`
-  margin-top: 1.775rem;
+  margin-top: 1.5rem;
   font-size: .75em;
-  color: ${colors.accentBlue};
+  line-height: 1.5;
+  color: ${colors.accentRed};
   > a {
-    color: ${colors.accentBlue};
+    color: ${colors.accentRed};
     text-decoration: none;
   }
 `;
@@ -144,9 +151,13 @@ QuoteSelectorWrapper.defaultProps = {
 const titlePlaceholder = '无题';
 const Post = ({
   isThread, title, anonymous, author, createTime, content, refers, postID, threadID, countOfReplies,
-  onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies,
+  onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList,
 }) => {
-  const titleRow = isThread ? (<Title><Link to={`/thread/${threadID}`}>{title || titlePlaceholder}</Link></Title>) : null;
+  const titleRow = isThread ? (
+    <Title>
+      <Link to={`/thread/${threadID}`}>{title || titlePlaceholder}</Link>
+    </Title>
+  ) : null;
   const authorText = anonymous ? (
     <AuthorWrapper anonymous>匿名{author}</AuthorWrapper>
   ) : (
@@ -158,26 +169,33 @@ const Post = ({
       }}
     />
   );
-  const viewThread = (isThread) && (countOfReplies > 0) && (<ViewThread><Link to={`/thread/${threadID}`}>查看全部 {countOfReplies} 条帖</Link></ViewThread>);
+  const viewThread = (isThread) && (inList) && (
+    <ViewThread>
+      <Link to={`/thread/${threadID}`}>
+        {(countOfReplies > 0) ? `查看全部 ${countOfReplies} 个回复` : '暂无回复'}
+      </Link>
+    </ViewThread>
+  );
   const topRow = isThread ? (
     <TopRowWrapper>
-      <MetaRow>
+      <TagsRow>
         <Tag text={mainTag} isMain isCompact />
         {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
         <MoreBtn><More /></MoreBtn>
-      </MetaRow>
+      </TagsRow>
       <MetaRow>
         {authorText}
         <PublishTime>·{timeElapsed(createTime).formatted}</PublishTime>
       </MetaRow>
     </TopRowWrapper>
   ) : (
-    <TopRowWrapper>
+    <MetaRow>
       {authorText}
       <PublishTime>·{timeElapsed(createTime).formatted}</PublishTime>
       {quoteSelector}
       <MoreBtn><More /></MoreBtn>
-    </TopRowWrapper>);
+    </MetaRow>
+  );
   return (
     <Wrapper isThread={isThread} hasReplies={hasReplies}>
       {topRow}
@@ -206,6 +224,7 @@ Post.propTypes = {
   quotable: PropTypes.bool,
   mainTag: PropTypes.string,
   subTags: PropTypes.arrayOf(PropTypes.string),
+  inList: PropTypes.bool,
   hasReplies: PropTypes.bool,
   countOfReplies: PropTypes.number,
 };
@@ -220,6 +239,7 @@ Post.defaultProps = {
   title: '',
   subTags: null,
   mainTag: null,
+  inList: false,
   hasReplies: false,
   countOfReplies: 0,
 };
