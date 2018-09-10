@@ -73,6 +73,11 @@ const QuotedContentWrapper = styled.div`
   margin: .5em 0;
 `;
 
+const PreviewArea = styled.div`
+  background-color: white;
+  padding: 1em;
+`;
+
 const QuotedContentArea = ({ threadID, quoted }) => (
   <Query query={QUERY_REFERS} variables={{ id: threadID }}>
     {({
@@ -270,7 +275,9 @@ class Draft extends React.Component {
       <MainContent>
         { quotedContent }
         { preview ? (
-          <MDPreview text={text} />
+          <PreviewArea>
+            <MDPreview text={text} />
+          </PreviewArea>
         ) : (
           <Editor text={text} save={this.saveText} />
         )}

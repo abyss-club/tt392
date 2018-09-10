@@ -16,11 +16,14 @@ const Wrapper = styled.div`
 `;
 
 const IconWrapper = styled.button`
-  color: ${props => (props.topbar ? colors.zircon : colors.vulcan)};
+  color: white;
   font-size: 1em;
   appearance: none;
   border: 0;
   background: none;
+  svg {
+    color: white;
+  }
 `;
 
 const Toolbar = styled.div`
@@ -33,6 +36,7 @@ const Toolbar = styled.div`
 const SlateArea = styled.div`
   border: 1px solid ${colors.aluminium};
   border-radius: 2px;
+  background-color: white;
   margin-top: .5em;
   padding: .5em;
   width: 100%;
