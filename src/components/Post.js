@@ -162,8 +162,8 @@ const Post = ({
   const topRow = isThread ? (
     <TopRowWrapper>
       <MetaRow>
-        <Tag text={mainTag} isMain />
-        {(subTags || []).map(t => <Tag key={t} text={t} />)}
+        <Tag text={mainTag} isMain isCompact />
+        {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
         <MoreBtn><More /></MoreBtn>
       </MetaRow>
       <MetaRow>

@@ -10,6 +10,9 @@ const ThreadWrapper = styled.div`
   border-radius: 16px;
   margin: 1rem;
   padding: 0;
+  :last-of-type {
+    margin: 1rem 1rem 0 1rem;
+  }
 `;
 
 // const TagsRow = styled.div`

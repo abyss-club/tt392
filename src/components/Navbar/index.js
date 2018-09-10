@@ -5,13 +5,13 @@ import { Route, Link } from 'react-router-dom';
 
 import Store from 'providers/Store';
 import MainContent from 'styles/MainContent';
+import AbyssLogo from 'components/icons/AbyssLogo';
 
 import NavTags from './NavTags';
 import SignInBtn from './SignInBtn';
 
 const Wrapper = styled.div`
   width: 100%;
-  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
 `;
 
 const NavWrapper = styled.nav`
@@ -33,21 +33,18 @@ const NavFirstRow = styled.div`
   }
 `;
 
-const NavTitle = styled.div`
-  font-family: 'Open Sans Condensed', sans-serif;
-  font-weight: 700;
-  font-size: 2em;
-  line-height: 3rem;
-  transform: translateY(-0.25rem);
+const NavTitle = styled(AbyssLogo)`
+  font-size: 1em;
+  margin-left: 2rem;
 `;
 
 const Navbar = ({ profile }) => (
   <Wrapper>
-    <MainContent>
+    <MainContent isNav>
       <NavWrapper>
         <NavFirstRow>
           <Link to="/">
-            <NavTitle>abyss</NavTitle>
+            <NavTitle />
           </Link>
           <SignInBtn profile={profile || {}} />
         </NavFirstRow>

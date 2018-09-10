@@ -13,7 +13,7 @@ import Pen from 'components/icons/Pen';
 import ThreadInList from './ThreadInList';
 
 const ThreadListWrapper = styled.div`
-  margin: .5em 0;
+  margin: 0;
 `;
 
 const THREADSLICE_QUERY = gql`
