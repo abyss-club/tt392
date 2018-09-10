@@ -143,7 +143,7 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 const Post = ({
-  isThread, title, anonymous, author, createTime, content, refers, postID, threadID,
+  isThread, title, anonymous, author, createTime, content, refers, postID, threadID, countOfReplies,
   onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies,
 }) => {
   const titleRow = isThread ? (<Title><Link to={`/thread/${threadID}`}>{title || titlePlaceholder}</Link></Title>) : null;
@@ -158,7 +158,7 @@ const Post = ({
       }}
     />
   );
-  const viewThread = (isThread) && (<ViewThread><Link to={`/thread/${threadID}`}>查看整串</Link></ViewThread>);
+  const viewThread = (isThread) && (countOfReplies > 0) && (<ViewThread><Link to={`/thread/${threadID}`}>查看全部 {countOfReplies} 条帖</Link></ViewThread>);
   const topRow = isThread ? (
     <TopRowWrapper>
       <MetaRow>
@@ -207,6 +207,7 @@ Post.propTypes = {
   mainTag: PropTypes.string,
   subTags: PropTypes.arrayOf(PropTypes.string),
   hasReplies: PropTypes.bool,
+  countOfReplies: PropTypes.number,
 };
 Post.defaultProps = {
   postID: null,
@@ -220,6 +221,7 @@ Post.defaultProps = {
   subTags: null,
   mainTag: null,
   hasReplies: false,
+  countOfReplies: 0,
 };
 
 export default Post;
