@@ -6,8 +6,9 @@ import { withRouter } from 'react-router-dom';
 
 import colors from 'utils/colors';
 import Query from 'components/Query';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Store from 'providers/Store';
+
+import Pen from 'components/icons/Pen';
 
 import ThreadInList from './ThreadInList';
 
@@ -36,12 +37,12 @@ const FloatBtn = styled.button`
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  background: ${colors.orange};
+  background: ${colors.buttonBg};
   color: white;
   border: none;
   outline: none;
-  font-size: 1.5rem;
-  line-height: 1;
+  font-size: 1em;
+  line-height: 0;
   cursor: pointer;
   box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14),0 1px 18px 0 rgba(0,0,0,0.12),0 3px 5px -1px rgba(0,0,0,0.2);
 `;
@@ -64,7 +65,7 @@ const ThreadList = ({
                   <ThreadInList key={thread.id} thread={thread} />
                 ))}
                 <FloatBtn onClick={addThread}>
-                  <FontAwesomeIcon icon="plus" />
+                  <Pen />
                 </FloatBtn>
               </React-Fragment>
             );

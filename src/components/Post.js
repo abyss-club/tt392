@@ -1,56 +1,95 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
+import Tag from 'components/Tag';
+
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import More from 'components/icons/More';
 
 const Wrapper = styled.div`
-  padding: 1rem 0 0 0;
-  border-bottom: .5px solid #A7A7A7;
-`;
-
-const TitleRow = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  margin: .5rem 0;
-`;
-
-const Title = styled.h3`
-  font-family: ${fontFamilies.system};
-  margin: 0 0.5rem 0 0;
-  font-size: 1.5rem;
-`;
-
-const TitleRight = styled.div`
-  margin-left: auto;
+  background-color: ${props => (props.isThread ? 'unset' : colors.bgGrey)};
+  padding: 1rem 1rem 0;
+  :not(:last-of-type):after {
+    content: "";
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    padding-top: 1em;
+    border-bottom: ${props => (props.hasReplies ? '0' : '1px')} solid ${colors.borderGrey};
+  }
+  :last-of-type {
+    padding: 1rem;
+    border-radius: 0 0 16px 16px;
+  }
 `;
 
 const IconWrapper = styled.span`
   padding-right: .5em;
 `;
 
+const TopRowWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+`;
+
+const MetaRow = styled.div`
+  width: 100%;
+  display: flex;
+`;
+
+const MoreBtn = styled.button`
+  margin: 0 0 0 auto;
+  background-color: unset;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  font-size: 1.5em;
+  line-height: 0;
+`;
+
+const Title = styled.p`
+  width: 100%;
+  font-family: ${fontFamilies.system};
+  margin: .5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 0.575rem 0 0.475rem 0;
+  > a {
+    color: ${colors.titleBlack};
+    text-decoration: none;
+  }
+`;
+
 const QuoteSelectorBtn = styled.button`
-  color: ${props => (props.isQuoted ? 'white' : 'unset')};
+  color: ${props => (props.isQuoted ? 'white' : colors.regularGrey)};
   background-color: ${props => (props.isQuoted ? colors.skyblue : 'unset')};
   border: none;
   cursor: pointer;
   outline: none;
-  padding: .5em .5em;
-  margin-right: .25em;
+  padding: .25em .5em;
+  margin: 0 0 0 .25em;
   border-radius: 5px;
+  font-size: .75em;
   :disabled {
     color: ${colors.aluminiumLight};
   }
 `;
 
-const PublicTime = styled.span`
-  font-family: 'Merriweather Sans', sans-serif;
+const PublishTime = styled.span`
+  font-family: ${fontFamilies.system};
+  color: ${colors.regularGrey};
+  font-size: .75em;
 `;
 
 const PostContent = styled.div`
@@ -58,9 +97,21 @@ const PostContent = styled.div`
   font-family: ${fontFamilies.system};
 `;
 
+const ViewThread = styled.p`
+  margin-top: 1.775rem;
+  font-size: .75em;
+  color: ${colors.accentBlue};
+  > a {
+    color: ${colors.accentBlue};
+    text-decoration: none;
+  }
+`;
+
 const AuthorWrapper = styled.span`
-  color: ${props => (props.anonymous ? colors.vulcan : colors.orangeLight)};
+  color: ${colors.regularBlack};
   font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
+  line-height: ${props => (props.anonymous ? '1.3' : 'unset')};
+  font-size: .75em;
 `;
 
 const QuoteSelectorWrapper = ({
@@ -73,10 +124,10 @@ const QuoteSelectorWrapper = ({
       onClick={() => onQuoteToggle({ postID })}
       disabled={disabled}
     >
-      <IconWrapper>
-        {isQuoted ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="quote-left" />)}
-      </IconWrapper>
       引用
+      <IconWrapper>
+        {isQuoted ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="reply" />)}
+      </IconWrapper>
     </QuoteSelectorBtn>
   );
 };
@@ -92,10 +143,10 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 const Post = ({
-  isThread, title, anonymous, author, createTime, content, refers, postID,
-  onQuoteToggle, isQuoted, quotable,
+  isThread, title, anonymous, author, createTime, content, refers, postID, threadID,
+  onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies,
 }) => {
-  const titleText = isThread ? (<Title>{title || titlePlaceholder}</Title>) : null;
+  const titleRow = isThread ? (<Title><Link to={`/thread/${threadID}`}>{title || titlePlaceholder}</Link></Title>) : null;
   const authorText = anonymous ? (
     <AuthorWrapper anonymous>匿名{author}</AuthorWrapper>
   ) : (
@@ -107,20 +158,35 @@ const Post = ({
       }}
     />
   );
-  return (
-    <Wrapper>
-      <TitleRow>
-        {titleText}
+  const viewThread = (isThread) && (<ViewThread><Link to={`/thread/${threadID}`}>查看整串</Link></ViewThread>);
+  const topRow = isThread ? (
+    <TopRowWrapper>
+      <MetaRow>
+        <Tag text={mainTag} isMain />
+        {(subTags || []).map(t => <Tag key={t} text={t} />)}
+        <MoreBtn><More /></MoreBtn>
+      </MetaRow>
+      <MetaRow>
         {authorText}
-        <TitleRight>
-          {quoteSelector}
-          <PublicTime>{timeElapsed(createTime).formatted}</PublicTime>
-        </TitleRight>
-      </TitleRow>
+        <PublishTime>·{timeElapsed(createTime).formatted}</PublishTime>
+      </MetaRow>
+    </TopRowWrapper>
+  ) : (
+    <TopRowWrapper>
+      {authorText}
+      <PublishTime>·{timeElapsed(createTime).formatted}</PublishTime>
+      {quoteSelector}
+      <MoreBtn><More /></MoreBtn>
+    </TopRowWrapper>);
+  return (
+    <Wrapper isThread={isThread} hasReplies={hasReplies}>
+      {topRow}
+      {titleRow}
       <PostContent>
         <QuotedContent refers={refers} />
-        <MDPreview text={content} />
+        <MDPreview text={content} isThread={isThread} />
       </PostContent>
+      {viewThread}
     </Wrapper>
   );
 };
@@ -134,18 +200,26 @@ Post.propTypes = {
   content: PropTypes.string.isRequired,
   refers: PropTypes.arrayOf(PropTypes.shape()),
   postID: PropTypes.string,
+  threadID: PropTypes.string,
   onQuoteToggle: PropTypes.func,
   isQuoted: PropTypes.bool,
   quotable: PropTypes.bool,
+  mainTag: PropTypes.string,
+  subTags: PropTypes.arrayOf(PropTypes.string),
+  hasReplies: PropTypes.bool,
 };
 Post.defaultProps = {
   postID: null,
+  threadID: null,
   onQuoteToggle: null,
   isQuoted: false,
   quotable: false,
   isThread: false,
   refers: null,
   title: '',
+  subTags: null,
+  mainTag: null,
+  hasReplies: false,
 };
 
 export default Post;

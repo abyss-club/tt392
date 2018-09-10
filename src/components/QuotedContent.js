@@ -4,29 +4,27 @@ import styled from 'styled-components';
 
 import colors from 'utils/colors';
 import timeElapsed from 'utils/calculateTime';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const QuotedContentArea = styled.div`
   width: 100%;
+  font-size: .75em;
+  margin: 0 0 .75em;
 `;
 
-const QuotedContentRow = styled.div`
+// const QuotedContentRow = styled.div`
+//   width: 100%;
+//   display: flex;
+//   flex-flow: row nowrap;
+// `;
+
+const QuotedMeta = styled.div`
   width: 100%;
-  display: flex;
-  flex-flow: row nowrap;
-`;
-
-const QuotedContentBtn = styled.button`
   background-color: unset;
-  color: ${colors.vulcanLight};
+  color: ${colors.regularGrey};
   border: none
   cursor: pointer;
   outline: none;
   border-radius: 5px;
-  padding-bottom: .55em;
-
-  font-size: .9em;
-  text-decoration: underline;
 `;
 
 const QuotedContentWrapper = styled.div`
@@ -34,21 +32,12 @@ const QuotedContentWrapper = styled.div`
   flex-flow: row wrap;
   min-width: 15em;
   max-width: 100%;
-  background-color: ${colors.zircon};
-  padding: .5em .5em;
+  background-color: white;
+  padding: .5rem 1rem .5rem;
   border-radius: 5px;
-  margin-bottom: .5em;
-`;
-
-const QuotedContentTime = styled.span`
-  color: ${colors.aluminiumLight};
-  margin-left: auto;
-  font-size: .9em;
-  font-family: 'Merriweather Sans', sans-serif;
 `;
 
 const QuotedText = styled.p`
-  margin: 0 0 0 1.4em;
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
@@ -58,15 +47,10 @@ const QuotedText = styled.p`
 const QuotedContent = ({ refers }) => (refers) && refers.map(refer => (
   <QuotedContentArea key={refer.id}>
     <QuotedContentWrapper>
-      <QuotedContentRow>
-        <FontAwesomeIcon icon="quote-left" />
-        <QuotedContentBtn>
-          {refer.author}
-        </QuotedContentBtn>
-        <QuotedContentTime>
-          {timeElapsed(refer.createTime).formatted}
-        </QuotedContentTime>
-      </QuotedContentRow>
+      <QuotedMeta>
+        {refer.author}·
+        {timeElapsed(refer.createTime).formatted}
+      </QuotedMeta>
       <QuotedText>{refer.content}</QuotedText>
     </QuotedContentWrapper>
   </QuotedContentArea>

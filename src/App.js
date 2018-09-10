@@ -16,11 +16,13 @@ import TagPage from 'components/TagPage';
 import TagView from 'components/TagPage/TagView';
 import { Loading, LoadingContainer } from 'utils/loading';
 import { ModalContainer } from 'utils/modal';
+import colors from 'utils/colors';
 
 faLib.loadFa();
 
 const Wrapper = styled.div`
-  height: 100%;
+  min-height: 100vh;
+  background-color: ${colors.mainBg};
 `;
 
 const GraphiQL = Loadable({
