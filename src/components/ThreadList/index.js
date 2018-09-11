@@ -28,8 +28,8 @@ const THREADSLICE_QUERY = gql`
 
 const FloatBtn = styled.button`
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
   width: 3rem;
   height: 3rem;
   border-radius: 50%;

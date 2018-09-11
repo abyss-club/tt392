@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-// import { withRouter } from 'react-router-dom';
 
 import Post from 'components/Post';
 
@@ -12,17 +11,6 @@ const ThreadWrapper = styled.div`
   margin: 0.5rem 0;
   padding-top: 0.5rem;
 `;
-
-// const TagsRow = styled.div`
-//   font-size: .75rem;
-//   margin: 0;
-// `;
-
-// const ViewThread = styled.p`
-//   margin: 1.775rem 2rem 0;
-//   font-size: .75em;
-//   color: ${colors.accentBlue};
-// `;
 
 const FooterWrapper = styled.div`
   font-size: 0.875rem;
@@ -48,15 +36,9 @@ const ThreadInList = ({ thread }) => {
   const replies = (thread.replies || []).posts || [];
   return (
     <ThreadWrapper>
-      {/* <TagsRow>
-        <Tag text={thread.mainTag} isMain />
-        {(thread.subTags || []).map(t => <Tag key={t} text={t} />)}
-      </TagsRow> */}
       <Post isThread inList {...thread} hasReplies={replies.length > 0} threadID={thread.id} />
-      {/* Border Hack */}
-      {/* <div /> */}
       <div>
-        {replies.map(post => <Post key={post.id} {...post} />)}
+        {replies.map(post => <Post inList key={post.id} threadID={thread.id} {...post} />)}
       </div>
       {(replies.length > 0) && (<Footer threadID={thread.id} />)}
     </ThreadWrapper>
@@ -65,7 +47,6 @@ const ThreadInList = ({ thread }) => {
 
 ThreadInList.propTypes = {
   thread: PropTypes.shape({}).isRequired,
-  // history: PropTypes.shape({}).isRequired,
 };
 
 export default ThreadInList;

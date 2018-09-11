@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MDPreview from 'components/MDPreview';
@@ -64,7 +64,7 @@ const MoreBtn = styled.button`
   line-height: 0;
 `;
 
-const Title = styled.p`
+const Title = styled.div`
   width: 100%;
   font-family: ${fontFamilies.system};
   margin: .5rem 0;
@@ -72,6 +72,8 @@ const Title = styled.p`
   line-height: 1.5;
   font-weight: 700;
   > a {
+    width: 100%;
+    display: block;
     color: ${colors.titleBlack};
     text-decoration: none;
   }
@@ -101,6 +103,7 @@ const PublishTime = styled.span`
 const PostContent = styled.div`
   width: 100%;
   font-family: ${fontFamilies.system};
+  ${props => props.inList && 'cursor: pointer;'}
 `;
 
 const ViewThread = styled.p`
@@ -151,7 +154,7 @@ QuoteSelectorWrapper.defaultProps = {
 const titlePlaceholder = '无题';
 const Post = ({
   isThread, title, anonymous, author, createTime, content, refers, postID, threadID, countOfReplies,
-  onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList,
+  onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList, history,
 }) => {
   const titleRow = isThread ? (
     <Title>
@@ -196,11 +199,16 @@ const Post = ({
       <MoreBtn><More /></MoreBtn>
     </MetaRow>
   );
+  const gotoThread = () => {
+    if (inList) {
+      history.push(`/thread/${threadID}/`);
+    }
+  };
   return (
     <Wrapper isThread={isThread} hasReplies={hasReplies}>
       {topRow}
       {titleRow}
-      <PostContent>
+      <PostContent inList={inList} onClick={gotoThread}>
         <QuotedContent refers={refers} />
         <MDPreview text={content} isThread={isThread} />
       </PostContent>
@@ -227,6 +235,7 @@ Post.propTypes = {
   inList: PropTypes.bool,
   hasReplies: PropTypes.bool,
   countOfReplies: PropTypes.number,
+  history: PropTypes.shape({}).isRequired,
 };
 Post.defaultProps = {
   postID: null,
@@ -244,4 +253,4 @@ Post.defaultProps = {
   countOfReplies: 0,
 };
 
-export default Post;
+export default withRouter(Post);
