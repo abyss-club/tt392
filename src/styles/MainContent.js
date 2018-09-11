@@ -14,4 +14,4 @@ const MainContent = styled.div`
 `;
 
 export default MainContent;
-export { breakpoint };
+export { breakpoint, maxWidth };
