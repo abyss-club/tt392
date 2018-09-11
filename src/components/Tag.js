@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 
 const TagWrapper = styled.button`
-  ${props => (props.isMain ? `
+  ${props => (props.ismain ? `
   background-color: ${colors.tagBlue};
   color: white;
   ` : `
@@ -30,7 +30,7 @@ const CompactTag = styled(Link)`
   margin-right: .25em;
 
   font-size: .75em;
-  color: ${props => (props.isMain ? colors.accentRed : colors.textGrey)};
+  color: ${props => (props.ismain ? colors.accentRed : colors.textGrey)};
   text-decoration: none;
   :hover {
     text-decoration: underline;
@@ -41,9 +41,9 @@ const Tag = ({
   text, isMain, onClick, className, selected, isCompact,
 }) => (
   isCompact ? (
-    <CompactTag isMain={isMain} to={`/tag/${text}`}>#{text}</CompactTag>
+    <CompactTag ismain={isMain ? 1 : 0} to={`/tag/${text}`}>#{text}</CompactTag>
   ) : (
-    <TagWrapper isMain={isMain} onClick={onClick} className={className}>
+    <TagWrapper ismain={isMain ? 1 : 0} onClick={onClick} className={className}>
       {selected ? <FontAwesomeIcon icon="check-square" /> : null}
       {text}
     </TagWrapper>

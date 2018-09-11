@@ -29,7 +29,7 @@ const Footer = ({ threadID }) => (
   </FooterWrapper>
 );
 Footer.propTypes = {
-  threadID: PropTypes.number.isRequired,
+  threadID: PropTypes.string.isRequired,
 };
 
 const ThreadInList = ({ thread }) => {

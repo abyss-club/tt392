@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
-
+import { breakpoint } from 'styles/MainContent';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
@@ -16,18 +16,22 @@ import More from 'components/icons/More';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : colors.bgGrey)};
-  padding: 1rem 1rem 0;
+  ${props => (props.inList ? 'padding: 1rem 1rem 0;' : 'padding: 1rem 1.5rem 0;')}
   :not(:last-of-type):after {
     content: "";
     display: block;
     margin: 0 auto;
     width: 100%;
-    padding-top: 1em;
+    padding-top: 1rem;
     ${props => props.isThread || `border-bottom: 1px solid ${colors.borderGrey};`}
   }
   :last-of-type {
-    padding: 1rem;
+    padding-bottom: 1rem;
     border-bottom: none;
+  }
+  @media (min-width: ${breakpoint}em) {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 `;
 
@@ -205,7 +209,7 @@ const Post = ({
     }
   };
   return (
-    <Wrapper isThread={isThread} hasReplies={hasReplies}>
+    <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
       {topRow}
       {titleRow}
       <PostContent inList={inList} onClick={gotoThread}>

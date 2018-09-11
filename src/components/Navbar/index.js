@@ -49,6 +49,7 @@ const Navbar = ({ profile }) => (
           <SignInBtn profile={profile || {}} />
         </NavFirstRow>
         <Route path="/" exact component={NavTags} />
+        <Route path="/thread/:id" exact component={NavTags} />
       </NavWrapper>
     </MainContent>
   </Wrapper>
