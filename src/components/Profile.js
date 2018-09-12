@@ -23,6 +23,10 @@ const UPDATE_NAME = gql`
   }
 `;
 
+const ProfileText = styled.p`
+  color: white;
+`;
+
 const NameInput = styled.input`
   width: 100%;
   display: block;
@@ -78,10 +82,10 @@ const Profile = () => (
 
       return (
         <MainContent>
-          <p>欢迎{data.profile.name && `，${data.profile.name}`}</p>
-          {data.profile.name || (
+          <ProfileText>欢迎{data.profile.name && `，${data.profile.name}`}</ProfileText>
+          {data.profile.name ? (<ProfileText>{data.profile.name}</ProfileText>) : (
             <React-Fragment>
-              <p>尚未设置用户名</p>
+              <ProfileText>尚未设置用户名</ProfileText>
               <Mutation mutation={UPDATE_NAME} refetchQueries={['FetchProfile']}>
                 {(setName, { innerData }) => (
                   <NameForm setName={setName} data={innerData} />
