@@ -17,6 +17,11 @@ const IconWrapper = styled(User)`
   line-height: 0;
 `;
 
+const SignInText = styled.p`
+  color: white;
+  font-weight: bold;
+`;
+
 const SignInBtn = ({ profile }) => {
   if ((profile.email || '') !== '') {
     return (
@@ -27,7 +32,7 @@ const SignInBtn = ({ profile }) => {
   }
   return (
     <Link to="/sign_in/">
-      <IconWrapper />
+      <SignInText>注册/登录</SignInText>
     </Link>
   );
 };
