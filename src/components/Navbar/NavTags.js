@@ -15,13 +15,8 @@ const NavTagsWrapper = styled.div`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  margin-left: 2rem;
+  margin: -0.25rem;
 `;
-
-// const TagRow = styled.div`
-//   width: 100%;
-//   margin: 0;
-// `;
 
 const AddBtnWrapper = styled.button`
   color: white;
@@ -34,7 +29,7 @@ const AddBtnWrapper = styled.button`
   width: 2rem;
   height: 2rem;
   padding: 0;
-  margin: 0 .4em .5em 0;
+  margin: 0.25em;
   line-height: 0;
   cursor: pointer;
 `;

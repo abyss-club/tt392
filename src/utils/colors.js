@@ -9,8 +9,10 @@ const colors = {
   zirconLight: '#FAFBFC',
   skyblue: '#12AAFF',
   indigo: '#7D12FF',
+
   mainBg: '#282B36',
   accentBlue: '#0F81FF',
+  accentRed: '#F13A30',
   tagBlue: '#0098FA',
   buttonBg: '#F13A30',
   titleBlack: '#1B1B1B',

@@ -4,11 +4,16 @@ import ThreadList from 'components/ThreadList';
 import PreviewInfo from 'components/PreviewInfo';
 import MainContent from 'styles/MainContent';
 
+const Wrapper = MainContent.extend`
+  display: flex;
+  flex-flow: column;
+`;
+
 const Home = () => (
-  <MainContent>
+  <Wrapper>
     <PreviewInfo />
     <ThreadList type="home" />
-  </MainContent>
+  </Wrapper>
 );
 
 export default Home;

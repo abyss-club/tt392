@@ -22,6 +22,7 @@ faLib.loadFa();
 
 const Wrapper = styled.div`
   min-height: 100vh;
+  color: ${colors.regularBlack};
   background-color: ${colors.mainBg};
 `;
 

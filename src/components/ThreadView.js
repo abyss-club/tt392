@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import gql from 'graphql-tag';
 import qs from 'qs';
 
-import MainContent from 'styles/MainContent';
+import MainContent, { breakpoint } from 'styles/MainContent';
 import Post from 'components/Post';
 import Query from 'components/Query';
 import Store from 'providers/Store';
@@ -15,8 +15,8 @@ import ChatBubble from 'components/icons/ChatBubble';
 // TODO: duplicated to ThreadList/index.js
 const FloatBtn = styled.button`
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  right: 1.5rem;
+  bottom: 1.5rem;
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
@@ -31,8 +31,14 @@ const FloatBtn = styled.button`
 `;
 
 const ThreadViewWrapper = styled.div`
+  margin: 1.5rem -0.5rem 0;
   background-color: white;
-  border-radius: 16px;
+  min-height: calc(100vh - 7rem);
+  border-radius: 1rem 1rem 0 0;
+  @media (min-width: ${breakpoint}em) {
+    margin-left: 0;
+    margin-right: 0;
+  }
 `;
 
 const THREAD_VIEW = gql`
@@ -95,8 +101,8 @@ class ThreadView extends React.Component {
             <MainContent>
               <ThreadViewWrapper>
                 <Post isThread {...thread} />
-                {replies.map(post =>
-                  (<Post
+                {replies.map(post => (
+                  <Post
                     key={post.id}
                     isThread={false}
                     postID={post.id}
@@ -104,11 +110,12 @@ class ThreadView extends React.Component {
                     isQuoted={quotedPosts.has(post.id)}
                     quotable={quotedPosts.size < 3}
                     {...post}
-                  />))}
-                <FloatBtn onClick={addReply}>
-                  <ChatBubble />
-                </FloatBtn>
+                  />
+                ))}
               </ThreadViewWrapper>
+              <FloatBtn onClick={addReply}>
+                <ChatBubble />
+              </FloatBtn>
             </MainContent>
           );
         }}

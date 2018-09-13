@@ -7,8 +7,9 @@ import timeElapsed from 'utils/calculateTime';
 
 const QuotedContentArea = styled.div`
   width: 100%;
-  font-size: .75em;
-  margin: 0 0 .75em;
+  font-size: .75rem;
+  line-height: 1.5;
+  margin-bottom: .75rem;
 `;
 
 // const QuotedContentRow = styled.div`
@@ -30,11 +31,10 @@ const QuotedMeta = styled.div`
 const QuotedContentWrapper = styled.div`
   display: inline-flex;
   flex-flow: row wrap;
-  min-width: 15em;
-  max-width: 100%;
+  width: 100%;
   background-color: white;
-  padding: .5rem 1rem .5rem;
-  border-radius: 5px;
+  padding: 1rem;
+  border-radius: 0.5rem;
 `;
 
 const QuotedText = styled.p`

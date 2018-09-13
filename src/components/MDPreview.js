@@ -12,15 +12,18 @@ const PreviewWrapper = styled.div`
 
   h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
-    margin: 0;
-  }
-
-  p {
-    margin: 0;
-  }
-
-  h2, h3, h4, h5, h6 {
     font-size: .875rem;
+  }
+
+  h1, h2, h3, h4, h5, h6, p {
+    margin: 1em 0;
+    line-height: 1.5;
+    :first-child {
+      margin-top: 0;
+    }
+    :last-child {
+      margin-bottom: 0;
+    }
   }
 
   h1 {

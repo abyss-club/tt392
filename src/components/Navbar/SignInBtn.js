@@ -11,7 +11,7 @@ const IconWrapper = styled(User)`
   background-color: unset;
   border: none;
   font-size: 1.5em;
-  margin: 0 1.5rem;
+  margin: 0;
   cursor: pointer;
   outline: none;
   line-height: 0;

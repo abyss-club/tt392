@@ -6,14 +6,14 @@ import gql from 'graphql-tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { withRouter } from 'react-router-dom';
 
-// import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import Store from 'providers/Store';
+import MainContent from 'styles/MainContent';
 import Query from 'components/Query';
 import Tag from 'components/Tag';
 
 const Wrapper = styled.div`
-  margin-top: .5rem;
+  margin: .5rem .875rem 0;
   > p {
     margin: 0;
   }
@@ -121,17 +121,19 @@ class TagSelector extends React.Component {
       />
     );
     return (
-      <Wrapper>
-        <BackBtn onClick={() => { history.goBack(); }} />
-        <SelectableTagWrapper>
-          {[...mainTags].map(tag => (subscribed.main.has(tag) ?
+      <MainContent>
+        <Wrapper>
+          <BackBtn onClick={() => { history.goBack(); }} />
+          <SelectableTagWrapper>
+            {[...mainTags].map(tag => (subscribed.main.has(tag) ?
             SelectableTag({ tag, isMain: true, selected: true }) :
             SelectableTag({ tag, isMain: true }))) }
-          {[...subTags].map(tag => (subscribed.sub.has(tag) ?
+            {[...subTags].map(tag => (subscribed.sub.has(tag) ?
             SelectableTag({ tag, selected: true }) :
             SelectableTag({ tag }))) }
-        </SelectableTagWrapper>
-      </Wrapper>
+          </SelectableTagWrapper>
+        </Wrapper>
+      </MainContent>
     );
   }
 }
