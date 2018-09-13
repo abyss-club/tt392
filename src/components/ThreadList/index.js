@@ -44,8 +44,12 @@ const FloatBtn = styled.button`
 `;
 
 const ThreadList = ({
-  history, type, tags, slug,
+  history, type, tags, slug, inited,
 }) => {
+  if (!inited) {
+    return null;
+  }
+
   const filterByTags = type === 'home' ? [...tags.subscribed.main, ...tags.subscribed.sub] : [slug];
   return (
     <Query
@@ -72,6 +76,7 @@ const ThreadList = ({
 ThreadList.propTypes = {
   history: PropTypes.shape().isRequired,
   type: PropTypes.string,
+  inited: PropTypes.bool.isRequired,
   tags: PropTypes.shape().isRequired,
   slug: PropTypes.string,
 };
@@ -84,8 +89,8 @@ const ThreadListWithRouter = withRouter(ThreadList);
 
 export default props => (
   <Store.Consumer>
-    {({ tags }) => (
-      <ThreadListWithRouter {...props} tags={tags} />
+    {({ inited, tags }) => (
+      <ThreadListWithRouter {...props} tags={tags} inited={inited} />
     )}
   </Store.Consumer>
 );

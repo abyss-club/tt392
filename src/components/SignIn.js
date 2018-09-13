@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   width: 18rem;
   margin: 7rem auto;
   text-align: center;
+  color: white;
 `;
 
 const Title = styled.h1`
@@ -27,7 +28,7 @@ const EmailInput = styled.input`
   width: 100%;
   height: 3rem;
   padding: 0.5rem;
-  margin-top: 1.5rem;
+  margin: 1.5rem 0;
 `;
 
 const NextBtn = styled.button`
