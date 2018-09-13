@@ -7,7 +7,7 @@ import Config from 'config';
 
 /* because Nav's height is 3rem, TODO: not use hard code */
 const Wrapper = styled.div`
-  height: calc(100% - 3rem);
+  height: calc(100vh - 3.5rem);
   overflow-y: hidden;
 `;
 
