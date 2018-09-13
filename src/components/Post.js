@@ -66,6 +66,7 @@ const MoreBtn = styled.button`
   padding: 0;
   font-size: 1.5em;
   line-height: 0;
+  visibility: hidden;
 `;
 
 const Title = styled.div`

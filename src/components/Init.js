@@ -27,7 +27,7 @@ class Init extends React.Component {
     super(props);
     const { setStore, profile, tags } = this.props;
     setStore({
-      inited: true,
+      initialized: true,
       profile: {
         isSignedIn: (profile.email || '') !== '',
         email: profile.email || '',
