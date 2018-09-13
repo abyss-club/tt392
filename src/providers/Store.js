@@ -8,7 +8,7 @@ class StoreProvider extends React.Component {
     super(props);
     /* eslint-disable */
     this.state = {
-      inited: false,
+      initialized: false,
       profile: {
         isSignedIn: false,
         name: '',
