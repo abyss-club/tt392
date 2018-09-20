@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { withRouter } from 'react-router-dom';
 
-import fontFamilies from 'utils/fontFamilies';
 import Store from 'providers/Store';
 import MainContent from 'styles/MainContent';
 import Query from 'components/Query';
@@ -28,29 +25,6 @@ const SelectableTagWrapper = styled.div`
 const TagInList = styled(Tag)`
   margin: .125rem;
 `;
-
-const BackBtnWrapper = styled.button`
-  color: black;
-  background-color: white;
-  font-size: 1em;
-  font-family: ${fontFamilies.system};
-  border: 1px solid #43484C;
-  border-radius: 5px;
-  height: 2em;
-  padding: .25em .5em;
-  margin: 0 .125em;
-  line-height: 1.5;
-`;
-
-const BackBtn = ({ onClick }) => (
-  <BackBtnWrapper onClick={onClick} >
-    <FontAwesomeIcon icon="chevron-left" />返回
-  </BackBtnWrapper>
-);
-BackBtn.propTypes = {
-  onClick: PropTypes.func.isRequired,
-};
-
 
 const flatSubTags = (tree) => {
   const subTags = new Set();
@@ -110,7 +84,6 @@ class TagSelector extends React.Component {
     const {
       mainTags, subTags, subscribed,
     } = this.state;
-    const { history } = this.props;
     const SelectableTag = ({ tag, isMain = false, selected = false }) => (
       <TagInList
         key={tag}
@@ -123,7 +96,6 @@ class TagSelector extends React.Component {
     return (
       <MainContent>
         <Wrapper>
-          <BackBtn onClick={() => { history.goBack(); }} />
           <SelectableTagWrapper>
             {[...mainTags].map(tag => (subscribed.main.has(tag) ?
             SelectableTag({ tag, isMain: true, selected: true }) :
@@ -144,7 +116,6 @@ TagSelector.propTypes = {
   setStore: PropTypes.func.isRequired,
   delSubbedTags: PropTypes.func.isRequired,
   addSubbedTags: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
 };
 
 const ADD_TAGS = gql`
@@ -171,8 +142,6 @@ const TAG_TREE = gql`
   }
 `;
 
-const TagSelectorWithRouter = withRouter(TagSelector);
-
 export default () => (
   <Store.Consumer>
     {({ profile, tags, setStore }) => (
@@ -182,7 +151,7 @@ export default () => (
             {addSubbedTags => (
               <Mutation mutation={DEL_TAGS}>
                 {delSubbedTags => (
-                  <TagSelectorWithRouter
+                  <TagSelector
                     tree={data.tags.tree}
                     profile={profile}
                     tags={tags}
