@@ -3,19 +3,20 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Tick from 'components/icons/Tick';
 
 import { Link } from 'react-router-dom';
 
 const TagWrapper = styled.button`
   ${props => (props.ismain ? `
-  background-color: ${colors.tagBlue};
+  background-color: ${colors.tagGrey};
   color: white;
   ` : `
-  background-color: ${colors.textGrey};
-  color: white;
+  background-color: unset;
+  color: ${colors.tagGrey};
   `)}
-  border: none;
+  border: 1px solid ${colors.tagGrey};
   outline: none;
   font-size: 1em;
   border-radius: 16px;
@@ -24,6 +25,22 @@ const TagWrapper = styled.button`
   margin: .25rem;
   font-family: ${fontFamilies.system};
   cursor: pointer;
+  > svg {
+    > path {
+      stroke: ${props => (props.ismain ? 'white' : colors.tagRed)};
+    }
+  }
+`;
+
+const SelectedTagWrapper = styled(TagWrapper)`
+  ${props => (props.ismain ? `
+  background-color: ${colors.tagRed};
+  color: white;
+  ` : `
+  background-color: unset;
+  color: ${colors.tagRed};
+  `)}
+  border: 1px solid ${colors.tagRed};
 `;
 
 const CompactTag = styled(Link)`
@@ -39,16 +56,23 @@ const CompactTag = styled(Link)`
 
 const Tag = ({
   text, isMain, onClick, className, selected, isCompact,
-}) => (
-  isCompact ? (
-    <CompactTag ismain={isMain ? 1 : 0} to={`/tag/${text}`}>#{text}</CompactTag>
+}) => {
+  const selectedTag = selected ? (
+    <SelectedTagWrapper ismain={isMain ? 1 : 0} onClick={onClick} className={className}>
+      {selected ? <Tick /> : null}
+      {text}
+    </SelectedTagWrapper>
   ) : (
     <TagWrapper ismain={isMain ? 1 : 0} onClick={onClick} className={className}>
-      {selected ? <FontAwesomeIcon icon="check-square" /> : null}
       {text}
     </TagWrapper>
-  )
-);
+  );
+  return (
+    isCompact ? (
+      <CompactTag ismain={isMain ? 1 : 0} to={`/tag/${text}`}>#{text}</CompactTag>
+    ) : selectedTag
+  );
+};
 
 Tag.propTypes = {
   selected: PropTypes.bool,
