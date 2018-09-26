@@ -5,40 +5,37 @@ import SoftBreak from 'slate-soft-break';
 
 import { Editor } from 'slate-react';
 import { Value } from 'slate';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import colors from 'utils/colors';
+// import LinkIcon from 'components/icons/Link';
+// import Image from 'components/icons/Image';
+// import colors from 'utils/colors';
 
 const Wrapper = styled.div`
-  height: 100%;
+  min-height: calc(100vh - 15rem);
+  font-size: .875em;
   width: 100%;
-  padding: .5rem 0;
 `;
 
-const IconWrapper = styled.button`
-  color: white;
-  font-size: 1em;
-  appearance: none;
-  border: 0;
-  background: none;
-  svg {
-    color: white;
-  }
-`;
-
-const Toolbar = styled.div`
-  width: 100%;
-  display: flex;
-  flex-flow: row nowrap;
-  color: black;
-`;
+// const IconWrapper = styled.button`
+//   color: white;
+//   font-size: 1em;
+//   appearance: none;
+//   border: 0;
+//   background: none;
+//   svg {
+//     color: white;
+//   }
+// `;
+//
+// const Toolbar = styled.div`
+//   width: 100%;
+//   display: flex;
+//   flex-flow: row nowrap;
+//   color: black;
+// `;
 
 const SlateArea = styled.div`
-  border: 1px solid ${colors.aluminium};
-  border-radius: 2px;
   background-color: white;
-  margin-top: .5em;
-  padding: .5em;
   width: 100%;
   font-family: 'Helvetica Neue', Arial, sans-serif;
 `;
@@ -46,19 +43,6 @@ const SlateArea = styled.div`
 const plugins = [
   SoftBreak(),
 ];
-
-const Icon = ({ name, onClick }) => (
-  <IconWrapper topbar onClick={onClick}>
-    <FontAwesomeIcon icon={name} color="black" />
-  </IconWrapper>
-);
-Icon.propTypes = {
-  name: PropTypes.string.isRequired,
-  onClick: PropTypes.func,
-};
-Icon.defaultProps = {
-  onClick: () => {},
-};
 
 const initialValue = text => Value.fromJSON({
   document: {
@@ -118,15 +102,11 @@ class TextEditor extends React.Component {
   render() {
     return (
       <Wrapper>
-        <Toolbar>
-          <Icon name="link" onClick={this.handleLinkClick} />
-          <Icon name="image" onClick={this.handleImageClick} />
-        </Toolbar>
         <SlateArea>
           <Editor
             value={this.state.value}
             onChange={this.onChange}
-            placeholder="Enter some text..."
+            placeholder="说点什么…"
             plugins={plugins}
           />
         </SlateArea>

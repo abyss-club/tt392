@@ -8,47 +8,27 @@ import { Query, Mutation } from 'react-apollo';
 import Editor from 'components/Editor';
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
+import SubTagInput from 'components/SubTagInput';
+import LinkIcon from 'components/icons/Link';
+import Image from 'components/icons/Image';
+import Tick from 'components/icons/Tick';
 import Store from 'providers/Store';
-import MainContent from 'styles/MainContent';
 import colors from 'utils/colors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const TitleRow = styled.div`
   display: flex;
-  margin: .5rem 0;
-  > * {
-    display: block;
-  }
-  > select {
-    width: 6rem;
-  }
-  > input {
-    width: 100%;
-    flex-shrink: 1;
-    margin-right: .5rem;
-  }
-`;
-
-const TagRow = styled.div`
-  display: flex;
-  margin: .5rem -.25rem;
-  > * {
-    display: block;
-  }
-  > input {
-    width: 100%;
-    flex-shrink: 1;
-    margin: 0 .25rem;
-  }
+  margin: .5rem 0rem 0;
+  padding-bottom: .25rem;
+  border-bottom: 1px solid ${colors.inputGrey};
 `;
 
 const Input = styled.input`
   border: none;
   outline: none;
   min-width: 0;
-  border-bottom: 1px solid black;
-  :focus {
-    border-bottom: 1px solid ${colors.orange};
+  ::placeholder {
+    color: ${colors.regularGrey};
   }
 `;
 
@@ -76,6 +56,127 @@ const QuotedContentWrapper = styled.div`
 const PreviewArea = styled.div`
   background-color: white;
   padding: 1em;
+`;
+
+const DraftArea = styled.div`
+  background-color: white;
+  padding: 1rem 1rem 0 1rem;
+  border-radius: 1rem;
+`;
+
+const DropdownWrapper = styled.div`
+  display: inline-block;
+  position: relative;
+  font-size: .875em;
+  margin-left: auto;
+  /* the angle-down arrow */
+  :after {
+    z-index: 100;
+    display: block;
+    content: " ";
+    position: absolute;
+    width: .25rem;
+    height: .25rem;
+    margin-top: -.375em;
+    right: .625em;
+    top: 50%;
+    border: 1px solid ${colors.regularBlack};
+    border-right: 0;
+    border-top: 0;
+    pointer-events: none;
+    transform: rotate(-45deg);
+    transform-origin: center;
+  }
+`;
+
+const Dropdown = styled.select`
+  display: block;
+  position: relative;
+  appearance: none;
+  border: none;
+  padding: .2em .5em;
+  width: 8em;
+  max-width: 100%;
+  height: 1.75em;
+  background-color: white;
+  color: black;
+  font-size: 1em;
+  cursor: pointer;
+  :invalid {
+    color: #8E8E8E;
+  }
+`;
+
+const ButtonRow = styled.div`
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+`;
+
+const ButtonRowRight = styled.div`
+  margin-left: auto;
+
+  display: inline-flex;
+  align-items: center;
+`;
+
+const TitleInput = styled(Input)`
+  font-size: 1.25em;
+  font-weight: 700;
+`;
+
+const IconWrapper = styled.button`
+  display: inline-flex;
+  align-items: center;
+
+  appearance: none;
+  border: 0;
+  background: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+`;
+
+const ToolBtn = styled(IconWrapper)`
+  font-size: 1.5em;
+  padding: 0 .5rem;
+`;
+
+const AnonBtn = styled(IconWrapper)`
+  font-size: .875em;
+  color: ${props => (props.isAnon ? colors.anonBlack : colors.regularGrey)};
+  svg {
+    path {
+      stroke: white;
+    }
+  }
+`;
+
+const PreviewBtn = styled(IconWrapper)`
+  padding: 0 0 0 .5rem;
+  color: ${colors.regularGrey};
+  font-size: .875em;
+  font-weight: 700;
+`;
+
+const AnonIcon = styled.div`
+  margin-left: .5em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: ${props => (props.isAnon ? colors.accentRed : 'unset')};
+  ${props => (props.isAnon ? 'border: none;' : `border: 1px solid ${colors.regularGrey};`)}
+  border-radius: 50%;
+  font-size: .875em;
+  line-height: 0;
+  height: 1.5rem;
+  width: 1.5rem;
+
+  svg {
+    padding-bottom: .1rem;
+  }
 `;
 
 const QuotedContentArea = ({ threadID, quoted }) => (
@@ -106,7 +207,9 @@ class Draft extends React.Component {
   constructor(props) {
     super(props);
 
-    const { profile, history, location } = props;
+    const {
+      profile, history, location, setStore,
+    } = props;
     if (!profile.isSignedIn) { // TODO: extract to component
       history.push('/sign_in/');
     }
@@ -115,11 +218,12 @@ class Draft extends React.Component {
       text: '',
       preview: false,
       error: '',
+      isAnon: false,
 
       // for thread
       title: '',
       mainTag: '',
-      subTags: [],
+      subTags: new Set(),
 
       // for post: reply
       replyTo: params.reply,
@@ -130,28 +234,45 @@ class Draft extends React.Component {
         return acc;
       }, {}) : null,
     };
+    setStore({ publish: this.publish });
   }
 
-  setSubTag = idx => (
-    (event) => {
-      event.preventDefault();
-      const { subTags } = this.state;
-      subTags[idx] = event.target.value;
-      this.setState({ subTags });
-    }
-  )
+  setSubTag = ({ type, tagName }) => {
+    this.setState((prevState) => {
+      const prevSet = new Set(prevState.subTags);
+      if (type === 'remove') prevSet.delete(tagName);
+      else if (type === 'add') prevSet.add(tagName);
+      return { subTags: prevSet };
+    });
+  }
 
   setTitle = (event) => {
     event.preventDefault();
     this.setState({ title: event.target.value });
   }
 
+  checkPublishRdy = () => {
+    let rdy = false;
+    const { text, mainTag } = this.state;
+    const { mode } = this.props.match.params;
+    if (mode === 'thread') {
+      rdy = !!text && !!mainTag;
+    } else if (mode === 'post') {
+      rdy = !!text;
+    }
+    this.props.setStore({ publishRdy: rdy });
+  }
+
   selectMainTag = (event) => {
     event.preventDefault();
     this.setState({ mainTag: event.target.value });
+    this.checkPublishRdy();
   }
 
-  saveText = (text) => { this.setState({ text }); }
+  saveText = (text) => {
+    this.setState({ text });
+    this.checkPublishRdy();
+  }
 
   togglePreview = () => {
     const { preview } = this.state;
@@ -167,10 +288,25 @@ class Draft extends React.Component {
     }));
   }
 
-  pubThread = (anonymous) => {
+  toggleAnon = () => {
+    this.setState(prevState => ({
+      isAnon: !prevState.isAnon,
+    }));
+  }
+
+  publish = () => {
+    const { mode } = this.props.match.params;
+    if (mode === 'thread') {
+      this.pubThread();
+    } else {
+      this.pubPost();
+    }
+  }
+
+  pubThread = () => {
     const { pubThread, history } = this.props;
     const {
-      text, mainTag, subTags, title,
+      text, mainTag, subTags, title, isAnon: anonymous,
     } = this.state;
 
     if (mainTag === '') {
@@ -183,8 +319,9 @@ class Draft extends React.Component {
     }
 
     const thread = {
-      anonymous, content: text, mainTag, subTags, title,
+      anonymous, content: text, mainTag, subTags: [...subTags], title,
     };
+
     this.setState({ error: '' });
     pubThread({ variables: { thread } }).then(({ data }) => {
       history.push(`/thread/${data.pubThread.id}/`);
@@ -193,8 +330,10 @@ class Draft extends React.Component {
     });
   }
 
-  pubPost = (anonymous) => {
-    const { replyTo, text, quoted } = this.state;
+  pubPost = () => {
+    const {
+      replyTo, text, quoted, isAnon: anonymous,
+    } = this.state;
     const { pubPost, history } = this.props;
     const refers = quoted && Object.keys(quoted).reduce((acc, id) => {
       if (quoted[id]) acc.push(id);
@@ -219,36 +358,28 @@ class Draft extends React.Component {
   }
 
   render() {
-    const { match, profile, tags } = this.props;
+    const { match, tags } = this.props;
     const { mode } = match.params;
     if (mode !== 'thread' && mode !== 'post') {
       return <p>404 not found</p>;
     }
     const {
-      preview, error, text, title, mainTag, subTags, quoted,
+      preview, error, text, title, mainTag, subTags, quoted, isAnon, replyTo,
     } = this.state;
     const threadSetting = (mode === 'thread') && (
       <div>
         <TitleRow>
-          <Input type="text" value={title || ''} onChange={this.setTitle} placeholder="标题" />
-          <select value={mainTag} onChange={this.selectMainTag}>
-            <option>主标签</option>
-            {[...tags.mainTags].map(tag => (
-              <option key={tag} value={tag}>{tag}</option>
-          ))}
-          </select>
+          <TitleInput type="text" value={title || ''} onChange={this.setTitle} placeholder="标题（可选）" />
+          <DropdownWrapper>
+            <Dropdown value={mainTag} onChange={this.selectMainTag}>
+              <option>添加主标签…</option>
+              {[...tags.mainTags].map(tag => (
+                <option key={tag} value={tag}>{tag}</option>
+            ))}
+            </Dropdown>
+          </DropdownWrapper>
         </TitleRow>
-        <TagRow>
-          {[0, 1, 2, 3].map(idx => (
-            <Input
-              key={idx}
-              type="text"
-              value={subTags[idx] || ''}
-              onChange={this.setSubTag(idx)}
-              placeholder="子标签"
-            />
-        ))}
-        </TagRow>
+        <SubTagInput setSubTag={this.setSubTag} subTags={subTags} />
       </div>
     );
     const quotedContent = (quoted) && (
@@ -260,33 +391,51 @@ class Draft extends React.Component {
           </QuotedBtn>
         ))}
         <QuotedContentWrapper>
-          <QuotedContentArea threadID={this.state.replyTo} quoted={quoted} />
+          <QuotedContentArea threadID={replyTo} quoted={quoted} />
         </QuotedContentWrapper>
       </QuotedWrapper>
     );
-    const publish = anonymous => (() => {
-      if (mode === 'thread') {
-        this.pubThread(anonymous);
-      } else {
-        this.pubPost(anonymous);
-      }
-    });
+    // const publish = () => {
+    //   if (mode === 'thread') {
+    //     this.pubThread();
+    //   } else {
+    //     this.pubPost();
+    //   }
+    // };
+    const anonSwitch = (
+      <AnonBtn onClick={this.toggleAnon} isAnon={isAnon}>
+        匿名发送<AnonIcon isAnon={isAnon}><Tick /></AnonIcon>
+      </AnonBtn>
+    );
     return (
-      <MainContent>
+      <DraftArea>
         { quotedContent }
+        { threadSetting }
         { preview ? (
           <PreviewArea>
             <MDPreview text={text} />
           </PreviewArea>
         ) : (
-          <Editor text={text} save={this.saveText} />
+          <Editor
+            text={text}
+            save={this.saveText}
+            ref={(instance) => { this.editorChild = instance; }}
+          />
         )}
-        { threadSetting }
         {(error !== '') && (<p>错误：{error}</p>)}
-        <button onClick={this.togglePreview}>{preview ? '编辑' : '预览' }</button>
-        <button onClick={publish(true)}>匿名发送</button>
-        <button onClick={publish(false)} disabled={profile.name === ''}>具名发送</button>
-      </MainContent>
+        <ButtonRow>
+          {anonSwitch}
+          <ButtonRowRight>
+            <ToolBtn onClick={() => this.editorChild.handleLinkClick()}>
+              <LinkIcon />
+            </ToolBtn>
+            <ToolBtn onClick={() => this.editorChild.handleImageClick()}>
+              <Image />
+            </ToolBtn>
+            <PreviewBtn onClick={this.togglePreview}>{preview ? '编辑' : '预览' }</PreviewBtn>
+          </ButtonRowRight>
+        </ButtonRow>
+      </DraftArea>
     );
   }
 }
@@ -299,6 +448,7 @@ Draft.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  setStore: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
   pubThread: PropTypes.func.isRequired,
   pubPost: PropTypes.func.isRequired,
@@ -336,7 +486,7 @@ const QUERY_REFERS = gql`
 
 export default props => (
   <Store.Consumer>
-    {({ profile, tags }) => (
+    {({ profile, tags, setStore }) => (
       <Mutation mutation={PUB_THREAD}>
         {pubThread => (
           <Mutation mutation={PUB_POST}>
@@ -347,6 +497,7 @@ export default props => (
                 pubPost={pubPost}
                 profile={profile}
                 tags={tags}
+                setStore={setStore}
               />
             )}
           </Mutation>
