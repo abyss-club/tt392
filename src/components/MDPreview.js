@@ -35,17 +35,40 @@ const PreviewWrapper = styled.div`
   }
 `;
 
-const MDPreview = ({ text, isThread }) => (
-  <PreviewWrapper isThread={isThread}>
-    <ReactMarkdown source={text} />
-  </PreviewWrapper>
-);
+const ImageHack = styled.span`
+  display: inline-block;
+  margin-left: ${props => (props.inList ? '-1rem' : '-1.5rem')};
+  width: ${props => (props.inList ? 'calc(100% + 2rem)' : 'calc(100% + 3rem)')};
+
+  > img {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+  }
+`;
+
+/* eslint-disable jsx-a11y/alt-text */
+const MDPreview = ({ text, isThread, inList }) => {
+  const customImg = props => (
+    <ImageHack inList={inList}>
+      <img {...props} />
+    </ImageHack>
+  );
+  return (
+    <PreviewWrapper isThread={isThread}>
+      <ReactMarkdown source={text} renderers={{ image: customImg }} />
+    </PreviewWrapper>
+  );
+};
+/* eslint-enable jsx-a11y/alt-text */
 MDPreview.propTypes = {
   text: PropTypes.string.isRequired,
   isThread: PropTypes.bool,
+  inList: PropTypes.bool,
 };
 MDPreview.defaultProps = {
   isThread: false,
+  inList: false,
 };
 
 export default MDPreview;

@@ -16,7 +16,7 @@ import More from 'components/icons/More';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : colors.bgGrey)};
-  ${props => (props.inList ? 'padding: 1rem 1rem 0;' : 'padding: 1rem 1.5rem 0;')}
+  ${props => (props.inList ? 'padding: 1rem 0 0;' : 'padding: 1rem 0 0;')}
   :not(:last-of-type):after {
     content: "";
     display: block;
@@ -40,6 +40,7 @@ const IconWrapper = styled.span`
 `;
 
 const TopRowWrapper = styled.div`
+  ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
   width: 100%;
 `;
 
@@ -70,6 +71,7 @@ const MoreBtn = styled.button`
 `;
 
 const Title = styled.div`
+  ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
   width: 100%;
   font-family: ${fontFamilies.system};
   margin: .5rem 0;
@@ -109,9 +111,17 @@ const PostContent = styled.div`
   width: 100%;
   font-family: ${fontFamilies.system};
   ${props => props.inList && 'cursor: pointer;'}
+  > div {
+    > div {
+      > h1, > h2, > h3, > h4, > h5, > h6, > p {
+        ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
+      }
+    }
+  }
 `;
 
 const ViewThread = styled.p`
+  padding: 0 1rem;
   margin-top: 1.5rem;
   font-size: .75em;
   line-height: 1.5;
@@ -162,7 +172,7 @@ const Post = ({
   onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList, history,
 }) => {
   const titleRow = isThread ? (
-    <Title>
+    <Title inList={inList}>
       <Link to={`/thread/${threadID}`}>{title || titlePlaceholder}</Link>
     </Title>
   ) : null;
@@ -177,15 +187,15 @@ const Post = ({
       }}
     />
   );
-  const viewThread = (isThread) && (inList) && (
+  const viewThread = (isThread) && (inList) && (countOfReplies > 0) && (
     <ViewThread>
       <Link to={`/thread/${threadID}`}>
-        {(countOfReplies > 0) ? `查看全部 ${countOfReplies} 个回复` : '暂无回复'}
+        {`查看全部 ${countOfReplies} 个回复`}
       </Link>
     </ViewThread>
   );
   const topRow = isThread ? (
-    <TopRowWrapper>
+    <TopRowWrapper inList={inList}>
       <TagsRow>
         <Tag text={mainTag} isMain isCompact />
         {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
@@ -197,12 +207,14 @@ const Post = ({
       </MetaRow>
     </TopRowWrapper>
   ) : (
-    <MetaRow>
-      {authorText}
-      <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
-      {quoteSelector}
-      <MoreBtn><More /></MoreBtn>
-    </MetaRow>
+    <TopRowWrapper inList={inList}>
+      <MetaRow>
+        {authorText}
+        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
+        {quoteSelector}
+        <MoreBtn><More /></MoreBtn>
+      </MetaRow>
+    </TopRowWrapper>
   );
   const gotoThread = () => {
     if (inList) {
@@ -214,8 +226,8 @@ const Post = ({
       {topRow}
       {titleRow}
       <PostContent inList={inList} onClick={gotoThread}>
-        <QuotedContent refers={refers} />
-        <MDPreview text={content} isThread={isThread} />
+        <QuotedContent refers={refers} inList={inList} />
+        <MDPreview text={content} isThread={isThread} inList={inList} />
       </PostContent>
       {viewThread}
     </Wrapper>
