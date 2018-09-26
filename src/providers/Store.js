@@ -6,7 +6,7 @@ const { Provider, Consumer } = React.createContext();
 class StoreProvider extends React.Component {
   constructor(props) {
     super(props);
-    /* eslint-disable */
+    /* eslint-disable react/no-unused-state */
     this.state = {
       initialized: false,
       profile: {
@@ -22,6 +22,8 @@ class StoreProvider extends React.Component {
         },
       },
       quotedPosts: new Set(),
+      publish: () => {},
+      publishRdy: false,
       setStore: this.setStore,
     };
     /* eslint-enable */

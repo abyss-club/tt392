@@ -10,6 +10,13 @@ const QuotedContentArea = styled.div`
   font-size: .75rem;
   line-height: 1.5;
   margin-bottom: .75rem;
+  background-color: ${colors.quoteGrey};
+  border: 1px solid ${colors.quoteBorder};
+  border-radius: 8px;
+
+  display: inline-flex;
+  flex-flow: row wrap;
+  padding: 1rem;
 `;
 
 // const QuotedContentRow = styled.div`
@@ -20,21 +27,11 @@ const QuotedContentArea = styled.div`
 
 const QuotedMeta = styled.div`
   width: 100%;
-  background-color: unset;
   color: ${colors.regularGrey};
   border: none
   cursor: pointer;
   outline: none;
   border-radius: 5px;
-`;
-
-const QuotedContentWrapper = styled.div`
-  display: inline-flex;
-  flex-flow: row wrap;
-  width: 100%;
-  background-color: white;
-  padding: 1rem;
-  border-radius: 0.5rem;
 `;
 
 const QuotedText = styled.p`
@@ -46,13 +43,11 @@ const QuotedText = styled.p`
 
 const QuotedContent = ({ refers }) => (refers) && refers.map(refer => (
   <QuotedContentArea key={refer.id}>
-    <QuotedContentWrapper>
-      <QuotedMeta>
-        {refer.author}·
-        {timeElapsed(refer.createTime).formatted}
-      </QuotedMeta>
-      <QuotedText>{refer.content}</QuotedText>
-    </QuotedContentWrapper>
+    <QuotedMeta>
+      {refer.author}&nbsp;·&nbsp;
+      {timeElapsed(refer.createTime).formatted}
+    </QuotedMeta>
+    <QuotedText>{refer.content}</QuotedText>
   </QuotedContentArea>
 ));
 QuotedContent.propTypes = {

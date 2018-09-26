@@ -193,13 +193,13 @@ const Post = ({
       </TagsRow>
       <MetaRow>
         {authorText}
-        <PublishTime>·{timeElapsed(createTime).formatted}</PublishTime>
+        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
       </MetaRow>
     </TopRowWrapper>
   ) : (
     <MetaRow>
       {authorText}
-      <PublishTime>·{timeElapsed(createTime).formatted}</PublishTime>
+      <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
       {quoteSelector}
       <MoreBtn><More /></MoreBtn>
     </MetaRow>
