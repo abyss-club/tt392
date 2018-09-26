@@ -14,16 +14,21 @@ const colors = {
   accentBlue: '#0F81FF',
   accentRed: '#F13A30',
   tagRed: '#F13A30',
+  lightRed: '#F6D9D8',
   tagGrey: '#7E8087',
   buttonBgBlack: '#52545E',
   buttonBg: '#F13A30',
   titleBlack: '#1B1B1B',
   regularBlack: '#1A1A1A',
+  anonBlack: '#191919',
   bgGrey: '#F4F4F4',
   iconGrey: '#F3F3F3',
   regularGrey: '#A5A5A5',
   borderGrey: '#E6E6E6',
   textGrey: '#666666',
+  inputGrey: '#E4E4E4',
+  quoteGrey: '#F9F9F9',
+  quoteBorder: '#E5E5E5',
 };
 
 export default colors;
