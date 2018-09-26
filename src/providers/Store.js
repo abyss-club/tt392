@@ -22,6 +22,8 @@ class StoreProvider extends React.Component {
         },
       },
       quotedPosts: new Set(),
+      publish: () => {},
+      publishRdy: false,
       setStore: this.setStore,
     };
     /* eslint-enable */
