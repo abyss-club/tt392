@@ -6,10 +6,8 @@ import colors from 'utils/colors';
 import timeElapsed from 'utils/calculateTime';
 
 const QuotedContentArea = styled.div`
-  width: 100%;
   font-size: .75rem;
   line-height: 1.5;
-  margin-bottom: .75rem;
   background-color: ${colors.quoteGrey};
   border: 1px solid ${colors.quoteBorder};
   border-radius: 8px;
@@ -17,6 +15,9 @@ const QuotedContentArea = styled.div`
   display: inline-flex;
   flex-flow: row wrap;
   padding: 1rem;
+
+  ${props => (props.inList ? 'margin: 0 1rem .75rem;' : 'margin: 0 1.5rem .75rem;')}
+  ${props => (props.inList ? 'width: calc(100% - 2rem);' : 'width: calc(100% - 3rem);')}
 `;
 
 // const QuotedContentRow = styled.div`
@@ -41,8 +42,8 @@ const QuotedText = styled.p`
   text-overflow: ellipsis;
 `;
 
-const QuotedContent = ({ refers }) => (refers) && refers.map(refer => (
-  <QuotedContentArea key={refer.id}>
+const QuotedContent = ({ refers, inList }) => (refers) && refers.map(refer => (
+  <QuotedContentArea key={refer.id} inList={inList}>
     <QuotedMeta>
       {refer.author}&nbsp;·&nbsp;
       {timeElapsed(refer.createTime).formatted}
@@ -52,6 +53,7 @@ const QuotedContent = ({ refers }) => (refers) && refers.map(refer => (
 ));
 QuotedContent.propTypes = {
   refers: PropTypes.arrayOf(PropTypes.shape()),
+  inList: PropTypes.bool,
 };
 
 export default QuotedContent;
