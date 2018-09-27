@@ -21,14 +21,14 @@ const colors = {
   titleBlack: '#1B1B1B',
   regularBlack: '#1A1A1A',
   anonBlack: '#191919',
-  bgGrey: '#F4F4F4',
+  bgGrey: '#FAFAFA',
   iconGrey: '#F3F3F3',
   regularGrey: '#A5A5A5',
   borderGrey: '#E6E6E6',
   setNameBorderGrey: '#80818A',
   textGrey: '#666666',
   inputGrey: '#E4E4E4',
-  quoteGrey: '#F9F9F9',
+  quoteGrey: '#F2F2F2',
   quoteBorder: '#E5E5E5',
 };
 
