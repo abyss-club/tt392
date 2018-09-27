@@ -25,6 +25,7 @@ const colors = {
   iconGrey: '#F3F3F3',
   regularGrey: '#A5A5A5',
   borderGrey: '#E6E6E6',
+  setNameBorderGrey: '#80818A',
   textGrey: '#666666',
   inputGrey: '#E4E4E4',
   quoteGrey: '#F9F9F9',
