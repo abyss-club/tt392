@@ -16,22 +16,21 @@ import More from 'components/icons/More';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : colors.bgGrey)};
-  ${props => (props.inList ? 'padding: 1rem 0 0;' : 'padding: 1rem 0 0;')}
+  padding: 1rem 0 0;
   :not(:last-of-type):after {
     content: "";
     display: block;
     margin: 0 auto;
     width: 100%;
-    padding-top: 1rem;
     ${props => props.isThread || `border-bottom: 1px solid ${colors.borderGrey};`}
   }
   :last-of-type {
-    padding-bottom: 1rem;
+    ${props => (props.inList ? 'padding-bottom: 0;' : 'padding-bottom: 1rem;')}
     border-bottom: none;
   }
   @media (min-width: ${breakpoint}em) {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0;
+    padding-right: 0;
   }
 `;
 
@@ -109,6 +108,7 @@ const PublishTime = styled.span`
 
 const PostContent = styled.div`
   width: 100%;
+  padding-bottom: 1.125rem;
   font-family: ${fontFamilies.system};
   ${props => props.inList && 'cursor: pointer;'}
   > div {
@@ -121,8 +121,7 @@ const PostContent = styled.div`
 `;
 
 const ViewThread = styled.p`
-  padding: 0 1rem;
-  margin-top: 1.5rem;
+  padding: 0 1rem 1rem;
   font-size: .75em;
   line-height: 1.5;
   color: ${colors.accentRed};
