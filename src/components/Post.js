@@ -20,9 +20,9 @@ const Wrapper = styled.div`
   :not(:last-of-type):after {
     content: "";
     display: block;
-    margin: 0 auto;
-    width: 100%;
+    ${props => (props.inList ? 'width: calc(100% - 2rem);' : 'width: calc(100% - 3rem);')}
     ${props => props.isThread || `border-bottom: 1px solid ${colors.borderGrey};`}
+    ${props => (props.inList ? 'margin: 0 1rem;' : 'margin: 0 1.5rem;')}
   }
   :last-of-type {
     ${props => (props.inList ? 'padding-bottom: 0;' : 'padding-bottom: 1rem;')}

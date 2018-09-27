@@ -9,7 +9,6 @@ const QuotedContentArea = styled.div`
   font-size: .75rem;
   line-height: 1.5;
   background-color: ${colors.quoteGrey};
-  border: 1px solid ${colors.quoteBorder};
   border-radius: 8px;
 
   display: inline-flex;
