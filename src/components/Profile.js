@@ -1,9 +1,13 @@
 import React from 'react';
-import { Query, Mutation } from 'react-apollo';
+import PropTypes from 'prop-types';
+import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import colors from 'utils/colors';
 
+import Query from 'components/Query';
+import Tick from 'components/icons/Tick';
+import NavTags from 'components/Navbar/NavTags';
 import MainContent from 'styles/MainContent';
 
 const PROFILE_QUERY = gql`
@@ -23,111 +27,215 @@ const UPDATE_NAME = gql`
   }
 `;
 
-const ProfileText = styled.p`
-  color: white;
+const NameForm = styled.form`
+  width: 100%;
+  height: 2rem;
+
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  border: 1px solid ${colors.setNameBorderGrey};
+  border-radius: 1rem;
+  padding: 0em .25rem 0 1rem;
 `;
 
 const NameInput = styled.input`
+  flex-grow: 2;
+
   width: 100%;
-  display: block;
-  font-size: 1em;
+  font-size: .75em;
   text-align: start;
-  border-radius: 5px;
-  color: black;
-  border: 1px solid #e0e0e0;
-  background-color: #f9f9f9;
-  height: 2.25em;
-  padding: 0em .5em;
+  border: none;
+  outline: none;
+  background-color: unset;
+  height: 100%;
+  padding: 0;
   appearance: none;
-  max-width: 21.25em;
+  color: ${colors.tagGrey};
 
   :focus {
     text-align: start;
-    color: black;
+    color: white;
   }
 `;
 
-const SubmitBtn = styled.input`
-  background-color: ${colors.orange};
+const SubmitBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: ${colors.tagRed};
   color: #fff;
-  font-weight: 600;
-  padding-top: .5rem;
-  padding-bottom: .5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  border-width: 1px;
-  border-color: #dae1e7;
-  border-radius: .25rem;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);
-  height: 2.5em;
-  margin-top: 1em;
+  border-radius: 50%;
+  height: 1.5rem;
+  width: 1.5rem;
   outline: none;
   border: none;
+
+  cursor: pointer;
+
+  :disabled {
+    background-color: ${colors.tagGrey};
+  }
+
+  > svg {
+    > path {
+      stroke: white;
+    }
+  }
+`;
+
+const Wrapper = styled(MainContent)`
+  color: white;
+`;
+
+const NameRow = styled.div`
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: 0 1rem;
+  margin: .75rem 0 1.8rem;
+`;
+
+const TitleText = styled.h4`
+  font-weight: 600;
+  font-size: 1.25em;
+`;
+
+const SetNameBtn = styled.button`
+  color: ${colors.tagGrey};
+  appearance: none;
+  border: 1px solid ${colors.setNameBorderGrey};
+  border-radius: 2rem;
+  background: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0 1rem;
+  margin: 0 0 0 auto;
+  height: 2rem;
+
+  font-size: .75em;
+`;
+
+const TagRow = styled.div`
+
+`;
+
+const TagText = styled.div`
+  padding: 0 0 .45rem 1rem;
+  color: ${colors.tagGrey};
+  font-size: .75em;
+`;
+
+const ErrInfo = styled.p`
+  width: 100%;
+  color: white;
 `;
 
 // TODO: use Store will be clear
-const Profile = () => (
-  <Query query={PROFILE_QUERY}>
-    {({ loading, error, data }) => {
-      if (loading) return <p>Loading...</p>;
-      if (error) {
-        return (
-          <pre>
-            {error.graphQLErrors.map(({ message }) => (
-              <span key={message}>{message}</span>
-            ))}
-          </pre>
-        );
-      }
-
-      return (
-        <MainContent>
-          <ProfileText>欢迎{data.profile.name && `，${data.profile.name}`}</ProfileText>
-          {data.profile.name ? (<ProfileText>{data.profile.name}</ProfileText>) : (
-            <React-Fragment>
-              <ProfileText>尚未设置用户名</ProfileText>
-              <Mutation mutation={UPDATE_NAME} refetchQueries={['FetchProfile']}>
-                {(setName, { innerData }) => (
-                  <NameForm setName={setName} data={innerData} />
-                )}
-              </Mutation>
-            </React-Fragment>
-          )}
-        </MainContent>
-      );
-    }}
-  </Query>
-);
-
-class NameForm extends React.Component {
+class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: '', status: 'INIT', disabled: false };
-    this.input = React.createRef();
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.state = {
+      remoteName: props.queryData.profile.name,
+      inputName: '',
+      status: 'INIT',
+      error: '',
+      disabled: false,
+      showInput: false,
+    };
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-    const name = this.input.value;
-    this.setState({ name, disabled: true });
-    this.props.setName({ variables: { name } }).then(({ data }) => {
-      if (data.name || false) {
-        this.setState({ status: 'COMPLETE', disabled: false });
+  handleChange = (e) => {
+    this.setState({ inputName: e.target.value });
+  }
+
+  submitName = (e) => {
+    e.preventDefault();
+    this.setState({ disabled: true });
+    this.props.setName({ variables: { name: this.state.inputName } }).then(({ data, errors }) => {
+      // TODO: Cleanup these
+      if (data.setName.name) {
+        this.setState({ status: 'COMPLETE', remoteName: data.setName.name, disabled: false });
       } else {
-        this.setState({ status: 'ERROR', disabled: false });
+        this.setState({ status: 'ERROR', error: errors[0].message, disabled: false });
       }
     }).catch(() => {
       this.setState({ status: 'ERROR', disabled: false });
     });
+    if (this.state.inputName) {
+      this.setState({ inputName: '' });
+    }
   }
 
-  render = () => (
-    <form onSubmit={this.handleSubmit}>
-      <NameInput type="text" name="name" placeholder="用户名" innerRef={(input) => { this.input = input; }} />
-      <SubmitBtn type="submit" value="提交" />
-    </form>
-  );
+  render() {
+    const {
+      remoteName, inputName, showInput, disabled,
+    } = this.state;
+    const firstRow = remoteName ? (
+      <NameRow>
+        <TitleText>{remoteName}</TitleText>
+      </NameRow>
+    ) : (
+      <NameRow>
+        {showInput ? (
+          <NameForm autoComplete="off" onSubmit={this.submitName}>
+            <NameInput autoComplete="false" spellCheck="false" autoCapitalize="none" type="text" name="name" placeholder="用户名" onChange={this.handleChange} value={inputName} />
+            <SubmitBtn type="submit" title="提交" name={inputName} disabled={!inputName || disabled}><Tick /></SubmitBtn>
+          </NameForm>
+        ) : (
+          <React.Fragment>
+            <TitleText>个人中心</TitleText>
+            <SetNameBtn onClick={() => { this.setState({ showInput: true }); }}>点击设置用户名</SetNameBtn>
+          </React.Fragment>
+        ) }
+      </NameRow>
+    );
+    return (
+      <Wrapper>
+        {firstRow}
+        {(this.state.status === 'ERROR') && (<ErrInfo>错误：{this.state.error}</ErrInfo>)}
+        <TagRow>
+          <TagText>已关注标签</TagText>
+          <NavTags />
+        </TagRow>
+      </Wrapper>
+    );
+  }
 }
+Profile.propTypes = {
+  queryData: PropTypes.shape({
+    profile: PropTypes.shape({
+      email: PropTypes.string.isRequired,
+      name: PropTypes.string,
+    }),
+  }),
+  setName: PropTypes.func.isRequired,
+};
+Profile.defaultProps = {
+  queryData: {
+    profile: {
+      name: null,
+    },
+  },
+};
 
-export default Profile;
+export default props => (
+  <Query query={PROFILE_QUERY}>
+    {({ data }) => (
+      <Mutation mutation={UPDATE_NAME} refetchQueries={['FetchProfile']}>
+        {(setName, { data: mutData, errors }) => (
+          <Profile
+            {...props}
+            setName={setName}
+            mutData={mutData}
+            mutError={errors}
+            queryData={data}
+          />
+        )}
+      </Mutation>
+      )}
+  </Query>
+);
