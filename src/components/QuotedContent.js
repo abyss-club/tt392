@@ -49,17 +49,17 @@ const QuotedText = styled.p`
   text-overflow: ellipsis;
 `;
 
-const QuotedContent = ({ refers, inList, inDraft }) => (refers) && refers.map(refer => (
-  <QuotedContentArea key={refer.id} inList={inList} inDraft={inDraft}>
+const QuotedContent = ({ quotes, inList, inDraft }) => (quotes) && quotes.map(quote => (
+  <QuotedContentArea key={quote.id} inList={inList} inDraft={inDraft}>
     <QuotedMeta>
-      {refer.author}&nbsp;·&nbsp;
-      {timeElapsed(refer.createTime).formatted}
+      {quote.author}&nbsp;·&nbsp;
+      {timeElapsed(quote.createTime).formatted}
     </QuotedMeta>
-    <QuotedText>{refer.content}</QuotedText>
+    <QuotedText>{quote.content}</QuotedText>
   </QuotedContentArea>
 ));
 QuotedContent.propTypes = {
-  refers: PropTypes.arrayOf(PropTypes.shape()),
+  quotes: PropTypes.arrayOf(PropTypes.shape()),
   inList: PropTypes.bool,
   inDraft: PropTypes.bool,
 };

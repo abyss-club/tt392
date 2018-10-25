@@ -167,7 +167,7 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 const Post = ({
-  isThread, title, anonymous, author, createTime, content, refers, postID, threadID, countOfReplies,
+  isThread, title, anonymous, author, createTime, content, quotes, postID, threadID, replyCount,
   onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList, history,
 }) => {
   const titleRow = isThread ? (
@@ -186,10 +186,10 @@ const Post = ({
       }}
     />
   );
-  const viewThread = (isThread) && (inList) && (countOfReplies > 0) && (
+  const viewThread = (isThread) && (inList) && (replyCount > 0) && (
     <ViewThread>
       <Link to={`/thread/${threadID}`}>
-        {`查看全部 ${countOfReplies} 个回复`}
+        {`查看全部 ${replyCount} 个回复`}
       </Link>
     </ViewThread>
   );
@@ -225,7 +225,7 @@ const Post = ({
       {topRow}
       {titleRow}
       <PostContent inList={inList} onClick={gotoThread}>
-        <QuotedContent refers={refers} inList={inList} />
+        <QuotedContent quotes={quotes} inList={inList} />
         <MDPreview text={content} isThread={isThread} inList={inList} />
       </PostContent>
       {viewThread}
@@ -240,7 +240,7 @@ Post.propTypes = {
   author: PropTypes.string.isRequired,
   createTime: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
-  refers: PropTypes.arrayOf(PropTypes.shape()),
+  quotes: PropTypes.arrayOf(PropTypes.shape()),
   postID: PropTypes.string,
   threadID: PropTypes.string,
   onQuoteToggle: PropTypes.func,
@@ -250,7 +250,7 @@ Post.propTypes = {
   subTags: PropTypes.arrayOf(PropTypes.string),
   inList: PropTypes.bool,
   hasReplies: PropTypes.bool,
-  countOfReplies: PropTypes.number,
+  replyCount: PropTypes.number,
   history: PropTypes.shape({}).isRequired,
 };
 Post.defaultProps = {
@@ -260,13 +260,13 @@ Post.defaultProps = {
   isQuoted: false,
   quotable: false,
   isThread: false,
-  refers: null,
+  quotes: null,
   title: '',
   subTags: null,
   mainTag: null,
   inList: false,
   hasReplies: false,
-  countOfReplies: 0,
+  replyCount: 0,
 };
 
 export default withRouter(Post);
