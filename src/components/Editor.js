@@ -11,9 +11,14 @@ import { Value } from 'slate';
 // import colors from 'utils/colors';
 
 const Wrapper = styled.div`
-  min-height: calc(100vh - 15rem);
+  min-height: 6em;
   font-size: .875em;
   width: 100%;
+  @media screen and (-webkit-min-device-pixel-ratio:0) {
+    *[contenteditable="true"] {
+      font-size: 16px;
+    }
+  }
 `;
 
 // const IconWrapper = styled.button`

@@ -15,8 +15,16 @@ const QuotedContentArea = styled.div`
   flex-flow: row wrap;
   padding: 1rem;
 
-  ${props => (props.inList ? 'margin: 0 1rem .75rem;' : 'margin: 0 1.5rem .75rem;')}
-  ${props => (props.inList ? 'width: calc(100% - 2rem);' : 'width: calc(100% - 3rem);')}
+  ${(props) => {
+    if (props.inList) return 'margin: 0 1rem .75rem;';
+    else if (props.inDraft) return 'margin: 0 0 .75rem;';
+    return 'margin: 0 1.5rem .75rem;';
+  }}
+  ${(props) => {
+    if (props.inList) return 'width: calc(100% - 2rem);';
+    else if (props.inDraft) return 'width: 100%;';
+    return 'width: calc(100% - 3rem);';
+  }}
 `;
 
 // const QuotedContentRow = styled.div`
@@ -41,8 +49,8 @@ const QuotedText = styled.p`
   text-overflow: ellipsis;
 `;
 
-const QuotedContent = ({ refers, inList }) => (refers) && refers.map(refer => (
-  <QuotedContentArea key={refer.id} inList={inList}>
+const QuotedContent = ({ refers, inList, inDraft }) => (refers) && refers.map(refer => (
+  <QuotedContentArea key={refer.id} inList={inList} inDraft={inDraft}>
     <QuotedMeta>
       {refer.author}&nbsp;·&nbsp;
       {timeElapsed(refer.createTime).formatted}
@@ -53,6 +61,7 @@ const QuotedContent = ({ refers, inList }) => (refers) && refers.map(refer => (
 QuotedContent.propTypes = {
   refers: PropTypes.arrayOf(PropTypes.shape()),
   inList: PropTypes.bool,
+  inDraft: PropTypes.bool,
 };
 
 export default QuotedContent;
