@@ -186,14 +186,14 @@ const QuotedContentArea = ({ threadID, quoted }) => (
     }) => {
       if (loading) return <p>Loading...</p>;
       if (error) return <p>Error...</p>;
-      const refers = [];
+      const quotes = [];
       data.thread.replies.posts.forEach((post) => {
         Object.keys(quoted).forEach((quote) => {
-          if (quoted[quote] && quote === post.id) refers.push(post);
+          if (quoted[quote] && quote === post.id) quotes.push(post);
         });
       });
       return (
-        <QuotedContent refers={refers} inDraft />
+        <QuotedContent quotes={quotes} inDraft />
       );
     }}
   </Query>
@@ -335,7 +335,7 @@ class Draft extends React.Component {
       replyTo, text, quoted, isAnon: anonymous,
     } = this.state;
     const { pubPost, history } = this.props;
-    const refers = quoted && Object.keys(quoted).reduce((acc, id) => {
+    const quotes = quoted && Object.keys(quoted).reduce((acc, id) => {
       if (quoted[id]) acc.push(id);
       return acc;
     }, []);
@@ -343,7 +343,7 @@ class Draft extends React.Component {
       threadID: replyTo,
       anonymous,
       content: text,
-      refers,
+      quotes,
     };
     if (text === '') {
       this.setState({ error: '内容不能为空' });
