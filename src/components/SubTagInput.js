@@ -8,6 +8,10 @@ import colors from 'utils/colors';
 import SmallCross from 'components/icons/SmallCross';
 
 const Input = styled.input`
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    font-size: 16px;
+  }
+
   border: none;
   outline: none;
   min-width: 0;
