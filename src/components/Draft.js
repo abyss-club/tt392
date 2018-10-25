@@ -15,6 +15,7 @@ import Tick from 'components/icons/Tick';
 import Store from 'providers/Store';
 import colors from 'utils/colors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { maxWidth } from 'styles/MainContent';
 
 const TitleRow = styled.div`
   display: flex;
@@ -62,6 +63,8 @@ const DraftArea = styled.div`
   background-color: white;
   padding: 1rem 1rem 0 1rem;
   border-radius: 1rem;
+  max-width: ${maxWidth}rem;
+  margin: 0 auto;
 `;
 
 const DropdownWrapper = styled.div`

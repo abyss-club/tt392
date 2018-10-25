@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+// import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { withRouter } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import Query from 'components/Query';
 import Pen from 'components/icons/Pen';
 import Store from 'providers/Store';
 import FloatButton from 'styles/FloatButton';
-import colors from 'utils/colors';
+// import colors from 'utils/colors';
 
 import ThreadInList from './ThreadInList';
 
