@@ -193,7 +193,7 @@ const QuotedContentArea = ({ threadID, quoted }) => (
         });
       });
       return (
-        <QuotedContent refers={refers} />
+        <QuotedContent refers={refers} inDraft />
       );
     }}
   </Query>
