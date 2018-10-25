@@ -21,7 +21,7 @@ const Input = styled.input`
   font-size: .75em;
   max-width: 100%;
 
-  flex-shrink: 0
+  flex-shrink: 0;
 `;
 
 const Wrapper = styled.div`
