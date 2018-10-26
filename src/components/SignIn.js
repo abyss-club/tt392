@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 import PropTypes from 'prop-types';
+import AbyssLogo from 'components/icons/AbyssLogo';
 
 import colors from 'utils/colors';
 
@@ -13,8 +14,8 @@ const Wrapper = styled.div`
   color: white;
 `;
 
-const Title = styled.h1`
-  font-family: 'Open Sans Condensed', sans-serif;
+const Logo = styled.div`
+  padding-top: 1rem;
 `;
 
 const CompleteInfoWrapper = styled.div`
@@ -27,17 +28,21 @@ const CompleteInfoWrapper = styled.div`
 const EmailInput = styled.input`
   width: 100%;
   height: 3rem;
-  padding: 0.5rem;
+  padding: 0.5rem .75rem;
   margin: 1.5rem 0;
+  border: none;
+  border-radius: .5rem;
+  outline: none;
 `;
 
 const NextBtn = styled.button`
   width: 100%;
   height: 3rem;
-  background: ${colors.orange};
+  background: ${colors.accentRed};
   color: white;
   border: none;
   outline: none;
+  border-radius: .5rem;
 `;
 
 class SignIn extends React.Component {
@@ -80,7 +85,7 @@ class SignIn extends React.Component {
     return (
       <Wrapper>
         <h3>进入</h3>
-        <Title>abyss</Title>
+        <Logo><AbyssLogo /></Logo>
         {(status !== 'COMPLETE') && (
         <form onSubmit={this.handleSubmit}>
           <p>
