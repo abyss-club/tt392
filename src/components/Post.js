@@ -43,7 +43,7 @@ const TopRowWrapper = styled.div`
   width: 100%;
 `;
 
-const TagsRow = styled.div`
+const TagRow = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
@@ -195,11 +195,11 @@ const Post = ({
   );
   const topRow = isThread ? (
     <TopRowWrapper inList={inList}>
-      <TagsRow>
+      <TagRow>
         <Tag text={mainTag} isMain isCompact />
         {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
         <MoreBtn><More /></MoreBtn>
-      </TagsRow>
+      </TagRow>
       <MetaRow>
         {authorText}
         <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
