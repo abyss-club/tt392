@@ -14,6 +14,11 @@ class StoreProvider extends React.Component {
         name: '',
         email: '',
       },
+      unreadNotiCount: {
+        system: null,
+        replied: null,
+        quoted: null,
+      },
       tags: {
         mainTags: new Set(),
         subscribed: {
