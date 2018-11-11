@@ -44,7 +44,7 @@ const Dialog = styled.div`
   box-sizing: border-box;
   max-width: auto;
   cursor: default;
-  border-radius: 4px;
+  border-radius: .25rem;
 `;
 
 

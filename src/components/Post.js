@@ -93,7 +93,7 @@ const QuoteSelectorBtn = styled.button`
   outline: none;
   padding: .25em .5em;
   margin: 0 0 0 .25em;
-  border-radius: 5px;
+  border-radius: .3125rem;
   font-size: .75em;
   :disabled {
     color: ${colors.aluminiumLight};

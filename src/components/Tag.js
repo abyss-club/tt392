@@ -19,7 +19,7 @@ const TagWrapper = styled.button`
   border: 1px solid ${colors.tagGrey};
   outline: none;
   font-size: 1em;
-  border-radius: 16px;
+  border-radius: 1rem;
   height: 2rem;
   padding: .25em 1.5em;
   margin: .25rem;

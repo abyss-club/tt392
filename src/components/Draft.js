@@ -46,7 +46,7 @@ const QuotedBtn = styled.button`
   outline: none;
   padding: .5em .5em;
   margin-right: .25em;
-  border-radius: 5px;
+  border-radius: .3125rem;
   font-size: .8em;
 `;
 
