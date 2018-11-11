@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-// import Discussion from 'components/icons/Discussion';
 import User from 'components/icons/User';
 // import colors from 'utils/colors';
 
@@ -11,7 +10,7 @@ const IconWrapper = styled(User)`
   background-color: unset;
   border: none;
   font-size: 1.5em;
-  margin: 0;
+  margin: 0 0 0 2.5rem;
   cursor: pointer;
   outline: none;
   line-height: 0;
@@ -39,7 +38,5 @@ const SignInBtn = ({ profile }) => {
 SignInBtn.propTypes = {
   profile: PropTypes.shape().isRequired,
 };
-
-// TODO: Add discusstion btn
 
 export default SignInBtn;

@@ -13,6 +13,7 @@ import colors from 'utils/colors';
 
 import NavTags from './NavTags';
 import SignInBtn from './SignInBtn';
+import NotificationBtn from './NotificationBtn';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -47,6 +48,10 @@ const NavText = styled.span`
 
 const NavTitle = styled(AbyssLogo)`
   font-size: 1em;
+`;
+
+const NavRight = styled.div`
+  margin-left: auto;
 `;
 
 const IconWrapper = styled.button`
@@ -114,8 +119,11 @@ const SendBtn = styled(ComposeBtnWrapper)`
 `;
 
 const Navbar = ({
-  profile, publish, history, publishRdy,
+  profile, publish, history, publishRdy, unreadNotiCount,
 }) => {
+  const notiBtn = (
+    (profile.email) && (
+    <NotificationBtn unreadNotiCount={unreadNotiCount || {}} />));
   const firstRowRegular = (
     <NavFirstRow>
       <Link to="/">
@@ -123,7 +131,15 @@ const Navbar = ({
       </Link>
       <Switch>
         <Route path="/tags" exact render={() => <TickBtn onClick={() => { history.push('/'); }} />} />
-        <Route path="/" render={() => <SignInBtn profile={profile || {}} />} />
+        <Route
+          path="/"
+          render={() => (
+            <NavRight>
+              {notiBtn}
+              <SignInBtn profile={profile || {}} />
+            </NavRight>
+          )}
+        />
       </Switch>
     </NavFirstRow>
   );
@@ -171,6 +187,7 @@ Navbar.propTypes = {
   history: PropTypes.shape({}).isRequired,
   publish: PropTypes.func.isRequired,
   publishRdy: PropTypes.bool.isRequired,
+  unreadNotiCount: PropTypes.shape().isRequired,
 };
 
 const NavbarWithRouter = withRouter(Navbar);
@@ -178,13 +195,14 @@ const NavbarWithRouter = withRouter(Navbar);
 export default () => (
   <Store.Consumer>
     {({
-      profile, tags, publish, publishRdy,
+      profile, tags, publish, publishRdy, unreadNotiCount,
     }) => (
       <NavbarWithRouter
         profile={profile}
         tags={tags}
         publish={publish}
         publishRdy={publishRdy}
+        unreadNotiCount={unreadNotiCount}
       />
     )}
   </Store.Consumer>
