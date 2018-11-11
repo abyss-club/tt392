@@ -14,6 +14,7 @@ import Draft from 'components/Draft';
 import Init from 'components/Init';
 import TagPage from 'components/TagPage';
 import TagView from 'components/TagPage/TagView';
+import Notification from 'components/Notification';
 import { Loading, LoadingContainer } from 'utils/loading';
 import { ModalContainer } from 'utils/modal';
 import colors from 'utils/colors';
@@ -52,6 +53,7 @@ const App = () => (
       <Route path="/draft/:mode" component={Draft} />
       <Route path="/graphiql/" component={GraphiQL} />
       <Route path="/voyager/" component={GQLVoyager} />
+      <Route path="/notification/" component={Notification} />
     </Switch>
   </Wrapper>
 );
