@@ -48,6 +48,8 @@ const TagRow = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+
+  overflow-x: scroll;
 `;
 
 const MetaRow = styled.div`
@@ -82,6 +84,10 @@ const Title = styled.div`
     display: block;
     color: ${colors.titleBlack};
     text-decoration: none;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 `;
 
