@@ -14,9 +14,9 @@ import QuotedContent from 'components/QuotedContent';
 const TagRow = styled.div`
   width: 100%;
   display: flex;
-  align-items: center;
   padding: 0 1rem;
-  margin-bottom: .175rem;
+
+  overflow-x: scroll;
 `;
 
 const ContentWrapper = styled.article`
@@ -42,14 +42,25 @@ const Title = styled.h5`
   font-family: ${fontFamilies.system};
   font-size: .875rem;
   font-weight: 600;
-  padding: 0 1rem;
-  margin-bottom: .25rem;
+  padding: 0 1rem .5rem;
   > a {
     width: 100%;
     display: block;
     color: ${colors.titleBlack};
     text-decoration: none;
   }
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const AnnouncementTitle = styled(Title)`
+  overflow: visible;
+  white-space: normal;
+  hyphens: auto;
+  overflow-wrap: break-word;
+
 `;
 
 const ViewThread = styled.p`
@@ -63,15 +74,21 @@ const ViewThread = styled.p`
   }
 `;
 
-const MetaRow = styled.p`
+// const MetaRow = styled.p`
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   padding: .5rem 1rem;
+// `;
+
+const TopRow = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  padding: .5rem 1rem;
+  flex-flow: row nowrap;
 `;
 
 const PostWrapper = styled.article`
-  background-color: ${colors.bgGrey};
 `;
 
 const AuthorWrapper = styled.span`
@@ -90,6 +107,19 @@ const PublishTime = styled.span`
   font-family: ${fontFamilies.system};
   color: ${colors.regularGrey};
   font-size: .75em;
+
+`;
+
+const TopRowTime = styled(PublishTime)`
+  padding: 0 1rem 0 .5rem;
+  line-height: calc(1.15*4/3);
+  {/* Wierd line-height hack */}
+`;
+
+const Repliers = styled.p`
+  padding: .25rem 0 .25rem 1rem;
+  font-size: .75rem;
+  color: ${colors.textGrey};
 `;
 
 const StyledMDPreview = styled.div`
@@ -108,16 +138,34 @@ authorText.propTypes = {
   author: PropTypes.string.isRequired,
 };
 
+// function formatUsername(users) {
+//   return users.map((user) => {
+//
+//   })
+// }
+
 const Content = ({ type, notification }) => {
   const tags = (type === 'replied' || type === 'quoted') && (
-    <TagRow>
-      <Tag text={notification.thread.mainTag} isMain isCompact />
-      {(notification.thread.subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
-    </TagRow>
+    <TopRow>
+      <TagRow>
+        <Tag text={notification.thread.mainTag} isMain isCompact />
+        {(notification.thread.subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
+      </TagRow>
+      <TopRowTime>{elapsed(notification.eventTime).formatted}</TopRowTime>
+    </TopRow>
+  );
+  const repliers = (type === 'replied') && (
+    <div>
+      <Repliers>
+        {notification.thread.replies.posts.map(post => (post.anonymous ? `匿名${post.author}` : post.author)).filter((name, idx, names) => names.indexOf(name) === idx).join(', ')}
+        {notification.repliers.length < 4 ? ' 回复了你的串' : ` 等 ${notification.repliers.length} 个用户回复了你的串`}
+      </Repliers>
+    </div>
   );
   const repliedNoti = (type === 'replied') && (
     <ContentWrapper>
       {tags}
+      {repliers}
       <Title>{notification.thread.title || titlePlaceholder}</Title>
       <QuotedContent
         inNoti
@@ -134,26 +182,31 @@ const Content = ({ type, notification }) => {
   const quotedNoti = (type === 'quoted') && (
     <ContentWrapper>
       {tags}
+      <Repliers>
+        {notification.quotedPost.anonymous ? `匿名${notification.quoter}` : notification.quoter}
+        {' 引用了你的帖'}
+      </Repliers>
       <Title>{notification.thread.title || titlePlaceholder}</Title>
       <PostWrapper>
-        <MetaRow>
-          {authorText({
-            anonymous: notification.post.anonymous,
-            author: notification.post.author,
-          })}
-          <PublishTime>&nbsp;·&nbsp;{elapsed(notification.post.createTime).formatted}</PublishTime>
-        </MetaRow>
         <QuotedContent
           inNoti
           quotes={[notification.quotedPost]}
         />
         <PostContent>{notification.post.content}</PostContent>
       </PostWrapper>
+      <ViewThread>
+        <Link to={`/thread/${notification.thread.id}`}>
+          {'查看原帖'}
+        </Link>
+      </ViewThread>
     </ContentWrapper>
   );
   const systemNoti = (type === 'system') && (
     <ContentWrapper>
-      <Title>{notification.title}</Title>
+      <TopRow>
+        <AnnouncementTitle>{notification.title}</AnnouncementTitle>
+        <TopRowTime>{elapsed(notification.eventTime).formatted}</TopRowTime>
+      </TopRow>
       <StyledMDPreview>
         <MDPreview text={notification.content} isThread />
       </StyledMDPreview>
