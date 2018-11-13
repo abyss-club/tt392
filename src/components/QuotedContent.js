@@ -100,7 +100,7 @@ const QuotedContent = ({
         anonymous: quote.anonymous,
         author: quote.author,
       })}
-      &nbsp;·&nbsp;
+      {' · '}
       {timeElapsed(quote.createTime).formatted}
     </QuotedMeta>
     <QuotedText>{quote.content}</QuotedText>
