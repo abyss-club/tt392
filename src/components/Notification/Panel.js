@@ -13,7 +13,7 @@ const PanelWrapper = styled.div`
 `;
 
 const Panel = ({ type, notifications }) => {
-  const notis = notifications.map(noti => (
+  const notis = notifications.slice().reverse().map(noti => (
     <Content
       key={noti.id}
       type={type}
