@@ -24,6 +24,7 @@ const PreviewWrapper = styled.div`
     :last-child {
       margin-bottom: 0;
     }
+    hyphens: auto;
   }
 
   h1 {

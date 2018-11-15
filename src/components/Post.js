@@ -43,11 +43,13 @@ const TopRowWrapper = styled.div`
   width: 100%;
 `;
 
-const TagsRow = styled.div`
+const TagRow = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+
+  overflow-x: scroll;
 `;
 
 const MetaRow = styled.div`
@@ -82,6 +84,10 @@ const Title = styled.div`
     display: block;
     color: ${colors.titleBlack};
     text-decoration: none;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 `;
 
@@ -93,7 +99,7 @@ const QuoteSelectorBtn = styled.button`
   outline: none;
   padding: .25em .5em;
   margin: 0 0 0 .25em;
-  border-radius: 5px;
+  border-radius: .3125rem;
   font-size: .75em;
   :disabled {
     color: ${colors.aluminiumLight};
@@ -195,11 +201,11 @@ const Post = ({
   );
   const topRow = isThread ? (
     <TopRowWrapper inList={inList}>
-      <TagsRow>
+      <TagRow>
         <Tag text={mainTag} isMain isCompact />
         {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
         <MoreBtn><More /></MoreBtn>
-      </TagsRow>
+      </TagRow>
       <MetaRow>
         {authorText}
         <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
