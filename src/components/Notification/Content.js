@@ -103,11 +103,11 @@ const PostContent = styled.p`
   font-size: .875rem;
 `;
 
-const PublishTime = styled.span`
+const PublishTime = styled.div`
   font-family: ${fontFamilies.system};
   color: ${colors.regularGrey};
   font-size: .75em;
-
+  white-space: nowrap;
 `;
 
 const TopRowTime = styled(PublishTime)`
