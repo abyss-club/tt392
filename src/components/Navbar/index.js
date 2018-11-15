@@ -9,21 +9,64 @@ import AbyssLogo from 'components/icons/AbyssLogo';
 import Tick from 'components/icons/Tick';
 import Cross from 'components/icons/Cross';
 import Send from 'components/icons/Send';
+import Hash from 'components/icons/Hash';
 import colors from 'utils/colors';
 
 import NavTags from './NavTags';
 import SignInBtn from './SignInBtn';
 import NotificationBtn from './NotificationBtn';
 
-const Wrapper = styled.div`
-  width: 100%;
-`;
+const startHide = 500;
+const endHide = 1000;
 
 const NavWrapper = styled.nav`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  padding: 0;
+`;
+
+const FloatNavWrapper = styled.nav`
+  transform: translateY(0);
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  transition: transform .5s, opacity .25s;
+  transition-timing-function: ease-in-out;
+
+  ${(props) => {
+    if (props.y < startHide) {
+      return `
+        display: none;
+        padding: 0;
+      `;
+    }
+    if (props.y >= startHide && props.y < endHide) {
+      return `
+        position: fixed;
+        transform: translateY(-5rem);
+        background-color: ${colors.mainBg};
+        border-radius: 1rem;
+        box-shadow: 0px 8px 24px rgba(13, 15, 23, 0.6);
+        width: calc(100vw - 1rem);
+        opacity: 0;
+`;
+    }
+    return `
+      position: fixed;
+      transform: translateY(.5rem);
+      background-color: ${colors.mainBg};
+      border-radius: 1rem;
+      box-shadow: 0px 8px 24px rgba(13, 15, 23, 0.6);
+      width: calc(100vw - 1rem);
+      opacity: 1;
+`;
+  }
+}}
+`;
+
+const FloatTagWrapper = styled.div`
+  display: ${props => (props.toggled ? 'flex' : 'none')};
+  width: 100%;
 `;
 
 const NavFirstRow = styled.div`
@@ -52,6 +95,9 @@ const NavTitle = styled(AbyssLogo)`
 
 const NavRight = styled.div`
   margin-left: auto;
+
+  display: flex;
+  align-items: center;
 `;
 
 const IconWrapper = styled.button`
@@ -118,70 +164,101 @@ const SendBtn = styled(ComposeBtnWrapper)`
   }
 `;
 
-const Navbar = ({
-  profile, publish, history, publishRdy, unreadNotiCount,
-}) => {
-  const notiBtn = (
-    (profile.email) && (
-    <NotificationBtn unreadNotiCount={unreadNotiCount || {}} />));
-  const firstRowRegular = (
-    <NavFirstRow>
-      <Link to="/">
-        <NavTitle />
-      </Link>
+const HashBtn = styled.button`
+  outline: 0;
+  border: 0;
+  background: none;
+  margin: 0 2.5rem 0;
+  cursor: pointer;
+
+  display: ${props => (props.y > startHide ? 'block' : 'none')};
+`;
+
+class Navbar extends React.PureComponent {
+  state = { toggledTagbar: false };
+
+  handleHashOnClick = () => {
+    this.setState(prevState => ({
+      toggledTagbar: !prevState.toggledTagbar,
+    }));
+  }
+
+  render() {
+    const {
+      profile, publish, history, publishRdy, unreadNotiCount, scroll,
+    } = this.props;
+    const hashBtn = (<HashBtn y={scroll.y} onClick={this.handleHashOnClick}><Hash /></HashBtn>);
+    const notiBtn = (
+      (profile.email) && (
+      <NotificationBtn unreadNotiCount={unreadNotiCount || {}} />));
+    const firstRowRegular = (
+      <NavFirstRow>
+        <Link to="/">
+          <NavTitle />
+        </Link>
+        <Switch>
+          <Route path="/tags" exact render={() => <TickBtn onClick={() => { history.push('/'); }} />} />
+          <Route
+            path="/"
+            render={() => (
+              <NavRight>
+                {hashBtn}
+                {notiBtn}
+                <SignInBtn profile={profile || {}} />
+              </NavRight>
+            )}
+          />
+        </Switch>
+      </NavFirstRow>
+    );
+
+    const firstRowComposing = ({ match }) => (
+      <NavFirstRowCompose>
+        <CloseBtn onClick={() => history.goBack()}><Cross /></CloseBtn>
+        <NavText>{match.params.mode === 'thread' ? '发表新帖' : '回复引用'}</NavText>
+        <SendBtn
+          disabled={!publishRdy}
+          onClick={publish}
+        >
+          <Send />
+        </SendBtn>
+      </NavFirstRowCompose>
+    );
+    firstRowComposing.propTypes = {
+      match: PropTypes.shape({
+        params: PropTypes.shape({
+          mode: PropTypes.string,
+        }),
+      }).isRequired,
+    };
+
+    const navbar = (
       <Switch>
-        <Route path="/tags" exact render={() => <TickBtn onClick={() => { history.push('/'); }} />} />
-        <Route
-          path="/"
-          render={() => (
-            <NavRight>
-              {notiBtn}
-              <SignInBtn profile={profile || {}} />
-            </NavRight>
-          )}
-        />
+        <Route path="/draft/:mode" exact render={({ match }) => firstRowComposing({ match })} />
+        <Route path="/" render={() => firstRowRegular} />
+        {/* <Route path="/tags" render={() => firstRowRegular} />
+        <Route path="/thread" render={() => firstRowRegular} />
+        <Route path="/profile" render={() => firstRowRegular} /> */}
       </Switch>
-    </NavFirstRow>
-  );
-
-  const firstRowComposing = ({ match }) => (
-    <NavFirstRowCompose>
-      <CloseBtn onClick={() => history.goBack()}><Cross /></CloseBtn>
-      <NavText>{match.params.mode === 'thread' ? '发表新帖' : '回复引用'}</NavText>
-      <SendBtn
-        disabled={!publishRdy}
-        onClick={publish}
-      >
-        <Send />
-      </SendBtn>
-    </NavFirstRowCompose>
-  );
-  firstRowComposing.propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        mode: PropTypes.string,
-      }),
-    }).isRequired,
-  };
-
-  return (
-    <Wrapper>
+    );
+    return (
       <MainContent>
-        <NavWrapper>
-          <Switch>
-            <Route path="/draft/:mode" exact render={({ match }) => firstRowComposing({ match })} />
-            <Route path="/" render={() => firstRowRegular} />
-            {/* <Route path="/tags" render={() => firstRowRegular} />
-            <Route path="/thread" render={() => firstRowRegular} />
-            <Route path="/profile" render={() => firstRowRegular} /> */}
-          </Switch>
+        <FloatNavWrapper y={scroll.y} diff={scroll.diff}>
+          {navbar}
+          <FloatTagWrapper toggled={this.state.toggledTagbar}>
+            <Route path="/" exact component={NavTags} />
+            <Route path="/thread/:id" exact component={NavTags} />
+          </FloatTagWrapper>
+        </FloatNavWrapper>
+        <NavWrapper y={scroll.y} diff={scroll.diff}>
+          {navbar}
           <Route path="/" exact component={NavTags} />
           <Route path="/thread/:id" exact component={NavTags} />
         </NavWrapper>
       </MainContent>
-    </Wrapper>
-  );
-};
+    );
+  }
+}
 Navbar.propTypes = {
   profile: PropTypes.shape().isRequired,
   history: PropTypes.shape({}).isRequired,
