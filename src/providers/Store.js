@@ -30,6 +30,10 @@ class StoreProvider extends React.Component {
       publish: () => {},
       publishRdy: false,
       setStore: this.setStore,
+      scroll: {
+        y: 0,
+        diff: 0,
+      },
     };
     /* eslint-enable */
   }

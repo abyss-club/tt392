@@ -12,7 +12,7 @@ import Store from 'providers/Store';
 import ChatBubble from 'components/icons/ChatBubble';
 
 const ThreadViewWrapper = styled.div`
-  margin: 1.5rem -0.5rem 0;
+  margin: .5rem -0.5rem 0;
   background-color: white;
   min-height: calc(100vh - 7rem);
   border-radius: 1rem 1rem 0 0;

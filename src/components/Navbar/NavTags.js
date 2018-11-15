@@ -15,8 +15,8 @@ const NavTagsWrapper = styled.div`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  margin: -0.25rem;
-  padding: 0 1rem;
+  margin: 0 -0.25rem;
+  padding: 0 1rem 1rem;
 `;
 
 const AddBtnWrapper = styled.button`
