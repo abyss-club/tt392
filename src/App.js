@@ -17,6 +17,7 @@ import TagView from 'components/TagPage/TagView';
 import Notification from 'components/Notification';
 import { Loading, LoadingContainer } from 'utils/loading';
 import { ModalContainer } from 'utils/modal';
+import ScrollContainer from 'utils/scroll';
 import colors from 'utils/colors';
 
 faLib.loadFa();
@@ -43,6 +44,7 @@ const App = () => (
     <ModalContainer />
     <Init />
     <Navbar />
+    <ScrollContainer />
     <Switch>
       <Route path="/" component={Home} exact />
       <Route path="/sign_in/" component={SignIn} />

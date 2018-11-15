@@ -188,6 +188,10 @@ Navbar.propTypes = {
   publish: PropTypes.func.isRequired,
   publishRdy: PropTypes.bool.isRequired,
   unreadNotiCount: PropTypes.shape().isRequired,
+  scroll: PropTypes.shape({
+    y: PropTypes.number.isRequired,
+    diff: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 const NavbarWithRouter = withRouter(Navbar);
@@ -195,7 +199,7 @@ const NavbarWithRouter = withRouter(Navbar);
 export default () => (
   <Store.Consumer>
     {({
-      profile, tags, publish, publishRdy, unreadNotiCount,
+      profile, tags, publish, publishRdy, unreadNotiCount, scroll,
     }) => (
       <NavbarWithRouter
         profile={profile}
@@ -203,6 +207,7 @@ export default () => (
         publish={publish}
         publishRdy={publishRdy}
         unreadNotiCount={unreadNotiCount}
+        scroll={scroll}
       />
     )}
   </Store.Consumer>
