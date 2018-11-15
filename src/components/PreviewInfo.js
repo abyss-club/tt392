@@ -5,7 +5,7 @@ import colors from 'utils/colors';
 
 const Wrapper = styled.div`
   background-color: white;
-  margin-top: 1.5rem;
+  margin-top: .5rem;
   padding: 1rem;
   border-radius: 1rem;
   a {
