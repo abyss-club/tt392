@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Route, Link, Switch, withRouter } from 'react-router-dom';
 
 import Store from 'providers/Store';
-import MainContent from 'styles/MainContent';
+import MainContent, { maxWidth } from 'styles/MainContent';
 import AbyssLogo from 'components/icons/AbyssLogo';
 import Tick from 'components/icons/Tick';
 import Cross from 'components/icons/Cross';
@@ -43,21 +43,27 @@ const FloatNavWrapper = styled.nav`
     if (props.y >= startHide && props.y < endHide) {
       return `
         position: fixed;
+        max-width: ${maxWidth - 1}rem;
+        margin: auto;
+        left: 0;
+        right: 0;
         transform: translateY(-5rem);
         background-color: ${colors.mainBg};
         border-radius: 1rem;
         box-shadow: 0px 8px 24px rgba(13, 15, 23, 0.6);
-        width: calc(100vw - 1rem);
         opacity: 0;
 `;
     }
     return `
       position: fixed;
+      max-width: ${maxWidth - 1}rem;
+      margin: auto;
+      left: 0;
+      right: 0;
       transform: translateY(.5rem);
       background-color: ${colors.mainBg};
       border-radius: 1rem;
       box-shadow: 0px 8px 24px rgba(13, 15, 23, 0.6);
-      width: calc(100vw - 1rem);
       opacity: 1;
 `;
   }
@@ -168,7 +174,7 @@ const HashBtn = styled.button`
   outline: 0;
   border: 0;
   background: none;
-  margin: 0 2.5rem 0;
+  margin: 0 2.5rem 0 0;
   cursor: pointer;
 
   display: ${props => (props.y > startHide ? 'block' : 'none')};
