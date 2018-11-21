@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import Store from 'providers/Store';
-import MainContent from 'styles/MainContent';
+import MainContent, { maxWidth } from 'styles/MainContent';
 import colors from 'utils/colors';
 import Panel from './Panel';
 
@@ -12,6 +12,9 @@ const Wrapper = styled.div`
 `;
 
 const Type = styled.div`
+  flex: 0 1 calc((100% - 2rem - 6em) / 3);
+
+  text-align: center;
   font-size: .8em;
   padding-bottom: .5rem;
   margin: 0 1em;
@@ -24,12 +27,12 @@ const Type = styled.div`
   }
 `;
 
-const TypeWrapper = styled.article`
-  margin-top: .5rem;
+const TypeBar = styled.article`
+  width: ${maxWidth}rem;
 
   display: flex;
   flex-flow: row wrap;
-  justify-content: center;
+  justify-content: space-around;
 
   background-color: white;
   border: none;
@@ -70,9 +73,9 @@ class Notifications extends React.Component {
     return (
       <MainContent>
         <Wrapper>
-          <TypeWrapper>
+          <TypeBar>
             {selectableType}
-          </TypeWrapper>
+          </TypeBar>
           <Panel type={this.state.currentPanel} />
         </Wrapper>
       </MainContent>
@@ -81,7 +84,6 @@ class Notifications extends React.Component {
 }
 Notifications.propTypes = {
   badgeCount: PropTypes.shape().isRequired,
-  setStore: PropTypes.func.isRequired,
 };
 
 export default () => (

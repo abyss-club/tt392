@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 
 import Store from 'providers/Store';
 import Query from 'components/Query';
+import colors from 'utils/colors';
 // import colors from 'utils/colors';
 
 import Content from './Content';
@@ -12,8 +13,21 @@ import Content from './Content';
 const PanelWrapper = styled.div`
 `;
 
+const EmptyPanel = styled.div`
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0 0 1rem 1rem;
+`;
+
+const EmptyHint = styled.p`
+  text-align: center;
+  font-size: 1.25em;
+  font-weight: 300;
+  color: ${colors.textGrey};
+`;
+
 const Panel = ({ type, notifications }) => {
-  const notis = notifications.slice().reverse().map(noti => (
+  const notis = notifications.length && notifications.slice().reverse().map(noti => (
     <Content
       key={noti.id}
       type={type}
@@ -22,7 +36,13 @@ const Panel = ({ type, notifications }) => {
   ));
   return (
     <PanelWrapper>
-      {notis}
+      {notifications.length ? notis : (
+        <EmptyPanel>
+          <EmptyHint>
+            You currently don&#39;t have any notification of type: {`“${type}”`}.
+          </EmptyHint>
+        </EmptyPanel>
+      )}
     </PanelWrapper>
   );
 };
