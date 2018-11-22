@@ -49,7 +49,7 @@ const TagRow = styled.div`
   align-items: center;
   margin-bottom: 1rem;
 
-  overflow-x: scroll;
+  overflow: scroll hidden;
 `;
 
 const MetaRow = styled.div`
