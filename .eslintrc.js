@@ -1,5 +1,8 @@
 module.exports = {
   "extends": "airbnb",
+  "plugins": [
+    "react-hooks",
+  ],
   "rules": {
     "react/jsx-filename-extension": [1, {
       "extensions": [".js", ".jsx"]
@@ -16,6 +19,8 @@ module.exports = {
     "no-use-before-define": [0, {}],
     "no-underscore-dangle": ["error", {"allow": ["__sharethis__"]}],
     "strict": 0,
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
   },
   "settings": {
     "import/resolver": {
