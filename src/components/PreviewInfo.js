@@ -29,11 +29,21 @@ const Title = styled.div`
 const PreviewInfo = () => (
   <Wrapper>
     <Title>本站尚处于开发初期</Title>
-    <p>Powered by Projects of <a href="https://gitlab.com/abyss.club/abyss">abyss</a></p>
-    <p>Abyss 使用 GraphQL API ( <a href="https://graphql.org/">了解 GraphQL</a> )</p>
     <p>
-      <Link to="/graphiql/"> GraphiQL </Link>/
-      <Link to="/voyager/"> GraphQL Voyager </Link>/
+    Powered by Projects of
+      <a href="https://gitlab.com/abyss.club/abyss">abyss</a>
+    </p>
+    <p>
+    Abyss 使用 GraphQL API (
+      <a href="https://graphql.org/">了解 GraphQL</a>
+      {' '}
+    )
+    </p>
+    <p>
+      <Link to="/graphiql/"> GraphiQL </Link>
+      /
+      <Link to="/voyager/"> GraphQL Voyager </Link>
+      /
       <a href="https://gitlab.com/abyss.club/abyss/blob/master/api.gql"> Schema</a>
     </p>
   </Wrapper>

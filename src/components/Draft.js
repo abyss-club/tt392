@@ -480,7 +480,7 @@ const QUERY_REFERS = gql`
     thread(id: $id) {
       replies(query: { after: "", limit: 100}) {
         posts {
-          id, author, content, createTime
+          id, author, content, createdAt
         }
       }
     }

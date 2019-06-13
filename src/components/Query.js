@@ -16,6 +16,7 @@ class InQuery extends React.Component {
       });
     }
   }
+
   render() {
     const {
       loading, error, children, apolloProps, queryProps,

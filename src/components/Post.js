@@ -173,7 +173,7 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 const Post = ({
-  isThread, title, anonymous, author, createTime, content, quotes, postID, threadID, replyCount,
+  isThread, title, anonymous, author, createdAt, content, quotes, postID, threadID, replyCount,
   onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList, history,
 }) => {
   const titleRow = isThread ? (
@@ -208,14 +208,14 @@ const Post = ({
       </TagRow>
       <MetaRow>
         {authorText}
-        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
+        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createdAt).formatted}</PublishTime>
       </MetaRow>
     </TopRowWrapper>
   ) : (
     <TopRowWrapper inList={inList}>
       <MetaRow>
         {authorText}
-        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createTime).formatted}</PublishTime>
+        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createdAt).formatted}</PublishTime>
         {quoteSelector}
         <MoreBtn><More /></MoreBtn>
       </MetaRow>
@@ -244,7 +244,7 @@ Post.propTypes = {
   title: PropTypes.string,
   anonymous: PropTypes.bool.isRequired,
   author: PropTypes.string.isRequired,
-  createTime: PropTypes.string.isRequired,
+  createdAt: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
   quotes: PropTypes.arrayOf(PropTypes.shape()),
   postID: PropTypes.string,

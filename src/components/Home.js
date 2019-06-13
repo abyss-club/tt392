@@ -1,10 +1,11 @@
 import React from 'react';
 
+import styled from 'styled-components';
 import ThreadList from 'components/ThreadList';
 import PreviewInfo from 'components/PreviewInfo';
 import MainContent from 'styles/MainContent';
 
-const Wrapper = MainContent.extend`
+const Wrapper = styled(MainContent)`
   display: flex;
   flex-flow: column;
 `;
