@@ -378,7 +378,7 @@ class Draft extends React.Component {
               <option>添加主标签…</option>
               {[...tags.mainTags].map(tag => (
                 <option key={tag} value={tag}>{tag}</option>
-            ))}
+              ))}
             </Dropdown>
           </DropdownWrapper>
         </TitleRow>
@@ -390,7 +390,10 @@ class Draft extends React.Component {
         {Object.keys(quoted).map(id => (
           <QuotedBtn key={id} onClick={() => this.toggleQuoted({ id })}>
             {quoted[id] ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="square" />)}
-            <span> {id}</span>
+            <span>
+              {' '}
+              {id}
+            </span>
           </QuotedBtn>
         ))}
         <QuotedContentWrapper>
@@ -407,7 +410,8 @@ class Draft extends React.Component {
     // };
     const anonSwitch = (
       <AnonBtn onClick={this.toggleAnon} isAnon={isAnon}>
-        匿名发送<AnonIcon isAnon={isAnon}><Tick /></AnonIcon>
+        匿名发送
+        <AnonIcon isAnon={isAnon}><Tick /></AnonIcon>
       </AnonBtn>
     );
     return (
@@ -425,7 +429,12 @@ class Draft extends React.Component {
             ref={(instance) => { this.editorChild = instance; }}
           />
         )}
-        {(error !== '') && (<p>错误：{error}</p>)}
+        {(error !== '') && (
+        <p>
+          错误：
+          {error}
+        </p>
+        )}
         <ButtonRow>
           {anonSwitch}
           <ButtonRowRight>
