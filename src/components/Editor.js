@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {
+  forwardRef, useState, useImperativeHandle, useRef,
+} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import SoftBreak from 'slate-soft-break';
@@ -58,11 +60,7 @@ const initialValue = text => Value.fromJSON({
         nodes: [
           {
             object: 'text',
-            leaves: [
-              {
-                text,
-              },
-            ],
+            text,
           },
         ],
       },
@@ -70,55 +68,47 @@ const initialValue = text => Value.fromJSON({
   },
 });
 
-function insertMarkup(change, type) {
-  if (type === 'image') change.insertText(' ![Description]() ');
-  if (type === 'link') change.insertText(' [Title]() ');
-  change.select();
-}
-
-
 // Define our app...
-class TextEditor extends React.Component {
+const TextEditor = forwardRef(({ text, save }, ref) => {
   // Set the initial value when the app is first constructed
-  state = {
-    value: initialValue(this.props.text),
-  };
+  const [value, setValue] = useState(initialValue(text));
+  const editorRef = useRef();
 
   // On change, update the app's React state with the new editor value.
-  onChange = ({ value }) => {
-    this.setState({ value });
+  const onChange = (change) => {
+    setValue(change.value);
     const texts = value.document.nodes.map(val => val.text);
-    this.props.save(texts.join('\n'));
-  }
+    save(texts.join('\n'));
+  };
 
-  handleLinkClick = () => {
-    const type = 'link';
-    const change = this.state.value.change().call(insertMarkup, type);
-    this.onChange(change);
-  }
+  useImperativeHandle(ref, () => ({
+    handleLinkClick() {
+      const change = editorRef.current.command('insertText', ' [Title]() ').command('focus');
+      onChange(change);
+    },
 
-  handleImageClick = () => {
-    const type = 'image';
-    const change = this.state.value.change().call(insertMarkup, type);
-    this.onChange(change);
-  }
+    handleImageClick() {
+      const change = editorRef.current.command('insertText', ' ![Description]() ').command('focus');
+      onChange(change);
+    },
+  }));
 
   // Render the editor.
-  render() {
-    return (
-      <Wrapper>
-        <SlateArea>
-          <Editor
-            value={this.state.value}
-            onChange={this.onChange}
-            placeholder="说点什么…"
-            plugins={plugins}
-          />
-        </SlateArea>
-      </Wrapper>
-    );
-  }
-}
+  return (
+    <Wrapper>
+      <SlateArea>
+        <Editor
+          ref={editorRef}
+          value={value}
+          onChange={onChange}
+          placeholder="说点什么…"
+          plugins={plugins}
+        />
+      </SlateArea>
+    </Wrapper>
+  );
+});
+
 TextEditor.propTypes = {
   text: PropTypes.string.isRequired,
   save: PropTypes.func.isRequired,

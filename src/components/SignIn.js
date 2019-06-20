@@ -92,7 +92,7 @@ class SignIn extends React.Component {
             <EmailInput
               type="email"
               placeholder="邮箱地址"
-              innerRef={(input) => { this.input = input; }}
+              ref={(input) => { this.input = input; }}
             />
           </p>
           <p><NextBtn type="submit" disabled={disabled}>下一步</NextBtn></p>
