@@ -25,10 +25,10 @@ const ThreadViewWrapper = styled.div`
 const THREAD_VIEW = gql`
   query Thread($id: String!) {
     thread(id: $id) {
-      id, anonymous, title, author, content, createTime, mainTag, subTags,
+      id, anonymous, title, author, content, createdAt, mainTag, subTags,
       replies(query: { after: "", limit: 100}) {
         posts {
-          id, anonymous, author, content, createTime, quotes { id, author, content, createTime }
+          id, anonymous, author, content, createdAt, quotes { id, author, content, createdAt }
         }
         sliceInfo {
           firstCursor

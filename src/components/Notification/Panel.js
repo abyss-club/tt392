@@ -73,8 +73,8 @@ QueryWrapper.propTypes = {
 function getNotification(type) {
   const fields = {
     system: 'id, type, eventTime, hasRead, title, content',
-    replied: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createTime, mainTag, subTags, title, replies(query: { before: "", limit: 3 }) { posts { id, anonymous, content, author, createTime } }, replyCount }, repliers',
-    quoted: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createTime, mainTag, subTags, title }, post { id, anonymous, author, content, createTime }, quoter, quotedPost { id, anonymous, author, content, createTime }',
+    replied: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createdAt, mainTag, subTags, title, replies(query: { before: "", limit: 3 }) { posts { id, anonymous, content, author, createdAt } }, replyCount }, repliers',
+    quoted: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createdAt, mainTag, subTags, title }, post { id, anonymous, author, content, createdAt }, quoter, quotedPost { id, anonymous, author, content, createdAt }',
   };
   return gql`
     query Notification {

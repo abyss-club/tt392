@@ -16,10 +16,10 @@ const THREADSLICE_QUERY = gql`
   query getThreadSlice($tags: [String!]) {
     threadSlice(tags: $tags, query: { after: "", limit: 10 }) {
       threads {
-        id, anonymous, title, author, content, createTime, mainTag, subTags, replyCount,
+        id, anonymous, title, author, content, createdAt, mainTag, subTags, replyCount,
         replies(query: { before: "", limit: 5}) {
           posts {
-            id, anonymous, author, content, createTime, quotes { id, author, content, createTime }
+            id, anonymous, author, content, createdAt, quotes { id, author, content, createdAt }
           }
         }
       }

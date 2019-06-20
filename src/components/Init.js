@@ -36,6 +36,7 @@ class Init extends React.Component {
       tags: parseTags(profile, tags),
     });
   }
+
   render() {
     return null;
   }
@@ -55,7 +56,6 @@ const INITIAL = gql`
     }
     tags {
       mainTags
-      recommended
     }
   }
 `;

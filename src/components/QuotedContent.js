@@ -101,7 +101,7 @@ const QuotedContent = ({
         author: quote.author,
       })}
       {' · '}
-      {timeElapsed(quote.createTime).formatted}
+      {timeElapsed(quote.createdAt).formatted}
     </QuotedMeta>
     <QuotedText>{quote.content}</QuotedText>
   </QuotedContentArea>
