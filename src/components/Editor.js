@@ -1,16 +1,10 @@
 import React, {
-  forwardRef, useState, useImperativeHandle, useRef,
+  forwardRef, useState, useImperativeHandle, createRef,
 } from 'react';
 import PropTypes from 'prop-types';
+import isURL from 'validator/lib/isURL';
 import styled from 'styled-components';
-import SoftBreak from 'slate-soft-break';
 
-import { Editor } from 'slate-react';
-import { Value } from 'slate';
-
-// import LinkIcon from 'components/icons/Link';
-// import Image from 'components/icons/Image';
-// import colors from 'utils/colors';
 
 const Wrapper = styled.div`
   min-height: 6em;
@@ -23,88 +17,88 @@ const Wrapper = styled.div`
   }
 `;
 
-// const IconWrapper = styled.button`
-//   color: white;
-//   font-size: 1em;
-//   appearance: none;
-//   border: 0;
-//   background: none;
-//   svg {
-//     color: white;
-//   }
-// `;
-//
-// const Toolbar = styled.div`
-//   width: 100%;
-//   display: flex;
-//   flex-flow: row nowrap;
-//   color: black;
-// `;
-
-const SlateArea = styled.div`
+const ContentArea = styled.textarea`
   background-color: white;
+  border: none;
   width: 100%;
   font-family: 'Helvetica Neue', Arial, sans-serif;
 `;
 
-const plugins = [
-  SoftBreak(),
-];
-
-const initialValue = text => Value.fromJSON({
-  document: {
-    nodes: [
-      {
-        object: 'block',
-        type: 'paragraph',
-        nodes: [
-          {
-            object: 'text',
-            text,
-          },
-        ],
-      },
-    ],
-  },
-});
-
-// Define our app...
 const TextEditor = forwardRef(({ text, save }, ref) => {
   // Set the initial value when the app is first constructed
-  const [value, setValue] = useState(initialValue(text));
-  const editorRef = useRef();
+  const [value, setValue] = useState(text);
+  const textareaRef = createRef();
 
   // On change, update the app's React state with the new editor value.
-  const onChange = (change) => {
-    setValue(change.value);
-    const texts = value.document.nodes.map(val => val.text);
-    save(texts.join('\n'));
+  const onChange = (e) => {
+    setValue(e.target.value);
+    save(value);
+    getSelection();
+  };
+
+  // Get selection range of the textarea
+  const getSelection = () => {
+    const textVal = textareaRef.current;
+    const { selectionStart, selectionEnd } = textVal;
+    return { selectionStart, selectionEnd };
   };
 
   useImperativeHandle(ref, () => ({
-    handleLinkClick() {
-      const change = editorRef.current.command('insertText', ' [Title]() ').command('focus');
-      onChange(change);
-    },
+    handleBtnClick({ type }) {
+      const insertText = ({ description, url }) => (type === 'link' ? `[${description || '标题'}](${url || ''})` : `![${description || '描述'}](${url || ''})`);
 
-    handleImageClick() {
-      const change = editorRef.current.command('insertText', ' ![Description]() ').command('focus');
-      onChange(change);
+      const { selectionStart, selectionEnd } = getSelection();
+      let newVal = value;
+      const newRange = { start: 0, end: 0 };
+
+      // when nothing is selected
+      if (selectionStart === selectionEnd) {
+        if (selectionStart === value.length) {
+          newVal = `${value} ${insertText({})}`;
+        } else {
+          newVal = `${value.substring(0, selectionStart)} ${insertText({})} ${value.substring(selectionStart, value.length)}`;
+        }
+        // trying to manipulate cursor selection
+        newRange.start = selectionStart - 2;
+        newRange.end = selectionStart - 2;
+      } else {
+        // when something is selected
+        const selectedText = value.slice(selectionStart, selectionEnd);
+        // if selection is a URL, insert '[Title](${selection})'
+        if (isURL(selectedText, { require_protocol: true })) {
+          newVal = `${value.substring(0, selectionStart)} ${insertText({ url: selectedText })} ${value.substring(selectionEnd, value.length)}`;
+          // try to manipulate cursor selection
+          newRange.start = selectionStart - type === 'link' ? 7 : 13;
+          newRange.end = selectionStart - 2;
+        } else {
+          // if selection isn't a URL, insert '[${selection}]()'
+          newVal = `${value.substring(0, selectionStart)} ${insertText({ description: selectedText })} ${value.substring(selectionEnd, value.length)}`;
+          // try to manipulate cursor selection
+          newRange.start = selectionEnd + type === 'link' ? 2 : 3;
+          newRange.end = selectionStart + type === 'link' ? 2 : 3;
+        }
+      }
+
+      setValue(newVal);
+      save(newVal);
+
+      // currently broken for unknown reason
+      // textareaRef.current.setSelectionRange(newRange.start, newRange.end);
+
+      textareaRef.current.focus();
     },
   }));
 
-  // Render the editor.
   return (
     <Wrapper>
-      <SlateArea>
-        <Editor
-          ref={editorRef}
-          value={value}
-          onChange={onChange}
-          placeholder="说点什么…"
-          plugins={plugins}
-        />
-      </SlateArea>
+      <ContentArea
+        ref={textareaRef}
+        value={value}
+        onChange={onChange}
+        placeholder="说点什么…"
+        required
+        spellcheck
+      />
     </Wrapper>
   );
 });
