@@ -438,10 +438,10 @@ class Draft extends React.Component {
         <ButtonRow>
           {anonSwitch}
           <ButtonRowRight>
-            <ToolBtn onClick={() => this.editorChild.handleLinkClick()}>
+            <ToolBtn onClick={() => this.editorChild.handleBtnClick({ type: 'link' })}>
               <LinkIcon />
             </ToolBtn>
-            <ToolBtn onClick={() => this.editorChild.handleImageClick()}>
+            <ToolBtn onClick={() => this.editorChild.handleBtnClick({ type: 'image' })}>
               <Image />
             </ToolBtn>
             <PreviewBtn onClick={this.togglePreview}>{preview ? '编辑' : '预览' }</PreviewBtn>
