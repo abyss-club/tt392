@@ -3,46 +3,95 @@ import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 import PropTypes from 'prop-types';
-import AbyssLogo from 'components/icons/AbyssLogo';
+import isEmail from 'validator/lib/isEmail';
 
+import Caution from 'components/icons/Caution';
+import { maxWidth } from 'styles/MainContent';
 import colors from 'utils/colors';
 
 const Wrapper = styled.div`
-  width: 18rem;
-  margin: 7rem auto;
-  text-align: center;
-  color: white;
-`;
-
-const Logo = styled.div`
-  padding-top: 1rem;
+  max-width: ${maxWidth}em;
+  background-color: white;
+  width: 24rem;
+  margin: 1rem auto;
+  padding: 1.5rem 1rem;
+  border-radius: .5rem;
 `;
 
 const CompleteInfoWrapper = styled.div`
-  width: 100%;
-  padding: 1rem;
-  margin: 1rem 0;
-  background-color: rgba(0, 0, 0, 0.1);
+`;
+
+const LoginTitle = styled.h2`
+  text-align: center;
 `;
 
 const EmailInput = styled.input`
   width: 100%;
   height: 3rem;
-  padding: 0.5rem .75rem;
-  margin: 1.5rem 0;
+  padding: 0.5rem 1rem;
+  margin: 1.5rem 0 .75rem;
   border: none;
-  border-radius: .5rem;
-  outline: none;
+  border-radius: 1.5rem;
+  background-color: ${colors.mainBg};
+
+  ::placeholder {
+    color: ${colors.regularGrey};
+  }
+`;
+
+const ErrWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 .25rem 0;
+  margin-bottom: .75rem;
+`;
+
+const ErrInfo = styled.p`
+  margin-left: .25rem;
+  font-size: .6875em;
 `;
 
 const NextBtn = styled.button`
   width: 100%;
   height: 3rem;
-  background: ${colors.accentRed};
+  background-color: ${colors.accentGreen};
   color: white;
   border: none;
   outline: none;
-  border-radius: .5rem;
+  border-radius: 1.5rem;
+
+  :disabled {
+    background-color: ${colors.buttonBgDisabled};
+  }
+`;
+
+const CompleteTitle = styled.div`
+  width: 100%;
+
+  background-color: white;
+  margin: 0.5rem 0 0rem;
+  padding: 0 0;
+
+  :after {
+    content: "";
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid ${colors.borderGrey};
+    margin: 0;
+    padding-top: 1rem;
+  }
+`;
+
+const CompleteText = styled.p`
+  color: ${colors.regularGrey};
+  margin-top: 1rem;
+  font-size: .75em;
+
+  > p {
+    color: ${colors.titleBlack};
+    font-size: calc(14em / 12);
+    font-weight: 600;
+  }
 `;
 
 class SignIn extends React.Component {
@@ -51,55 +100,71 @@ class SignIn extends React.Component {
     this.state = {
       status: 'INIT',
       email: '',
-      disabled: false,
+      disabled: true,
+      info: '',
     };
-    this.input = React.createRef();
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleSubmit(event) {
+  handleSubmit = (event) => {
     event.preventDefault();
-    const email = this.input.value;
-    this.setState({ email, disabled: true });
-    this.props.auth({ variables: { email } }).then(({ data }) => {
-      if (data.auth || false) {
-        this.setState({ status: 'COMPLETE', disabled: false });
-      } else {
+    const { email } = this.state;
+    if (!isEmail(email)) {
+      this.setState({ status: 'ERROR', disabled: true, info: '不是合法的邮件地址。' });
+    } else {
+      this.setState({ disabled: true });
+      this.props.auth({ variables: { email } }).then(({ data }) => {
+        if (data.auth || false) {
+          this.setState({ status: 'COMPLETE', disabled: false });
+        } else {
+          this.setState({ status: 'ERROR', disabled: false });
+        }
+      }).catch(() => {
         this.setState({ status: 'ERROR', disabled: false });
-      }
-    }).catch(() => {
-      this.setState({ status: 'ERROR', disabled: false });
-    });
+      });
+    }
+  }
+
+  handleChange = (e) => {
+    this.setState({ status: 'INIT', info: '' });
+    if (e.target.value) {
+      this.setState({ email: e.target.value, disabled: false });
+    } else {
+      this.setState({ disabled: true });
+    }
   }
 
   render() {
     const { status, email, disabled } = this.state;
     const completed = (
       <CompleteInfoWrapper>
-        <h4>我们给你发送了一个登录链接!</h4>
-        <p>我们发送了一封电子邮件到</p>
-        <p><small>{email}</small></p>
-        <p>其中包含一个用于登录的魔法链接</p>
+        <CompleteTitle><h2>检查你的邮箱</h2></CompleteTitle>
+        <CompleteText>
+          一封包含了登录链接的电子邮件已被发送到：
+          <p>{email}</p>
+        </CompleteText>
       </CompleteInfoWrapper>
     );
     return (
       <Wrapper>
-        <h3>进入</h3>
-        <Logo><AbyssLogo /></Logo>
         {(status !== 'COMPLETE') && (
-        <form onSubmit={this.handleSubmit}>
-          <p>
+        <>
+          <LoginTitle>登录</LoginTitle>
+          <form onSubmit={this.handleSubmit}>
             <EmailInput
               type="email"
+              onChange={this.handleChange}
               placeholder="邮箱地址"
               ref={(input) => { this.input = input; }}
             />
-          </p>
-          <p><NextBtn type="submit" disabled={disabled}>下一步</NextBtn></p>
-          {(status === 'ERROR') && (
-            <p>发生了错误，请重试</p>
-          )}
-        </form>
+            {(status === 'ERROR') && (
+              <ErrWrapper>
+                <Caution />
+                <ErrInfo>{this.state.info || '发生了错误，请重试。'}</ErrInfo>
+              </ErrWrapper>
+            )}
+            <p><NextBtn type="submit" disabled={disabled}>下一步</NextBtn></p>
+          </form>
+        </>
         )}
         {(status === 'COMPLETE') && completed}
       </Wrapper>

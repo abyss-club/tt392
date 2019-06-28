@@ -34,10 +34,13 @@ const PreviewWrapper = styled.div`
   img {
     max-width: 100%;
   }
+
+  ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
 `;
 
 const ImageHack = styled.span`
   display: inline-block;
+  padding: .5em 0;
   margin-left: ${props => (props.inList ? '-1rem' : '-1.5rem')};
   width: ${props => (props.inList ? 'calc(100% + 2rem)' : 'calc(100% + 3rem)')};
 
@@ -56,7 +59,7 @@ const MDPreview = ({ text, isThread, inList }) => {
     </ImageHack>
   );
   return (
-    <PreviewWrapper isThread={isThread}>
+    <PreviewWrapper isThread={isThread} inList={inList}>
       <ReactMarkdown source={text} renderers={{ image: customImg }} />
     </PreviewWrapper>
   );

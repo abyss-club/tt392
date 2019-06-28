@@ -169,7 +169,7 @@ const AnonIcon = styled.div`
   align-items: center;
   justify-content: center;
 
-  background-color: ${props => (props.isAnon ? colors.accentRed : 'unset')};
+  background-color: ${props => (props.isAnon ? colors.accentGreen : 'unset')};
   ${props => (props.isAnon ? 'border: none;' : `border: 1px solid ${colors.regularGrey};`)}
   border-radius: 50%;
   font-size: .875em;

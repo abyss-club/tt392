@@ -47,7 +47,7 @@ const CompactTag = styled(Link)`
   margin-right: .25em;
 
   font-size: .75em;
-  color: ${props => (props.ismain ? colors.accentRed : colors.textGrey)};
+  color: ${props => (props.ismain ? colors.tagRed : colors.tagGrey)};
   text-decoration: none;
   :hover {
     text-decoration: underline;

@@ -16,16 +16,27 @@ const TagRow = styled.div`
   display: flex;
   padding: 0 1rem;
 
-  overflow-x: scroll;
+  overflow: scroll hidden;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 `;
 
 const ContentWrapper = styled.article`
   background-color: white;
   border: none;
   padding: 1rem 0 0;
+  :first-of-type {
+    border-top-left-radius: .5rem;
+    border-top-right-radius: .5rem;
+    padding-bottom: 1rem;
+  }
   :last-of-type {
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
     padding-bottom: 1rem;
   }
   :not(:last-of-type):after {
@@ -67,9 +78,9 @@ const ViewThread = styled.p`
   padding: .5rem 1rem;
   font-size: .75em;
   line-height: 1.5;
-  color: ${colors.accentRed};
+  color: ${colors.accentGreen};
   > a {
-    color: ${colors.accentRed};
+    color: ${colors.accentGreen};
     text-decoration: none;
   }
 `;
@@ -168,7 +179,7 @@ const Content = ({ type, notification }) => {
       {repliers}
       <Title>{notification.thread.title || titlePlaceholder}</Title>
       <QuotedContent
-        inNoti
+        inNotiReply
         quotes={notification.thread.replies.posts.slice().reverse()}
       />
       {/* Duplicate the array, then reverse it. */}
@@ -189,7 +200,7 @@ const Content = ({ type, notification }) => {
       <Title>{notification.thread.title || titlePlaceholder}</Title>
       <PostWrapper>
         <QuotedContent
-          inNoti
+          inNotiQuote
           quotes={[notification.quotedPost]}
         />
         <PostContent>{notification.post.content}</PostContent>

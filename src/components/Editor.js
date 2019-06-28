@@ -33,7 +33,7 @@ const TextEditor = forwardRef(({ text, save }, ref) => {
 
   // On change, update the app's React state with the new editor value.
   const onChange = (e) => {
-    setRow(baseRow);
+    // setTimeout(setRow(baseRow), 0);
     resize();
     setValue(e.target.value);
     save(value);

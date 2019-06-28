@@ -7,7 +7,7 @@ const Wrapper = styled.div`
   background-color: white;
   margin-top: .5rem;
   padding: 1rem;
-  border-radius: 1rem;
+  border-radius: .5rem;
   a {
     text-decoration: none;
     color: ${colors.accentBlue};

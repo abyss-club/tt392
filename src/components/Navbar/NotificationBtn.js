@@ -26,7 +26,7 @@ const Badge = styled.div`
   left: 1.25em;
   top: -1.5em;
 
-  background-color: ${colors.accentRed};
+  background-color: ${colors.accentGreen};
   height: 1em;
   color: white;
 

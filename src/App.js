@@ -15,6 +15,7 @@ import Init from 'components/Init';
 import TagPage from 'components/TagPage';
 import TagView from 'components/TagPage/TagView';
 import Notification from 'components/Notification';
+import NavTags from 'components/Navbar/NavTags';
 import { Loading, LoadingContainer } from 'utils/loading';
 import { ModalContainer } from 'utils/modal';
 import ScrollContainer from 'utils/scroll';
@@ -44,6 +45,8 @@ const App = () => (
     <ModalContainer />
     <Init />
     <Navbar />
+    <Route path="/" exact component={NavTags} />
+    <Route path="/thread/:id" exact component={NavTags} />
     <ScrollContainer />
     <Switch>
       <Route path="/" component={Home} exact />

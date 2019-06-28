@@ -11,24 +11,34 @@ const Wrapper = styled.div`
   margin: 0;
 `;
 
+const Title = styled.h2`
+  color: ${colors.regularGrey};
+  width: 100%;
+  font-size: 1.125em;
+  font-weight: 600;
+  margin: 1rem 0;
+  text-align: center;
+`;
+
 const Type = styled.div`
   flex: 0 1 calc((100% - 2rem - 6em) / 3);
 
   text-align: center;
   font-size: .8em;
-  padding-bottom: .5rem;
+  padding: .625rem 0 .5rem;
   margin: 0 1em;
-  ${props => (props.selected ? `border-bottom: 2px solid ${colors.accentRed};` : 'border: none')}
+  ${props => (props.selected ? `border-bottom: 2px solid ${colors.accentGreen};` : 'border: none')}
   color: ${props => (props.selected ? colors.regularBlack : colors.regularGrey)};
 
   cursor: pointer;
   :hover {
-    border-bottom: 2px solid ${colors.accentRed};
+    border-bottom: 2px solid ${colors.accentGreen};
   }
 `;
 
 const TypeBar = styled.article`
-  width: ${maxWidth}rem;
+  max-width: ${maxWidth}rem;
+  margin-bottom: .5rem;
 
   display: flex;
   flex-flow: row wrap;
@@ -36,15 +46,6 @@ const TypeBar = styled.article`
 
   background-color: white;
   border: none;
-  padding: 1rem 0 0;
-  border-radius: 1rem 1rem 0 0;
-  :after {
-    content: "";
-    display: block;
-    width: calc(100% - 2rem);
-    border-bottom: 1px solid ${colors.borderGrey};
-    margin: 0 1rem;
-  }
 `;
 
 class Notifications extends React.Component {
@@ -71,14 +72,15 @@ class Notifications extends React.Component {
       </Type>
     ));
     return (
-      <MainContent>
-        <Wrapper>
-          <TypeBar>
-            {selectableType}
-          </TypeBar>
+      <Wrapper>
+        <TypeBar>
+          <Title>消息中心</Title>
+          {selectableType}
+        </TypeBar>
+        <MainContent>
           <Panel type={this.state.currentPanel} />
-        </Wrapper>
-      </MainContent>
+        </MainContent>
+      </Wrapper>
     );
   }
 }

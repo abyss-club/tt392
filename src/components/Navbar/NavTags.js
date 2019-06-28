@@ -16,7 +16,7 @@ const NavTagsWrapper = styled.div`
   flex-flow: row wrap;
   align-items: center;
   margin: 0 -0.25rem;
-  padding: 0 1rem 1rem;
+  padding: 1rem 1rem .5rem;
 `;
 
 const AddBtnWrapper = styled.button`
@@ -33,6 +33,14 @@ const AddBtnWrapper = styled.button`
   margin: 0.25em;
   line-height: 0;
   cursor: pointer;
+`;
+
+const DescriptionText = styled.p`
+  color: ${colors.textOnBg};
+  width: 100%;
+  font-size: ${11 / 12}em;
+  font-family: ${fontFamilies.system};
+  padding-bottom: .5rem;
 `;
 
 const AddBtn = ({ onClick }) => (
@@ -56,6 +64,7 @@ const NavTags = ({ tags, history }) => {
   );
   return (
     <NavTagsWrapper>
+      <DescriptionText>已关注标签</DescriptionText>
       <AddBtn onClick={() => { history.push('/tags/'); }} />
       <React.Fragment>
         {([...main]).map(tag => SubbedTag(tag, true))}
