@@ -42,8 +42,8 @@ const TagWrapper = styled.span`
   align-items: center;
 
   background-color: ${colors.lightRed};
-  color: ${colors.accentRed};
-  border: 1px solid ${colors.accentRed};
+  color: ${colors.accentGreen};
+  border: 1px solid ${colors.accentGreen};
   border-radius: .75rem;
   padding: .25em 1em;
   font-size: .75em;
@@ -61,7 +61,7 @@ const CrossWrapper = styled.button`
   line-height: 0;
   > svg {
     > path {
-      stroke: ${colors.accentRed};
+      stroke: ${colors.accentGreen};
     }
   }
 `;

@@ -3,32 +3,38 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
+import colors from 'utils/colors';
 import Post from 'components/Post';
 
-const ThreadWrapper = styled.div`
+const ThreadWrapper = styled.article`
   background-color: white;
-  border-radius: 1rem;
-  margin: 0.5rem 0;
+  margin: 1rem 0;
   padding-top: 0.5rem;
+  border-radius: .5rem;
+  :last-of-type {
+    margin: 1rem 0 0;
+  }
 `;
 
-const FooterWrapper = styled.div`
+const MoreWrapper = styled.div`
+  background-color: ${colors.secondaryBg};
   font-size: 0.875rem;
   line-height: 1.5;
   padding: 0.75rem 0;
   text-align: center;
+  border-radius: 0 0 .5rem .5rem;
   > a {
-    color: inherit;
+    color: ${colors.accentGreen};
     text-decoration: none;
   }
 `;
 
-const Footer = ({ threadID }) => (
-  <FooterWrapper>
+const More = ({ threadID }) => (
+  <MoreWrapper>
     <Link to={`/thread/${threadID}`}>查看整串</Link>
-  </FooterWrapper>
+  </MoreWrapper>
 );
-Footer.propTypes = {
+More.propTypes = {
   threadID: PropTypes.string.isRequired,
 };
 
@@ -40,7 +46,7 @@ const ThreadInList = ({ thread }) => {
       <div>
         {replies.map(post => <Post inList key={post.id} threadID={thread.id} {...post} />)}
       </div>
-      {(replies.length > 0) && (<Footer threadID={thread.id} />)}
+      {(replies.length > 0) && (<More threadID={thread.id} />)}
     </ThreadWrapper>
   );
 };

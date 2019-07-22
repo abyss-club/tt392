@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import isURL from 'validator/lib/isURL';
 import styled from 'styled-components';
 
-
 const Wrapper = styled.div`
   min-height: 6em;
   font-size: .875em;
@@ -22,18 +21,27 @@ const ContentArea = styled.textarea`
   border: none;
   width: 100%;
   font-family: 'Helvetica Neue', Arial, sans-serif;
+  resize: none;
 `;
 
 const TextEditor = forwardRef(({ text, save }, ref) => {
   // Set the initial value when the app is first constructed
   const [value, setValue] = useState(text);
+  const baseRow = 2;
+  const [row, setRow] = useState(baseRow);
   const textareaRef = createRef();
 
   // On change, update the app's React state with the new editor value.
   const onChange = (e) => {
+    // setTimeout(setRow(baseRow), 0);
+    resize();
     setValue(e.target.value);
     save(value);
-    getSelection();
+  };
+
+  const resize = () => {
+    const { scrollHeight, clientHeight } = textareaRef.current;
+    setRow(row + (scrollHeight - clientHeight) / 16);
   };
 
   // Get selection range of the textarea
@@ -96,6 +104,7 @@ const TextEditor = forwardRef(({ text, save }, ref) => {
         value={value}
         onChange={onChange}
         placeholder="说点什么…"
+        rows={row}
         required
         spellcheck
       />

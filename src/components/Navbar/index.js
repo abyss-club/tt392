@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Route, Link, Switch, withRouter } from 'react-router-dom';
+import {
+  Route, Link, Switch, withRouter,
+} from 'react-router-dom';
 
 import Store from 'providers/Store';
-import MainContent, { maxWidth } from 'styles/MainContent';
+import { maxWidth } from 'styles/MainContent';
 import AbyssLogo from 'components/icons/AbyssLogo';
 import Tick from 'components/icons/Tick';
 import Cross from 'components/icons/Cross';
@@ -12,7 +14,6 @@ import Send from 'components/icons/Send';
 import Hash from 'components/icons/Hash';
 import colors from 'utils/colors';
 
-import NavTags from './NavTags';
 import SignInBtn from './SignInBtn';
 import NotificationBtn from './NotificationBtn';
 
@@ -20,9 +21,13 @@ const startHide = 500;
 const endHide = 1000;
 
 const NavWrapper = styled.nav`
+  position: sticky;
+  top: 0;
+
   display: flex;
   flex-flow: row wrap;
   align-items: center;
+  background-color: ${colors.titleBlack};
 `;
 
 const FloatNavWrapper = styled.nav`
@@ -158,7 +163,7 @@ const SendBtn = styled(ComposeBtnWrapper)`
   padding: 0;
   > svg {
     > path {
-      fill: ${colors.accentRed};
+      fill: ${colors.accentGreen};
     }
   }
   :disabled {
@@ -189,6 +194,25 @@ class Navbar extends React.PureComponent {
     }));
   }
 
+  titleOnClick = () => {
+    const { history } = this.props;
+    if (history.location.pathname !== ('/')) {
+      history.push('/');
+    } else {
+      try {
+        // trying to use new API - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth',
+        });
+      } catch (error) {
+        // just a fallback for older browsers
+        window.scrollTo(0, 0);
+      }
+    }
+  }
+
   render() {
     const {
       profile, publish, history, publishRdy, unreadNotiCount, scroll,
@@ -200,7 +224,7 @@ class Navbar extends React.PureComponent {
     const firstRowRegular = (
       <NavFirstRow>
         <Link to="/">
-          <NavTitle />
+          <NavTitle onClick={this.titleOnClick} />
         </Link>
         <Switch>
           <Route path="/tags" exact render={() => <TickBtn onClick={() => { history.push('/'); }} />} />
@@ -208,7 +232,7 @@ class Navbar extends React.PureComponent {
             path="/"
             render={() => (
               <NavRight>
-                {hashBtn}
+                {/* {hashBtn} */}
                 {notiBtn}
                 <SignInBtn profile={profile || {}} />
               </NavRight>
@@ -248,20 +272,14 @@ class Navbar extends React.PureComponent {
       </Switch>
     );
     return (
-      <MainContent>
-        <FloatNavWrapper y={scroll.y} diff={scroll.diff}>
+      <>
+        {/* <FloatNavWrapper y={scroll.y} diff={scroll.diff}>
           {navbar}
-          <FloatTagWrapper toggled={this.state.toggledTagbar}>
-            <Route path="/" exact component={NavTags} />
-            <Route path="/thread/:id" exact component={NavTags} />
-          </FloatTagWrapper>
-        </FloatNavWrapper>
+        </FloatNavWrapper> */}
         <NavWrapper y={scroll.y} diff={scroll.diff}>
           {navbar}
-          <Route path="/" exact component={NavTags} />
-          <Route path="/thread/:id" exact component={NavTags} />
         </NavWrapper>
-      </MainContent>
+      </>
     );
   }
 }

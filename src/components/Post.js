@@ -15,7 +15,7 @@ import timeElapsed from 'utils/calculateTime';
 import More from 'components/icons/More';
 
 const Wrapper = styled.div`
-  background-color: ${props => (props.isThread ? 'unset' : colors.bgGrey)};
+  background-color: ${props => (props.isThread ? 'unset' : 'white')};
   padding: 1rem 0 0;
   :not(:last-of-type):after {
     content: "";
@@ -47,9 +47,15 @@ const TagRow = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
 
   overflow: scroll hidden;
+  scrollbar-width: none;
+
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 `;
 
 const MetaRow = styled.div`
@@ -72,13 +78,12 @@ const MoreBtn = styled.button`
 `;
 
 const Title = styled.div`
-  ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
   width: 100%;
   font-family: ${fontFamilies.system};
-  margin: .5rem 0;
   font-size: 1.25rem;
   line-height: 1.5;
   font-weight: 700;
+  margin-bottom: 1rem;
   > a {
     width: 100%;
     display: block;
@@ -130,9 +135,9 @@ const ViewThread = styled.p`
   padding: 0 1rem 1rem;
   font-size: .75em;
   line-height: 1.5;
-  color: ${colors.accentRed};
+  color: ${colors.accentGreen};
   > a {
-    color: ${colors.accentRed};
+    color: ${colors.accentGreen};
     text-decoration: none;
   }
 `;
@@ -141,7 +146,8 @@ const AuthorWrapper = styled.span`
   color: ${colors.regularBlack};
   font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
   line-height: ${props => (props.anonymous ? '1.3' : 'unset')};
-  font-size: .75em;
+  font-size: .875em;
+  font-weight: 600;
 `;
 
 const QuoteSelectorWrapper = ({
@@ -182,14 +188,17 @@ const Post = ({
     </Title>
   ) : null;
   const authorText = anonymous ? (
-    <AuthorWrapper anonymous>匿名{author}</AuthorWrapper>
+    <AuthorWrapper anonymous>
+      匿名
+      {author}
+    </AuthorWrapper>
   ) : (
     <AuthorWrapper>{author}</AuthorWrapper>
   );
   const quoteSelector = (!isThread) && onQuoteToggle && (
     <QuoteSelectorWrapper {...{
-        postID, onQuoteToggle, isQuoted, quotable,
-      }}
+      postID, onQuoteToggle, isQuoted, quotable,
+    }}
     />
   );
   const viewThread = (isThread) && (inList) && (replyCount > 0) && (
@@ -206,16 +215,23 @@ const Post = ({
         {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
         <MoreBtn><More /></MoreBtn>
       </TagRow>
+      {titleRow}
       <MetaRow>
         {authorText}
-        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createdAt).formatted}</PublishTime>
+        <PublishTime>
+&nbsp;·&nbsp;
+          {timeElapsed(createdAt).formatted}
+        </PublishTime>
       </MetaRow>
     </TopRowWrapper>
   ) : (
     <TopRowWrapper inList={inList}>
       <MetaRow>
         {authorText}
-        <PublishTime>&nbsp;·&nbsp;{timeElapsed(createdAt).formatted}</PublishTime>
+        <PublishTime>
+&nbsp;·&nbsp;
+          {timeElapsed(createdAt).formatted}
+        </PublishTime>
         {quoteSelector}
         <MoreBtn><More /></MoreBtn>
       </MetaRow>
@@ -229,7 +245,6 @@ const Post = ({
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
       {topRow}
-      {titleRow}
       <PostContent inList={inList} onClick={gotoThread}>
         <QuotedContent quotes={quotes} inList={inList} />
         <MDPreview text={content} isThread={isThread} inList={inList} />

@@ -9,46 +9,58 @@ import fontFamilies from 'utils/fontFamilies';
 const QuotedContentArea = styled.article`
   font-size: .75rem;
   line-height: 1.5;
-  background-color: ${colors.quoteGrey};
 
   display: inline-flex;
   flex-flow: row wrap;
   padding: 1rem;
 
   ${(props) => {
-    if (props.inNoti) {
+    if (props.inNotiReply) {
       return `
-      padding-bottom: 0;
-      :first-of-type {
-        border-top-left-radius: 1rem;
-        border-top-right-radius: 1rem;
-      }
-      :last-of-type {
-        border-bottom-left-radius: 1rem;
-        border-bottom-right-radius: 1rem;
-        padding-bottom: 1rem;
-      }
-      :not(:last-of-type):after {
-        content: "";
-        display: block;
-        width: 100%;
-        border-bottom: 1px solid ${colors.borderGrey};
-        padding: 1rem 0 0;
-      }
-`;
+        padding-bottom: 0;
+        background-color: ${colors.quotedBgInNoti};
+        :first-of-type {
+          border-top-left-radius: 1rem;
+          border-top-right-radius: 1rem;
+        }
+        :last-of-type {
+          border-bottom-left-radius: 1rem;
+          border-bottom-right-radius: 1rem;
+          padding-bottom: 1rem;
+        }
+        :not(:last-of-type):after {
+          content: "";
+          display: block;
+          width: 100%;
+          border-bottom: 1px solid ${colors.borderGrey};
+          padding: 1rem 0 0;
+        }
+      `;
     }
-    return 'border-radius: .5rem;';
+    if (props.inNotiQuote) {
+      return `
+        padding-bottom: 1rem;
+        background-color: ${colors.quotedBg};
+        border-radius: 0 .125rem .125rem 0;
+        border-left: 2px solid ${colors.quotedBorder};
+      `;
+    }
+    return `
+      background-color: ${colors.quotedBg};
+      border-radius: 0 .125rem .125rem 0;
+      border-left: 2px solid ${colors.quotedBorder};
+    `;
   }}
   ${(props) => {
     if (props.inList) return 'margin: 0 1rem .75rem;';
-    else if (props.inDraft) return 'margin: 0 0 .75rem;';
-    else if (props.inNoti) return 'margin: 0 1rem;';
+    if (props.inDraft) return 'margin: 0 0 .75rem;';
+    if (props.inNotiReply || props.inNotiQuote) return 'margin: 0 1rem;';
     return 'margin: 0 1.5rem .75rem;';
   }}
   ${(props) => {
     if (props.inList) return 'width: calc(100% - 2rem);';
-    else if (props.inDraft) return 'width: 100%;';
-    else if (props.inNoti) return 'width: calc(100% - 2rem);';
+    if (props.inDraft) return 'width: 100%;';
+    if (props.inNotiReply || props.inNotiQuote) return 'width: calc(100% - 2rem);';
     return 'width: calc(100% - 3rem);';
   }}
 `;
@@ -92,9 +104,15 @@ authorText.propTypes = {
 };
 
 const QuotedContent = ({
-  quotes, inList, inDraft, inNoti,
+  quotes, inList, inDraft, inNotiReply, inNotiQuote,
 }) => (quotes) && quotes.map(quote => (
-  <QuotedContentArea key={quote.id} inList={inList} inDraft={inDraft} inNoti={inNoti}>
+  <QuotedContentArea
+    key={quote.id}
+    inList={inList}
+    inDraft={inDraft}
+    inNotiReply={inNotiReply}
+    inNotiQuote={inNotiQuote}
+  >
     <QuotedMeta>
       {authorText({
         anonymous: quote.anonymous,
@@ -110,7 +128,8 @@ QuotedContent.propTypes = {
   quotes: PropTypes.arrayOf(PropTypes.shape()),
   inList: PropTypes.bool,
   inDraft: PropTypes.bool,
-  inNoti: PropTypes.bool,
+  inNotiQuote: PropTypes.bool,
+  inNotiReply: PropTypes.bool,
 };
 
 export default QuotedContent;

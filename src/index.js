@@ -15,13 +15,15 @@ import './index.css';
 
 
 const Root = () => (
-  <BrowserRouter>
-    <Store.Provider>
-      <ApolloProvider client={client}>
-        <App />
-      </ApolloProvider>
-    </Store.Provider>
-  </BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <Store.Provider>
+        <ApolloProvider client={client}>
+          <App />
+        </ApolloProvider>
+      </Store.Provider>
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));
