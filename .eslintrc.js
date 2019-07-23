@@ -17,7 +17,7 @@ module.exports = {
       }
     }],
     "no-use-before-define": [0, {}],
-    "no-underscore-dangle": ["error", {"allow": ["__sharethis__"]}],
+    "no-underscore-dangle": ["error", {"allow": ["__sharethis__", "__typename"]}],
     "strict": 0,
     "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
     "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
