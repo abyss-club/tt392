@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {
+  useState, useEffect, useCallback, useContext,
+} from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
-import PropTypes from 'prop-types';
+import { useMutation } from '@apollo/react-hooks';
 import isEmail from 'validator/lib/isEmail';
 
 import Caution from 'components/icons/Caution';
+import LoginContext from 'providers/Login';
 import { maxWidth } from 'styles/MainContent';
 import colors from 'utils/colors';
 
@@ -16,9 +19,6 @@ const Wrapper = styled.div`
   margin: 1rem auto;
   padding: 1.5rem 1rem;
   border-radius: .5rem;
-`;
-
-const CompleteInfoWrapper = styled.div`
 `;
 
 const LoginTitle = styled.h2`
@@ -59,6 +59,7 @@ const NextBtn = styled.button`
   border: none;
   outline: none;
   border-radius: 1.5rem;
+  cursor: pointer;
 
   :disabled {
     background-color: ${colors.buttonBgDisabled};
@@ -87,93 +88,94 @@ const CompleteText = styled.p`
   margin-top: 1rem;
   font-size: .75em;
 
-  > p {
+  > span {
     color: ${colors.titleBlack};
     font-size: calc(14em / 12);
     font-weight: 600;
   }
 `;
 
-class SignIn extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      status: 'INIT',
-      email: '',
-      disabled: true,
-      info: '',
-    };
-  }
+const SignIn = ({ history }) => {
+  const [{ profile }] = useContext(LoginContext);
+  const [status, setStatus] = useState('INIT');
+  const [email, setEmail] = useState('');
+  const [disabled, setDisabled] = useState(true);
+  const [info, setInfo] = useState('');
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    const { email } = this.state;
+  const [auth, { error, loading, data }] = useMutation(SIGN_IN, { variables: { email } });
+
+  useEffect(() => {
+    // console.log({ loading, data });
+    // console.log('in effect');
+    if (!loading && !error && data && data.auth) {
+      setStatus('COMPLETE');
+      setDisabled(false);
+    } else if (error) {
+      setInfo(error.message);
+      setStatus('ERROR');
+      setDisabled(false);
+    }
+  }, [loading, error, data]);
+  // TODO: adding data to dep list would cause infinite rerender in apollo hooks beta
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (!isEmail(email)) {
-      this.setState({ status: 'ERROR', disabled: true, info: '不是合法的邮件地址。' });
+      setStatus('ERROR');
+      setDisabled(true);
+      setInfo('不是合法的邮件地址。');
     } else {
-      this.setState({ disabled: true });
-      this.props.auth({ variables: { email } }).then(({ data }) => {
-        if (data.auth || false) {
-          this.setState({ status: 'COMPLETE', disabled: false });
-        } else {
-          this.setState({ status: 'ERROR', disabled: false });
-        }
-      }).catch(() => {
-        this.setState({ status: 'ERROR', disabled: false });
-      });
+      setDisabled(true);
+      auth();
     }
-  }
+  };
 
-  handleChange = (e) => {
-    this.setState({ status: 'INIT', info: '' });
+  const handleChange = useCallback((e) => {
+    setStatus('INIT');
     if (e.target.value) {
-      this.setState({ email: e.target.value, disabled: false });
+      setEmail(e.target.value);
+      setDisabled(false);
     } else {
-      this.setState({ disabled: true });
+      setDisabled(true);
     }
-  }
+  }, []);
 
-  render() {
-    const { status, email, disabled } = this.state;
-    const completed = (
-      <CompleteInfoWrapper>
-        <CompleteTitle><h2>检查你的邮箱</h2></CompleteTitle>
-        <CompleteText>
+  if (profile.isSignedIn) history.replace('/profile');
+
+  const completed = (
+    <div>
+      <CompleteTitle><h2>检查你的邮箱</h2></CompleteTitle>
+      <CompleteText>
           一封包含了登录链接的电子邮件已被发送到：
-          <p>{email}</p>
-        </CompleteText>
-      </CompleteInfoWrapper>
-    );
-    return (
-      <Wrapper>
-        {(status !== 'COMPLETE') && (
+        <span>{email}</span>
+      </CompleteText>
+    </div>
+  );
+  return (
+    <Wrapper>
+      {(status !== 'COMPLETE') && (
         <>
           <LoginTitle>登录</LoginTitle>
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <EmailInput
               type="email"
-              onChange={this.handleChange}
+              onChange={handleChange}
               placeholder="邮箱地址"
-              ref={(input) => { this.input = input; }}
+              disabled={loading}
             />
             {(status === 'ERROR') && (
               <ErrWrapper>
                 <Caution />
-                <ErrInfo>{this.state.info || '发生了错误，请重试。'}</ErrInfo>
+                <ErrInfo>{info || '发生了错误，请重试。'}</ErrInfo>
               </ErrWrapper>
             )}
-            <p><NextBtn type="submit" disabled={disabled}>下一步</NextBtn></p>
+            <p><NextBtn type="submit" title="下一步" disabled={!email || disabled}>下一步</NextBtn></p>
           </form>
         </>
-        )}
-        {(status === 'COMPLETE') && completed}
-      </Wrapper>
-    );
-  }
-}
-
-SignIn.propTypes = {
-  auth: PropTypes.func.isRequired,
+      )}
+      {(status === 'COMPLETE') && completed}
+    </Wrapper>
+  );
 };
 
 const SIGN_IN = gql`
@@ -182,10 +184,10 @@ const SIGN_IN = gql`
   }
 `;
 
-export default () => (
-  <Mutation mutation={SIGN_IN}>
-    {auth => (
-      <SignIn auth={auth} />
-    )}
-  </Mutation>
-);
+SignIn.propTypes = {
+  history: PropTypes.shape({
+    replace: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+export default SignIn;

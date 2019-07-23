@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Query as ApolloQuery } from 'react-apollo';
+import { Query as ApolloQuery } from '@apollo/react-hooks';
 
 import { Loading } from 'utils/loading';
 import modal from 'utils/modal';

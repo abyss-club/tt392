@@ -1,24 +1,23 @@
-import React from 'react';
+import React, {
+  useState, useContext, useEffect, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import {
-  Route, Link, Switch, withRouter,
-} from 'react-router-dom';
+import { Route, Link, Switch } from 'react-router-dom';
+import { useRouter } from 'utils/routerHooks';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 
-import Store from 'providers/Store';
-import { maxWidth } from 'styles/MainContent';
 import AbyssLogo from 'components/icons/AbyssLogo';
 import Tick from 'components/icons/Tick';
 import Cross from 'components/icons/Cross';
-import Send from 'components/icons/Send';
-import Hash from 'components/icons/Hash';
 import colors from 'utils/colors';
 
+import LoginContext from 'providers/Login';
+import DraftContext from 'providers/Draft';
+import RefetchContext from 'providers/Refetch';
 import SignInBtn from './SignInBtn';
 import NotificationBtn from './NotificationBtn';
-
-const startHide = 500;
-const endHide = 1000;
 
 const NavWrapper = styled.nav`
   position: sticky;
@@ -27,57 +26,7 @@ const NavWrapper = styled.nav`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  background-color: ${colors.titleBlack};
-`;
-
-const FloatNavWrapper = styled.nav`
-  transform: translateY(0);
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  transition: transform .5s, opacity .25s;
-  transition-timing-function: ease-in-out;
-
-  ${(props) => {
-    if (props.y < startHide) {
-      return `
-        display: none;
-        padding: 0;
-      `;
-    }
-    if (props.y >= startHide && props.y < endHide) {
-      return `
-        position: fixed;
-        max-width: ${maxWidth - 1}rem;
-        margin: auto;
-        left: 0;
-        right: 0;
-        transform: translateY(-5rem);
-        background-color: ${colors.mainBg};
-        border-radius: 1rem;
-        box-shadow: 0px 8px 24px rgba(13, 15, 23, 0.6);
-        opacity: 0;
-`;
-    }
-    return `
-      position: fixed;
-      max-width: ${maxWidth - 1}rem;
-      margin: auto;
-      left: 0;
-      right: 0;
-      transform: translateY(.5rem);
-      background-color: ${colors.mainBg};
-      border-radius: 1rem;
-      box-shadow: 0px 8px 24px rgba(13, 15, 23, 0.6);
-      opacity: 1;
-`;
-  }
-}}
-`;
-
-const FloatTagWrapper = styled.div`
-  display: ${props => (props.toggled ? 'flex' : 'none')};
-  width: 100%;
+  background-color: ${props => (props.compose ? 'white' : colors.titleBlack)};
 `;
 
 const NavFirstRow = styled.div`
@@ -92,12 +41,87 @@ const NavFirstRow = styled.div`
 `;
 
 const NavFirstRowCompose = styled(NavFirstRow)`
-  justify-content: flex-start;
   padding: 0 .5rem;
+  color: #36393F;
 `;
 
-const NavText = styled.span`
-  font-size: 1.125em;
+const NavFirstRowError = styled(NavFirstRow)`
+  padding: 0 .5rem;
+  background-color: #FF4F37;
+  color: white;
+`;
+
+const ErrInfo = styled.p`
+  display: flex;
+  flex-flow: row nowrap;
+  justify-items: center;
+
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
+
+const TitleAndModeWrapper = styled.div`
+  flex: 1 0 auto;
+  margin: 0 auto;
+
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+`;
+
+const SendModeWrapper = styled.div`
+  color: ${colors.accentGreen};
+`;
+
+const SelectWrapper = styled.div`
+  display: inline-block;
+  position: relative;
+  margin: 0 auto;
+
+  > select {
+    display: block;
+    position: relative;
+    appearance: none;
+    cursor: pointer;
+
+    font-size: .6875em;
+    font-family: sans-serif;
+
+    color: ${colors.accentGreen};
+    background-color: white;
+
+    max-width: 100%;
+    padding: 0 1em 0 .125em;
+    border: none;
+  }
+
+  :after {
+    z-index: 1;
+    display: block;
+    content: "";
+    position: absolute;
+    width: .25em;
+    height: .25em;
+    margin-top: -.3125em;
+    right: .125em;
+    top: 50%;
+    border: 1px solid ${colors.accentGreen};
+    border-radius: 0;
+    border-right: 0;
+    border-top: 0;
+    pointer-events: none;
+    transform: rotate(-45deg);
+    transform-origin: center;
+  }
+`;
+
+const NavText = styled.p`
+  width: 100%;
+  text-align: center;
+  font-size: .875em;
+  margin: 1.0625rem 0 0;
 `;
 
 const NavTitle = styled(AbyssLogo)`
@@ -140,176 +164,281 @@ const ComposeBtnWrapper = styled.button`
   cursor: pointer;
 `;
 
-const TickBtnWrapper = styled(IconWrapper)`
-`;
-
 const TickBtn = ({ onClick }) => (
-  <TickBtnWrapper onClick={onClick}>
+  <IconWrapper onClick={onClick}>
     <Tick />
-  </TickBtnWrapper>
+  </IconWrapper>
 );
 TickBtn.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
+
 const CloseBtn = styled(ComposeBtnWrapper)`
   padding: 0 .5rem 0 .5rem;
   font-size: 1.5em;
+  > svg {
+    > path {
+      stroke: ${props => (props.isError ? 'white' : colors.regularGrey)};
+    }
+  }
 `;
 
 const SendBtn = styled(ComposeBtnWrapper)`
-  font-size: 1.5em;
+  font-size: .75em;
   margin-left: auto;
-  padding: 0;
-  > svg {
-    > path {
-      fill: ${colors.accentGreen};
-    }
-  }
+  padding: .5rem 1rem;
+  border-radius: 1rem;
+  color: white;
+  background-color: ${colors.buttonBg};
+
   :disabled {
-    > svg {
-      > path {
-        fill: ${colors.buttonBgBlack};
-      }
-    }
+    background-color: ${colors.buttonBgDisabled};
   }
 `;
 
-const HashBtn = styled.button`
-  outline: 0;
-  border: 0;
-  background: none;
-  margin: 0 2.5rem 0 0;
-  cursor: pointer;
+// const HashBtn = styled.button`
+//   outline: 0;
+//   border: 0;
+//   background: none;
+//   margin: 0 2.5rem 0 0;
+//   cursor: pointer;
+//
+//   display: ${props => (props.y > startHide ? 'block' : 'none')};
+// `;
+//
+/* <SignInBtn profile={profile || {}} /> */
+const LoginWrapper = () => {
+  const [{ profile }] = useContext(LoginContext);
+  return (
+    <>
+      {profile.email && (<NotificationBtn />)}
+      <SignInBtn profile={profile || {}} />
+    </>
+  );
+};
 
-  display: ${props => (props.y > startHide ? 'block' : 'none')};
-`;
+const Title = () => {
+  const { history, location } = useRouter();
+  const [{ threadList }, dispatch] = useContext(RefetchContext);
 
-class Navbar extends React.PureComponent {
-  state = { toggledTagbar: false };
-
-  handleHashOnClick = () => {
-    this.setState(prevState => ({
-      toggledTagbar: !prevState.toggledTagbar,
-    }));
-  }
-
-  titleOnClick = () => {
-    const { history } = this.props;
-    if (history.location.pathname !== ('/')) {
+  const titleOnClick = useCallback(() => {
+    if (location.pathname !== ('/')) {
       history.push('/');
     } else {
+      if (window.pageYOffset === 0) {
+        if (!threadList) dispatch({ type: 'REFETCH_THREADLIST', status: true });
+      }
       try {
         // trying to use new API - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
-        window.scroll({
-          top: 0,
-          left: 0,
-          behavior: 'smooth',
-        });
+        window.scroll({ top: 0, left: 0, behavior: 'smooth' });
       } catch (error) {
         // just a fallback for older browsers
         window.scrollTo(0, 0);
       }
     }
-  }
+  }, [history, location.pathname]);
 
-  render() {
-    const {
-      profile, publish, history, publishRdy, unreadNotiCount, scroll,
-    } = this.props;
-    const hashBtn = (<HashBtn y={scroll.y} onClick={this.handleHashOnClick}><Hash /></HashBtn>);
-    const notiBtn = (
-      (profile.email) && (
-      <NotificationBtn unreadNotiCount={unreadNotiCount || {}} />));
-    const firstRowRegular = (
+  return (
+    <Link to="/" title="Home">
+      <NavTitle onClick={titleOnClick} />
+    </Link>
+  );
+};
+
+const Navbar = () => {
+  const { history } = useRouter();
+  console.log('navbar rendered');
+
+  const firstRowRegular = () => (
+    <NavWrapper>
       <NavFirstRow>
-        <Link to="/">
-          <NavTitle onClick={this.titleOnClick} />
-        </Link>
+        <Title />
         <Switch>
           <Route path="/tags" exact render={() => <TickBtn onClick={() => { history.push('/'); }} />} />
           <Route
             path="/"
             render={() => (
               <NavRight>
-                {/* {hashBtn} */}
-                {notiBtn}
-                <SignInBtn profile={profile || {}} />
+                <LoginWrapper />
               </NavRight>
             )}
           />
         </Switch>
       </NavFirstRow>
-    );
+    </NavWrapper>
+  );
 
-    const firstRowComposing = ({ match }) => (
-      <NavFirstRowCompose>
-        <CloseBtn onClick={() => history.goBack()}><Cross /></CloseBtn>
-        <NavText>{match.params.mode === 'thread' ? '发表新帖' : '回复引用'}</NavText>
-        <SendBtn
-          disabled={!publishRdy}
-          onClick={publish}
-        >
-          <Send />
-        </SendBtn>
-      </NavFirstRowCompose>
-    );
-    firstRowComposing.propTypes = {
-      match: PropTypes.shape({
-        params: PropTypes.shape({
-          mode: PropTypes.string,
-        }),
-      }).isRequired,
+  const FirstRowComposing = ({ match }) => {
+    const { mode } = match.params;
+    const [{
+      anonymous, title, content, mainTag, subTags, quoteIds, threadId,
+    }, dispatch] = useContext(DraftContext);
+    const [publishRdy, setPublishRdy] = useState(false);
+    const [optionVal, setOptionVal] = useState(anonymous ? 'anonymous' : 'normal');
+    const [errInfo, setErrInfo] = useState('');
+    const [showError, setShowError] = useState(false);
+    const [pubThread, threadState] = useMutation(PUB_THREAD, {
+      variables: {
+        thread: {
+          anonymous, title, content, mainTag, subTags: [...subTags],
+        },
+      },
+    });
+    const [pubPost, postState] = useMutation(PUB_POST, {
+      variables: {
+        post: {
+          anonymous, content, quoteIds: [...quoteIds], threadId,
+        },
+      },
+    });
+
+    const handleChange = (e) => {
+      setOptionVal(e.target.value);
     };
 
-    const navbar = (
-      <Switch>
-        <Route path="/draft/:mode" exact render={({ match }) => firstRowComposing({ match })} />
-        <Route path="/" render={() => firstRowRegular} />
-        {/* <Route path="/tags" render={() => firstRowRegular} />
-        <Route path="/thread" render={() => firstRowRegular} />
-        <Route path="/profile" render={() => firstRowRegular} /> */}
-      </Switch>
-    );
+    useEffect(() => {
+      dispatch({
+        type: 'SET_ANONYMOUS',
+        anonymous: optionVal === 'anonymous',
+      });
+    }, [dispatch, optionVal]);
+
+    const handleSubmit = useCallback(() => {
+      if (mode === 'thread') {
+        pubThread();
+      }
+      if (mode === 'post') {
+        pubPost();
+      }
+    }, [mode, pubPost, pubThread]);
+
+    useEffect(() => {
+      if (mode === 'thread') {
+        const { data, error, loading } = threadState;
+        if (loading) {
+          setPublishRdy(false);
+        } else {
+          if (error) {
+            setErrInfo(error.message);
+            setShowError(true);
+          }
+          if (data) {
+            setPublishRdy(false);
+            dispatch({ type: 'RESET_DRAFT' });
+            history.push(`/thread/${data.pubThread.id}`);
+          }
+        }
+      }
+    }, [dispatch, mode, threadState]);
+
+    useEffect(() => {
+      if (mode === 'post') {
+        const { data, error, loading } = postState;
+        if (loading) {
+          setPublishRdy(false);
+        } else {
+          if (error) {
+            setErrInfo(error.message);
+            setShowError(true);
+          }
+          if (data) {
+            setPublishRdy(false);
+            dispatch({ type: 'RESET_DRAFT' });
+            history.push(`/thread/${threadId}`);
+          }
+        }
+      }
+    }, [dispatch, mode, postState, threadId]);
+
+    const checkPublishRdy = useCallback(() => {
+      if (mode === 'thread') {
+        if (content && mainTag) {
+          setPublishRdy(true);
+        } else {
+          setPublishRdy(false);
+        }
+      }
+      if (mode === 'post') {
+        if (quoteIds && content && threadId) {
+          setPublishRdy(true);
+        } else {
+          setPublishRdy(false);
+        }
+      }
+    }, [content, mainTag, mode, quoteIds, threadId]);
+
+    useEffect(() => {
+      checkPublishRdy();
+    }, [checkPublishRdy]);
+
+    const handleCloseBtn = useCallback(() => {
+      dispatch({ type: 'RESET_DRAFT' });
+      history.goBack();
+    }, [dispatch]);
+
     return (
-      <>
-        {/* <FloatNavWrapper y={scroll.y} diff={scroll.diff}>
-          {navbar}
-        </FloatNavWrapper> */}
-        <NavWrapper y={scroll.y} diff={scroll.diff}>
-          {navbar}
-        </NavWrapper>
-      </>
+      <NavWrapper compose="true">
+        {!showError ? (
+          <NavFirstRowCompose>
+            <CloseBtn onClick={handleCloseBtn}><Cross /></CloseBtn>
+            <TitleAndModeWrapper>
+              <NavText>{mode === 'thread' ? '发表新帖' : '回复引用'}</NavText>
+              <SendModeWrapper>
+                <SelectWrapper>
+                  <select value={optionVal} onChange={handleChange}>
+                    <option value="anonymous">匿名发帖</option>
+                    <option value="normal">用户名</option>
+                  </select>
+                </SelectWrapper>
+              </SendModeWrapper>
+            </TitleAndModeWrapper>
+            <SendBtn
+              disabled={!publishRdy}
+              onClick={handleSubmit}
+            >
+              发帖
+            </SendBtn>
+          </NavFirstRowCompose>
+        ) : (
+          <NavFirstRowError>
+            <CloseBtn isError onClick={() => setShowError(false)}><Cross /></CloseBtn>
+            <ErrInfo>{errInfo}</ErrInfo>
+          </NavFirstRowError>
+        )}
+      </NavWrapper>
     );
-  }
-}
-Navbar.propTypes = {
-  profile: PropTypes.shape().isRequired,
-  history: PropTypes.shape({}).isRequired,
-  publish: PropTypes.func.isRequired,
-  publishRdy: PropTypes.bool.isRequired,
-  unreadNotiCount: PropTypes.shape().isRequired,
-  scroll: PropTypes.shape({
-    y: PropTypes.number.isRequired,
-    diff: PropTypes.number.isRequired,
-  }).isRequired,
+  };
+  FirstRowComposing.propTypes = {
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        mode: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+  };
+
+  return (
+    <Switch>
+      <Route path="/draft/:mode" exact component={FirstRowComposing} />
+      <Route path={['/', '/tags', '/thread', '/profile']} component={firstRowRegular} />
+    </Switch>
+  );
 };
 
-const NavbarWithRouter = withRouter(Navbar);
+const PUB_THREAD = gql`
+  mutation PubThread($thread: ThreadInput!) {
+    pubThread(thread: $thread) {
+      id
+    }
+  }
+`;
 
-export default () => (
-  <Store.Consumer>
-    {({
-      profile, tags, publish, publishRdy, unreadNotiCount, scroll,
-    }) => (
-      <NavbarWithRouter
-        profile={profile}
-        tags={tags}
-        publish={publish}
-        publishRdy={publishRdy}
-        unreadNotiCount={unreadNotiCount}
-        scroll={scroll}
-      />
-    )}
-  </Store.Consumer>
-);
+const PUB_POST = gql`
+  mutation PubPost($post: PostInput!) {
+    pubPost(post: $post) {
+      id
+    }
+  }
+`;
+
+export default Navbar;

@@ -1,77 +1,80 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import { useContext, useEffect } from 'react';
 import gql from 'graphql-tag';
 
-import Query from 'components/Query';
-import Store from 'providers/Store';
+// import Query from 'components/Query';
+import { useQuery } from '@apollo/react-hooks';
+import TagsContext from 'providers/Tags';
+import LoginContext from 'providers/Login';
+import { UNAUTHENTICATED } from 'utils/errorCodes';
 
-const parseTags = (profile, tags) => {
-  const subscribedTags = profile.tags || tags.recommended || [];
-  const mainTags = new Set(tags.mainTags);
-  const subscribed = {
-    main: new Set(),
-    sub: new Set(),
-  };
-  subscribedTags.forEach((tag) => {
-    if (mainTags.has(tag)) {
-      subscribed.main.add(tag);
-    } else {
-      subscribed.sub.add(tag);
+const Tags = () => {
+  const { loading, data, error } = useQuery(TAGS);
+  console.log('render init');
+  const [, dispatchTags] = useContext(TagsContext);
+
+  useEffect(() => {
+    if (!loading && !error) {
+      const { mainTags, recommended } = data;
+      dispatchTags({ type: 'INIT', tags: { mainTags, recommended } });
     }
-  });
-  return { mainTags, subscribed };
+  }, [data, dispatchTags, loading, error]);
+  // [dispatchTags, loading, error, data] data] data]would cause infinite rerender in apollo hooks beta
+
+  return null;
 };
 
-class Init extends React.Component {
-  constructor(props) {
-    super(props);
-    const { setStore, profile, tags } = this.props;
-    setStore({
-      initialized: true,
-      profile: {
-        isSignedIn: (profile.email || '') !== '',
-        email: profile.email || '',
-        name: profile.name || '',
-      },
-      tags: parseTags(profile, tags),
-    });
-  }
+const Login = () => {
+  const [, dispatchLogin] = useContext(LoginContext);
+  const [, dispatchTags] = useContext(TagsContext);
+  const { loading, data, error } = useQuery(PROFILE);
+  console.log('render login');
+  useEffect(() => {
+    if (!loading) {
+      if (error && error.graphQLErrors[0].extensions.code === UNAUTHENTICATED) {
+        dispatchLogin({ type: 'INIT' });
+      }
+      if (data && data.profile) {
+        const { profile, mainTags, recommended } = data;
+        dispatchLogin({
+          type: 'INIT_WITH_LOGIN',
+          profile,
+        });
+        dispatchTags({
+          type: 'INIT_WITH_LOGIN',
+          profile,
+          tags: { mainTags, recommended },
+        });
+      }
+    }
+  }, [dispatchLogin, dispatchTags, loading, error, data]);
+  // TODO: adding data to dep list would cause infinite rerender in apollo hooks beta
 
-  render() {
-    return null;
-  }
-}
-Init.propTypes = {
-  profile: PropTypes.shape().isRequired,
-  tags: PropTypes.shape().isRequired,
-  setStore: PropTypes.func.isRequired,
+  return null;
 };
 
-const INITIAL = gql`
+const Init = () => {
+  Tags();
+  Login();
+  return null;
+};
+
+const PROFILE = gql`
   query {
     profile {
       name
       email
       tags
     }
-    tags {
-      mainTags
-    }
+    mainTags
+    recommended
   }
 `;
 
-export default () => (
-  <Store.Consumer>
-    {({ setStore }) => (
-      <Query query={INITIAL}>
-        {({ data }) => (
-          <Init
-            profile={data.profile}
-            tags={data.tags}
-            setStore={setStore}
-          />
-        )}
-      </Query>
-    )}
-  </Store.Consumer>
-);
+const TAGS = gql`
+  query {
+    mainTags
+    recommended
+  }
+`;
+
+export default Init;

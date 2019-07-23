@@ -6,7 +6,7 @@ import { breakpoint, maxWidth } from 'styles/MainContent';
 const FloatButton = styled.button`
   position: fixed;
   right: 1.5rem;
-  bottom: 1.5rem;
+  bottom: ${(props => (props.aboveScrollbar ? '4.5rem' : '1.5rem'))};
   width: 3rem;
   height: 3rem;
   border-radius: 50%;

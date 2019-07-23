@@ -8,7 +8,7 @@ import Post from 'components/Post';
 
 const ThreadWrapper = styled.article`
   background-color: white;
-  margin: 1rem 0;
+  margin: .5rem 0;
   padding-top: 0.5rem;
   border-radius: .5rem;
   :last-of-type {
@@ -29,30 +29,42 @@ const MoreWrapper = styled.div`
   }
 `;
 
-const More = ({ threadID }) => (
+const More = ({ threadId }) => (
   <MoreWrapper>
-    <Link to={`/thread/${threadID}`}>查看整串</Link>
+    <Link to={`/thread/${threadId}`}>查看整串</Link>
   </MoreWrapper>
 );
 More.propTypes = {
-  threadID: PropTypes.string.isRequired,
+  threadId: PropTypes.string.isRequired,
 };
 
 const ThreadInList = ({ thread }) => {
   const replies = (thread.replies || []).posts || [];
   return (
     <ThreadWrapper>
-      <Post isThread inList {...thread} hasReplies={replies.length > 0} threadID={thread.id} />
+      <Post
+        isThread
+        inList
+        hasReplies={replies.length > 0}
+        threadId={thread.id}
+        {...thread}
+      />
       <div>
-        {replies.map(post => <Post inList key={post.id} threadID={thread.id} {...post} />)}
+        {replies.map(post => <Post inList key={post.id} threadId={thread.id} {...post} />)}
       </div>
-      {(replies.length > 0) && (<More threadID={thread.id} />)}
+      {(replies.length > 0) && (<More threadId={thread.id} />)}
     </ThreadWrapper>
   );
 };
 
 ThreadInList.propTypes = {
-  thread: PropTypes.shape({}).isRequired,
+  thread: PropTypes.shape({
+    replies: PropTypes.shape({
+      posts: PropTypes.arrayOf(PropTypes.shape()),
+      sliceInfo: PropTypes.shape(),
+    }),
+    id: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default ThreadInList;

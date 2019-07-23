@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
 import colors from 'utils/colors';
 
+import DraftContext from 'providers/Draft';
+
 const PreviewWrapper = styled.div`
   * {
     font-size: .875rem;
-    color: ${props => (props.isThread ? colors.textGrey : colors.regularBlack)};
+    color: ${colors.textRegular};
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -52,7 +54,11 @@ const ImageHack = styled.span`
 `;
 
 /* eslint-disable jsx-a11y/alt-text */
-const MDPreview = ({ text, isThread, inList }) => {
+const MDPreview = ({
+  isThread = false, inList = false, inDraft = false, text = '',
+}) => {
+  const [{ content }] = useContext(DraftContext);
+
   const customImg = props => (
     <ImageHack inList={inList}>
       <img {...props} />
@@ -60,19 +66,18 @@ const MDPreview = ({ text, isThread, inList }) => {
   );
   return (
     <PreviewWrapper isThread={isThread} inList={inList}>
-      <ReactMarkdown source={text} renderers={{ image: customImg }} />
+      <ReactMarkdown source={inDraft ? content : text} renderers={{ image: customImg }} />
     </PreviewWrapper>
   );
 };
 /* eslint-enable jsx-a11y/alt-text */
+/* eslint-disable react/require-default-props */
 MDPreview.propTypes = {
-  text: PropTypes.string.isRequired,
   isThread: PropTypes.bool,
   inList: PropTypes.bool,
+  inDraft: PropTypes.bool,
+  text: PropTypes.string,
 };
-MDPreview.defaultProps = {
-  isThread: false,
-  inList: false,
-};
+/* eslint-disable react/require-default-props */
 
 export default MDPreview;

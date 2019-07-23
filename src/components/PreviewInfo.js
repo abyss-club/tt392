@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import colors from 'utils/colors';
 
-const Wrapper = styled.div`
+const Wrapper = styled.article`
   background-color: white;
-  margin-top: .5rem;
+  margin: .5rem 0;
   padding: 1rem;
   border-radius: .5rem;
   a {
@@ -30,13 +30,13 @@ const PreviewInfo = () => (
   <Wrapper>
     <Title>本站尚处于开发初期</Title>
     <p>
-    Powered by Projects of
+      Powered by Projects of
+      {' '}
       <a href="https://gitlab.com/abyss.club/abyss">abyss</a>
     </p>
     <p>
-    Abyss 使用 GraphQL API (
+      Abyss 使用 GraphQL API (
       <a href="https://graphql.org/">了解 GraphQL</a>
-      {' '}
     )
     </p>
     <p>

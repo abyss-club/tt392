@@ -36,7 +36,7 @@ const Wrapper = styled.div`
 `;
 
 const TagWrapper = styled.span`
-  flex-shrink: 0
+  flex-shrink: 0;
 
   display: inline-flex;
   align-items: center;

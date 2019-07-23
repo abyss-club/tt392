@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { withRouter } from 'react-router-dom';
+import { useRouter } from 'utils/routerHooks';
 
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
-import Store from 'providers/Store';
+import TagsContext from 'providers/Tags';
 import Tag from 'components/Tag';
 import Plus from 'components/icons/Plus';
 
@@ -43,17 +43,21 @@ const DescriptionText = styled.p`
   padding-bottom: .5rem;
 `;
 
-const AddBtn = ({ onClick }) => (
-  <AddBtnWrapper onClick={onClick}>
-    <Plus />
+const AddBtn = ({ onClick, children }) => (
+  <AddBtnWrapper title="Modify tags subscription" onClick={onClick}>
+    {children}
   </AddBtnWrapper>
 );
 AddBtn.propTypes = {
   onClick: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
-const NavTags = ({ tags, history }) => {
+const NavTags = () => {
+  const { history } = useRouter();
+  const [{ tags }] = useContext(TagsContext);
   const { main, sub } = tags.subscribed;
+
   const SubbedTag = (tag, isMain = false) => (
     <Tag
       key={tag}
@@ -65,26 +69,15 @@ const NavTags = ({ tags, history }) => {
   return (
     <NavTagsWrapper>
       <DescriptionText>已关注标签</DescriptionText>
-      <AddBtn onClick={() => { history.push('/tags/'); }} />
-      <React.Fragment>
+      <AddBtn onClick={() => { history.push('/tags/'); }}>
+        <Plus />
+      </AddBtn>
+      <>
         {([...main]).map(tag => SubbedTag(tag, true))}
         {([...sub]).map(tag => SubbedTag(tag))}
-      </React.Fragment>
+      </>
     </NavTagsWrapper>
   );
 };
-NavTags.propTypes = {
-  // profile: PropTypes.shape().isRequired,
-  tags: PropTypes.shape().isRequired,
-  history: PropTypes.shape({}).isRequired,
-};
 
-const NavTagsWithRouter = withRouter(NavTags);
-
-export default () => (
-  <Store.Consumer>
-    {({ profile, tags }) => (
-      <NavTagsWithRouter profile={profile} tags={tags} />
-     )}
-  </Store.Consumer>
-);
+export default NavTags;

@@ -1,27 +1,27 @@
-import React from 'react';
-import Store from 'providers/Store';
-import PropTypes from 'prop-types';
+import React, { useEffect, useContext } from 'react';
+import ScrollContext from 'providers/Scroll';
 
 let ticking = false;
 let lastScrollY = 0;
 let diff = 0;
 
-class ScrollContainer extends React.PureComponent {
-  componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
-  }
+const ScrollContainer = () => {
+  const [_, setStore] = useContext(ScrollContext);
 
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
-  }
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return function cleanup() {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  });
 
-  handleScroll = () => {
+  const handleScroll = () => {
     diff = window.scrollY - lastScrollY;
     lastScrollY = window.scrollY;
 
     if (!ticking) {
       window.requestAnimationFrame(() => {
-        this.props.setStore({
+        setStore({
           scroll: {
             y: lastScrollY,
             diff,
@@ -32,25 +32,11 @@ class ScrollContainer extends React.PureComponent {
 
       ticking = true;
     }
-  }
+  };
 
-  render() {
-    return (
-      <div />
-    );
-  }
-}
-ScrollContainer.propTypes = {
-  setStore: PropTypes.func.isRequired,
+  return (
+    <div />
+  );
 };
 
-export default () => (
-  <Store.Consumer>
-    {({ setStore, scroll }) => (
-      <ScrollContainer
-        setStore={setStore}
-        scroll={scroll}
-      />
-    )}
-  </Store.Consumer>
-);
+export default ScrollContainer;

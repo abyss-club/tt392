@@ -12,13 +12,12 @@ import SignIn from 'components/SignIn';
 import ThreadView from 'components/ThreadView';
 import Draft from 'components/Draft';
 import Init from 'components/Init';
-import TagPage from 'components/TagPage';
+import Error from 'components/Error';
+import TagSelector from 'components/TagPage/TagSelector';
 import TagView from 'components/TagPage/TagView';
 import Notification from 'components/Notification';
 import NavTags from 'components/Navbar/NavTags';
 import { Loading, LoadingContainer } from 'utils/loading';
-import { ModalContainer } from 'utils/modal';
-import ScrollContainer from 'utils/scroll';
 import colors from 'utils/colors';
 
 faLib.loadFa();
@@ -41,24 +40,27 @@ const GQLVoyager = Loadable({
 
 const App = () => (
   <Wrapper>
-    <LoadingContainer />
-    <ModalContainer />
-    <Init />
-    <Navbar />
-    <Route path="/" exact component={NavTags} />
-    <Route path="/thread/:id" exact component={NavTags} />
-    <ScrollContainer />
+    <Route render={({ location }) => !location.pathname.startsWith('/error') && (
+      <>
+        <Init />
+        <Navbar />
+      </>
+    )}
+    />
+    <Route path="/error/:errCode" component={Error} />
+    <Route path={['/', '/thread/:id']} exact component={NavTags} />
     <Switch>
       <Route path="/" component={Home} exact />
-      <Route path="/sign_in/" component={SignIn} />
-      <Route path="/profile/" component={Profile} />
-      <Route path="/tags/" component={TagPage} />
-      <Route path="/tag/:slug" component={TagView} />
-      <Route path="/thread/:id" component={ThreadView} />
-      <Route path="/draft/:mode" component={Draft} />
-      <Route path="/graphiql/" component={GraphiQL} />
-      <Route path="/voyager/" component={GQLVoyager} />
-      <Route path="/notification/" component={Notification} />
+      <Route path="/sign_in/" component={SignIn} exact />
+      <Route path="/profile/" component={Profile} exact />
+      <Route path="/tags/" component={TagSelector} exact />
+      <Route path="/tag/:slug" component={TagView} exact />
+      <Route path="/thread/:id" component={ThreadView} exact />
+      <Route path="/notification/" component={Notification} exact />
+      <Route path="/draft/:mode" component={Draft} exact />
+      <Route path="/graphiql/" component={GraphiQL} exact />
+      <Route path="/voyager/" component={GQLVoyager} exact />
+      <Route component={Error} />
     </Switch>
   </Wrapper>
 );

@@ -99,9 +99,6 @@ const TopRow = styled.div`
   flex-flow: row nowrap;
 `;
 
-const PostWrapper = styled.article`
-`;
-
 const AuthorWrapper = styled.span`
   color: ${colors.regularBlack};
   font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
@@ -123,8 +120,8 @@ const PublishTime = styled.div`
 
 const TopRowTime = styled(PublishTime)`
   padding: 0 1rem 0 .5rem;
-  line-height: calc(1.15*4/3);
-  {/* Wierd line-height hack */}
+  line-height: calc(1.15 * 4 / 3);
+  /* Weird line-height hack */
 `;
 
 const Repliers = styled.p`
@@ -140,7 +137,10 @@ const StyledMDPreview = styled.div`
 const titlePlaceholder = '无题';
 
 const authorText = ({ anonymous, author }) => (anonymous ? (
-  <AuthorWrapper anonymous>匿名{author}</AuthorWrapper>
+  <AuthorWrapper anonymous>
+    匿名
+    {author}
+  </AuthorWrapper>
 ) : (
   <AuthorWrapper>{author}</AuthorWrapper>
 ));
@@ -198,13 +198,13 @@ const Content = ({ type, notification }) => {
         {' 引用了你的帖'}
       </Repliers>
       <Title>{notification.thread.title || titlePlaceholder}</Title>
-      <PostWrapper>
+      <article>
         <QuotedContent
           inNotiQuote
           quotes={[notification.quotedPost]}
         />
         <PostContent>{notification.post.content}</PostContent>
-      </PostWrapper>
+      </article>
       <ViewThread>
         <Link to={`/thread/${notification.thread.id}`}>
           {'查看原帖'}

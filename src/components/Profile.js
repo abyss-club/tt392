@@ -1,26 +1,17 @@
-import React from 'react';
+import React, {
+  useState, useEffect, useCallback, useContext,
+} from 'react';
 import PropTypes from 'prop-types';
-import { Mutation } from 'react-apollo';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import colors from 'utils/colors';
 
-import Query from 'components/Query';
-import Tick from 'components/icons/Tick';
-import NavTags from 'components/Navbar/NavTags';
-import MainContent from 'styles/MainContent';
+import LoginContext from 'providers/Login';
+import MainContent, { maxWidth } from 'styles/MainContent';
 
-const PROFILE_QUERY = gql`
-  query FetchProfile {
-    profile {
-      email
-      name
-    }
-  }
-`;
-
-const UPDATE_NAME = gql`
-  mutation UpdateName($name: String!) {
+const SET_NAME = gql`
+  mutation SetName($name: String!) {
     setName(name: $name) {
       name
     }
@@ -28,66 +19,52 @@ const UPDATE_NAME = gql`
 `;
 
 const NameForm = styled.form`
-  width: 100%;
-  height: 2rem;
-
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-
-  border: 1px solid ${colors.setNameBorderGrey};
-  border-radius: 1rem;
-  padding: 0em .25rem 0 1rem;
+  margin: 0 auto;
 `;
 
 const NameInput = styled.input`
-  flex-grow: 2;
-
-  width: 100%;
   font-size: .75em;
-  text-align: start;
+  width: 100%;
+  height: 2rem;
+  padding: 0.5rem 1rem;
+  margin: 0 0 .75rem;
   border: none;
-  outline: none;
-  background-color: unset;
-  height: 100%;
-  padding: 0;
-  appearance: none;
-  color: ${colors.tagGrey};
+  border-radius: 1.5rem;
+  background-color: ${colors.mainBg};
 
-  :focus {
-    text-align: start;
-    color: white;
+  ::placeholder {
+    color: ${colors.regularGrey};
   }
+`;
+
+const BtnWrapper = styled.div`
+  margin: 0 auto;
 `;
 
 const SubmitBtn = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  background-color: ${colors.tagRed};
-  color: #fff;
-  border-radius: 50%;
-  height: 1.5rem;
-  width: 1.5rem;
-  outline: none;
+  font-size: .6875em;
+  width: 100%;
+  height: 2rem;
+  background-color: ${colors.accentGreen};
+  color: white;
   border: none;
-
+  border-radius: 1.5rem;
   cursor: pointer;
 
   :disabled {
-    background-color: ${colors.tagGrey};
-  }
-
-  > svg {
-    > path {
-      stroke: white;
-    }
+    background-color: ${colors.buttonBgDisabled};
   }
 `;
 
-const Wrapper = styled(MainContent)`
-  color: white;
+const UpperArea = styled.div`
+  /* hack */
+  margin: 0 auto;
+  max-width: ${maxWidth}em;
+
+  display: flex;
+  flex-flow: row wrap;
+  background-color: white;
+
 `;
 
 const NameRow = styled.div`
@@ -100,33 +77,33 @@ const NameRow = styled.div`
 `;
 
 const TitleText = styled.h4`
+  width: 100%;
+  height: 3.5rem;
+
   font-weight: 600;
-  font-size: 1.25em;
+  font-size: 1.125em;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const SetNameBtn = styled.button`
-  color: ${colors.tagGrey};
+  color: white;
   appearance: none;
-  border: 1px solid ${colors.setNameBorderGrey};
+  border: none;
   border-radius: 2rem;
-  background: none;
-  outline: none;
+  background-color: ${colors.buttonBg};
   cursor: pointer;
   padding: 0 1rem;
   margin: 0 0 0 auto;
   height: 2rem;
 
-  font-size: .75em;
-`;
+  font-size: .6875em;
 
-const TagRow = styled.div`
-
-`;
-
-const TagText = styled.div`
-  padding: 0 0 .45rem 1rem;
-  color: ${colors.tagGrey};
-  font-size: .75em;
+  :disabled {
+    background-color: ${colors.buttonBgDisabled};
+  }
 `;
 
 const ErrInfo = styled.p`
@@ -134,108 +111,90 @@ const ErrInfo = styled.p`
   color: white;
 `;
 
-// TODO: use Store will be clear
-class Profile extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      remoteName: props.queryData.profile.name,
-      inputName: '',
-      status: 'INIT',
-      error: '',
-      disabled: false,
-      showInput: false,
-    };
-  }
+const Profile = () => {
+  const [{ profile }, dispatch] = useContext(LoginContext);
+  const [inputName, setInputName] = useState('');
+  const [status, setStatus] = useState('INIT');
+  const [errInfo, setErrInfo] = useState('');
+  const [disabled, setDisabled] = useState(false);
+  const [showInput, setShowInput] = useState(false);
 
-  handleChange = (e) => {
-    this.setState({ inputName: e.target.value });
-  }
+  const [setName, { error, loading, data }] = useMutation(SET_NAME,
+    { variables: { name: inputName } });
 
-  submitName = (e) => {
-    e.preventDefault();
-    this.setState({ disabled: true });
-    this.props.setName({ variables: { name: this.state.inputName } }).then(({ data, errors }) => {
-      // TODO: Cleanup these
-      if (data.setName.name) {
-        this.setState({ status: 'COMPLETE', remoteName: data.setName.name, disabled: false });
-      } else {
-        this.setState({ status: 'ERROR', error: errors[0].message, disabled: false });
-      }
-    }).catch(() => {
-      this.setState({ status: 'ERROR', disabled: false });
+  // console.log({ error, loading, data });
+
+  const handleChange = useCallback((e) => {
+    setInputName(e.target.value);
+  }, []);
+
+  const dispatchSetName = useCallback((name) => {
+    dispatch({
+      type: 'SET_NAME',
+      name,
     });
-    if (this.state.inputName) {
-      this.setState({ inputName: '' });
+  }, [dispatch]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setDisabled(true);
+    setName();
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      if (data && data.setName.name) {
+        setDisabled(true);
+        dispatchSetName(data.setName.name);
+      } else if (error) {
+        setStatus('ERROR');
+        setErrInfo(error.message);
+        setDisabled(false);
+      }
+    } else {
+      setStatus('LOADING');
     }
-  }
+  }, [loading, error, setStatus, setDisabled, dispatchSetName]);
 
-  render() {
-    const {
-      remoteName, inputName, showInput, disabled,
-    } = this.state;
-    const firstRow = remoteName ? (
-      <NameRow>
-        <TitleText>{remoteName}</TitleText>
-      </NameRow>
-    ) : (
-      <NameRow>
-        {showInput ? (
-          <NameForm autoComplete="off" onSubmit={this.submitName}>
-            <NameInput autoComplete="false" spellCheck="false" autoCapitalize="none" type="text" name="name" placeholder="用户名" onChange={this.handleChange} value={inputName} />
-            <SubmitBtn type="submit" title="提交" name={inputName} disabled={!inputName || disabled}><Tick /></SubmitBtn>
-          </NameForm>
-        ) : (
-          <React.Fragment>
-            <TitleText>个人中心</TitleText>
-            <SetNameBtn onClick={() => { this.setState({ showInput: true }); }}>点击设置用户名</SetNameBtn>
-          </React.Fragment>
-        ) }
-      </NameRow>
-    );
-    return (
-      <Wrapper>
-        {firstRow}
-        {(this.state.status === 'ERROR') && (<ErrInfo>错误：{this.state.error}</ErrInfo>)}
-        <TagRow>
-          <TagText>已关注标签</TagText>
-          <NavTags />
-        </TagRow>
-      </Wrapper>
-    );
-  }
-}
-Profile.propTypes = {
-  queryData: PropTypes.shape({
-    profile: PropTypes.shape({
-      email: PropTypes.string.isRequired,
-      name: PropTypes.string,
-    }),
-  }),
-  setName: PropTypes.func.isRequired,
-};
-Profile.defaultProps = {
-  queryData: {
-    profile: {
-      name: null,
-    },
-  },
-};
+  useEffect(() => {
+    if (profile.name) {
+      setStatus('COMPLETE');
+    }
+  }, [profile]);
 
-export default props => (
-  <Query query={PROFILE_QUERY}>
-    {({ data }) => (
-      <Mutation mutation={UPDATE_NAME} refetchQueries={['FetchProfile']}>
-        {(setName, { data: mutData, errors }) => (
-          <Profile
-            {...props}
-            setName={setName}
-            mutData={mutData}
-            mutError={errors}
-            queryData={data}
-          />
-        )}
-      </Mutation>
+  const firstRow = (
+    <NameRow>
+      {showInput ? (
+        <NameForm autoComplete="off" onSubmit={handleSubmit}>
+          <NameInput autoComplete="false" spellCheck="false" autoCapitalize="none" type="text" name="name" placeholder="用户名" onChange={handleChange} disabled={status === 'LOADING'} />
+          <SubmitBtn type="submit" title="提交" disabled={!inputName || disabled}>确认（之后不能修改)</SubmitBtn>
+        </NameForm>
+      ) : (
+        <BtnWrapper>
+          <SetNameBtn onClick={() => { setShowInput(true); }}>设置用户名</SetNameBtn>
+        </BtnWrapper>
+      ) }
+    </NameRow>
+  );
+
+  const firstRowWithName = (
+    <NameRow>
+      <TitleText>{ profile.name }</TitleText>
+    </NameRow>
+  );
+
+  return (
+    <UpperArea>
+      <TitleText>个人中心</TitleText>
+      {(status === 'COMPLETE' ? firstRowWithName : firstRow)}
+      {(status === 'ERROR') && (
+        <ErrInfo>
+          错误：
+          {errInfo}
+        </ErrInfo>
       )}
-  </Query>
-);
+    </UpperArea>
+  );
+};
+
+export default Profile;
