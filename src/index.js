@@ -6,7 +6,7 @@ import { ApolloProvider } from 'react-apollo';
 import App from 'App';
 import client from 'providers/client';
 import Store from 'providers/Store';
-import registerServiceWorker from 'registerServiceWorker';
+import * as serviceWorker from './serviceWorker';
 
 import 'normalize.css';
 import 'assets/css/fonts.css';
@@ -27,4 +27,4 @@ const Root = () => (
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));
-registerServiceWorker();
+serviceWorker.register();
