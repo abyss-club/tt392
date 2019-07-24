@@ -140,7 +140,7 @@ const SignIn = ({ history }) => {
     }
   }, []);
 
-  if (profile.isSignedIn) history.replace('/profile');
+  // if (profile.isSignedIn) history.replace('/profile');
 
   const completed = (
     <div>

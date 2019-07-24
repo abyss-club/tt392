@@ -13,7 +13,7 @@ import RefetchContext from 'providers/Refetch';
 import FloatButton from 'styles/FloatButton';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
-import Loading from 'styles/Loading';
+import { LoadMore } from 'styles/Loading';
 
 import ThreadInList from './ThreadInList';
 
@@ -117,14 +117,14 @@ const Threads = ({
       onLoadMore();
     }
   }, [inView, onLoadMore]);
-  if (loading) return <Loading />;
+  if (!entries || loading) return <LoadMore />;
   return (
     <>
       {entries.map(thread => (
         <ThreadInList key={thread.id} thread={thread} />
       ))}
       {hasNext && (
-        <Loading ref={ref} />
+        <LoadMore ref={ref} />
       )}
     </>
   );

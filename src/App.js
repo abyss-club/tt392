@@ -17,7 +17,7 @@ import TagSelector from 'components/TagPage/TagSelector';
 import TagView from 'components/TagPage/TagView';
 import Notification from 'components/Notification';
 import NavTags from 'components/Navbar/NavTags';
-import { Loading, LoadingContainer } from 'utils/loading';
+import { LoadingWrapper, LoadingBar } from 'styles/Loading';
 import colors from 'utils/colors';
 
 faLib.loadFa();
@@ -30,16 +30,17 @@ const Wrapper = styled.div`
 
 const GraphiQL = Loadable({
   loader: () => import('components/GraphiQL'),
-  loading: Loading,
+  loading: LoadingWrapper,
 });
 
 const GQLVoyager = Loadable({
   loader: () => import('components/Voyager'),
-  loading: Loading,
+  loading: LoadingWrapper,
 });
 
 const App = () => (
   <Wrapper>
+    <LoadingBar />
     <Route render={({ location }) => !location.pathname.startsWith('/error') && (
       <>
         <Init />

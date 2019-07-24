@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { useInView } from 'react-intersection-observer';
 
 import MainContent, { breakpoint } from 'styles/MainContent';
-import Loading from 'styles/Loading';
+import { LoadMore } from 'styles/Loading';
 import FloatButton from 'styles/FloatButton';
 import Post from 'components/Post';
 import { useQuery } from '@apollo/react-hooks';
@@ -52,7 +52,7 @@ const PostWrapper = ({
       onLoadMore();
     }
   }, [inView, onLoadMore]);
-  if (!entries && loading) return <Loading />;
+  if (!entries || loading) return <LoadMore />;
   return (
     <>
       {entries.map(post => (
@@ -60,7 +60,7 @@ const PostWrapper = ({
           key={post.id}
           isThread={false}
           postId={post.id}
-          onQuoteToggle={handleQuoteToggle}
+          handleQuoteToggle={handleQuoteToggle}
           isQuoted={quotedPosts.has(post.id)}
           quotable={quotedPosts.size < 3}
           threadId={threadId}
@@ -68,7 +68,7 @@ const PostWrapper = ({
         />
       ))}
       {hasNext && (
-        <Loading ref={ref} />
+        <LoadMore ref={ref} />
       )}
     </>
   );
@@ -87,12 +87,14 @@ PostWrapper.propTypes = {
 };
 
 const ThreadView = ({ match }) => {
-  const { history } = useRouter();
+  const { history, location } = useRouter();
+  console.log(location);
   const { id } = match.params;
   const [quotedPosts, setQP] = useState(new Set());
   const handleQuoteToggle = ({ postId }) => {
     setQP((prevQP) => {
       const newQuotedPosts = new Set(prevQP);
+      console.log({ prevQP, postId });
       if (newQuotedPosts.has(postId)) {
         newQuotedPosts.delete(postId);
       } else {
@@ -109,10 +111,8 @@ const ThreadView = ({ match }) => {
   console.log('render threadview');
 
   const {
-    data, loading, error, fetchMore,
+    data, loading, fetchMore, refetch,
   } = useQuery(THREAD_VIEW, { variables: { id, cursor: '' } });
-
-  console.log({ loading, data, error });
 
   const thread = !loading ? data.thread : {};
   const sliceInfo = !loading ? data.thread.replies.sliceInfo : {};
@@ -136,6 +136,11 @@ const ThreadView = ({ match }) => {
       return newPosts.length ? updatedData : prevResult;
     },
   });
+
+  if ((location.state || {}).refetchThread) {
+    refetch();
+    history.replace({ state: { refetchThread: false } });
+  }
 
   return !loading && (
     <MainContent>

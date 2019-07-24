@@ -7,7 +7,9 @@ import config from 'config';
 
 export default new ApolloClient({
   link: ApolloLink.from([
-    onError(({ graphQLErrors, networkError }) => {
+    onError(({
+      forward, graphQLErrors, networkError, operation
+    }) => {
       if (graphQLErrors) {
         console.log(graphQLErrors);
         graphQLErrors.map(({ message, locations, path }) =>
@@ -17,8 +19,8 @@ export default new ApolloClient({
         console.log(networkError.statusCode);
         if (networkError.statusCode >= 500) {
           window.location = '/error/NETWORK_ERROR';
-          return Observable.of();
         }
+        forward(operation);
         console.log(`[Network error]: ${networkError}`);
       }
     }),

@@ -12,8 +12,9 @@ import { RefetchProvider } from 'providers/Refetch';
 import { ScrollbarProvider } from 'providers/Scrollbar';
 import { SliderProvider } from 'providers/Slider';
 import { ScrollToProvider } from 'providers/ScrollTo';
+import { LoadingProvider } from 'providers/Loading';
 import {
-  login, draft, notification, tags, refetch, scrollbar, scrollTo, slider,
+  login, draft, notification, tags, refetch, scrollbar, scrollTo, slider, loading,
 } from 'reducers';
 import { HookedBrowserRouter } from 'utils/routerHooks';
 import ScrollToTop from 'utils/scrollToTop';
@@ -42,11 +43,13 @@ const Root = () => (
                 <DraftProvider reducer={draft}>
                   <LoginProvider reducer={login}>
                     <NotiProvider reducer={notification}>
-                      <ApolloProvider client={client}>
-                        <ScrollToTop>
-                          <App />
-                        </ScrollToTop>
-                      </ApolloProvider>
+                      <LoadingProvider reducer={loading}>
+                        <ApolloProvider client={client}>
+                          <ScrollToTop>
+                            <App />
+                          </ScrollToTop>
+                        </ApolloProvider>
+                      </LoadingProvider>
                     </NotiProvider>
                   </LoginProvider>
                 </DraftProvider>

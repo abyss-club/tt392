@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  color: ${colors.regularGrey};
+  color: ${colors.regularBlack};
   width: 100%;
   font-size: 1.125em;
   font-weight: 600;
@@ -61,7 +61,8 @@ const Notifications = () => {
       onClick={() => { setCurrentPanel(type); }}
     >
       {typeText[type]}
-:
+      :
+      {' '}
       {unreadNotiCount[type]}
     </Type>
   ));

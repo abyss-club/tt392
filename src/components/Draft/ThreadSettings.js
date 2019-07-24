@@ -1,7 +1,6 @@
 import React, {
-  useEffect, useState, useContext, useRef, useMemo, useCallback,
+  useState, useContext, useCallback,
 } from 'react';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import TagsContext from 'providers/Tags';
 import DraftContext from 'providers/Draft';
@@ -21,6 +20,8 @@ const Input = styled.input`
 const TagRow = styled.div`
   display: flex;
   flex-flow: row nowrap;
+
+  overflow-x: auto;
 `;
 
 const TitleRow = styled.div`

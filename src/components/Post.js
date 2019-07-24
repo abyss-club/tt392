@@ -156,13 +156,13 @@ const AuthorWrapper = styled.span`
 `;
 
 const QuoteSelectorWrapper = ({
-  postID, onQuoteToggle, isQuoted, quotable,
+  postId, handleQuoteToggle, isQuoted, quotable,
 }) => {
   const disabled = (!isQuoted) && (!quotable);
   return (
     <QuoteSelectorBtn
       isQuoted={isQuoted}
-      onClick={() => onQuoteToggle({ postID })}
+      onClick={() => handleQuoteToggle({ postId })}
       disabled={disabled}
     >
       引用
@@ -173,13 +173,13 @@ const QuoteSelectorWrapper = ({
   );
 };
 QuoteSelectorWrapper.propTypes = {
-  postID: PropTypes.string,
-  onQuoteToggle: PropTypes.func.isRequired,
+  postId: PropTypes.string,
+  handleQuoteToggle: PropTypes.func.isRequired,
   isQuoted: PropTypes.bool.isRequired,
   quotable: PropTypes.bool.isRequired,
 };
 QuoteSelectorWrapper.defaultProps = {
-  postID: null,
+  postId: null,
 };
 
 const titlePlaceholder = '无题';
@@ -229,7 +229,7 @@ const ScrollWrapper = ({ postId, children }) => {
 
 const Post = ({
   isThread, title, anonymous, author, createdAt, content, quotes, postId, threadId, replyCount,
-  onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList,
+  handleQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList,
 }) => {
   const titleRow = isThread ? (
     <Title inList={inList}>
@@ -244,9 +244,9 @@ const Post = ({
   ) : (
     <AuthorWrapper>{author}</AuthorWrapper>
   );
-  const quoteSelector = (!isThread) && onQuoteToggle && (
+  const quoteSelector = (!isThread) && handleQuoteToggle && (
     <QuoteSelectorWrapper {...{
-      postId, onQuoteToggle, isQuoted, quotable,
+      postId, handleQuoteToggle, isQuoted, quotable,
     }}
     />
   );
@@ -278,7 +278,9 @@ const Post = ({
       <MetaRow>
         {authorText}
         <PublishTime>
-&nbsp;·&nbsp;
+          {' '}
+          ·
+          {' '}
           {timeElapsed(createdAt).formatted}
         </PublishTime>
         {quoteSelector}
@@ -319,7 +321,7 @@ Post.propTypes = {
   quotes: PropTypes.arrayOf(PropTypes.shape()),
   postId: PropTypes.string,
   threadId: PropTypes.string,
-  onQuoteToggle: PropTypes.func,
+  handleQuoteToggle: PropTypes.func,
   isQuoted: PropTypes.bool,
   quotable: PropTypes.bool,
   mainTag: PropTypes.string,
@@ -331,7 +333,7 @@ Post.propTypes = {
 Post.defaultProps = {
   postId: null,
   threadId: null,
-  onQuoteToggle: null,
+  handleQuoteToggle: null,
   isQuoted: false,
   quotable: false,
   isThread: false,

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { Link } from 'react-router-dom';
@@ -24,7 +23,7 @@ const Badge = styled.div`
   display: ${props => (props.count === 0 ? 'none' : 'unset')};
   position: absolute;
   left: 1.25em;
-  top: -1.5em;
+  top: -1em;
 
   background-color: ${colors.accentGreen};
   height: 1em;
@@ -61,7 +60,7 @@ const NotificationBtn = () => {
         quoted,
       });
     }
-  }, [dispatch, loading]);
+  }, [data, dispatch, loading]);
 
   return (
     <StyledLink title="Notification" to="/notification/">

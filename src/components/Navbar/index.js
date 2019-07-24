@@ -237,7 +237,7 @@ const Title = () => {
         window.scrollTo(0, 0);
       }
     }
-  }, [history, location.pathname]);
+  }, [dispatch, history, location.pathname, threadList]);
 
   return (
     <Link to="/" title="Home">
@@ -270,10 +270,12 @@ const Navbar = () => {
   );
 
   const FirstRowComposing = ({ match }) => {
+    const [{ profile }] = useContext(LoginContext);
     const { mode } = match.params;
     const [{
       anonymous, title, content, mainTag, subTags, quoteIds, threadId,
     }, dispatch] = useContext(DraftContext);
+    const [, dispatchRefetch] = useContext(RefetchContext);
     const [publishRdy, setPublishRdy] = useState(false);
     const [optionVal, setOptionVal] = useState(anonymous ? 'anonymous' : 'normal');
     const [errInfo, setErrInfo] = useState('');
@@ -326,11 +328,12 @@ const Navbar = () => {
           if (data) {
             setPublishRdy(false);
             dispatch({ type: 'RESET_DRAFT' });
+            dispatchRefetch({ type: 'REFETCH_THREADLIST', status: true });
             history.push(`/thread/${data.pubThread.id}`);
           }
         }
       }
-    }, [dispatch, mode, threadState]);
+    }, [dispatch, dispatchRefetch, mode, threadState]);
 
     useEffect(() => {
       if (mode === 'post') {
@@ -345,7 +348,7 @@ const Navbar = () => {
           if (data) {
             setPublishRdy(false);
             dispatch({ type: 'RESET_DRAFT' });
-            history.push(`/thread/${threadId}`);
+            dispatch({ })
           }
         }
       }
@@ -388,7 +391,7 @@ const Navbar = () => {
                 <SelectWrapper>
                   <select value={optionVal} onChange={handleChange}>
                     <option value="anonymous">匿名发帖</option>
-                    <option value="normal">用户名</option>
+                    {profile.name && <option value="normal">{profile.name}</option>}
                   </select>
                 </SelectWrapper>
               </SendModeWrapper>
