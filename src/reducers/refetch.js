@@ -7,6 +7,14 @@ const reducer = (state, action) => {
         threadList: !!status,
       };
     }
+    case 'REFETCH_THREAD': {
+      const { status } = action;
+      return {
+        ...state,
+        thread: !!status,
+      };
+    }
+
     default:
       throw new Error('Invalid action type.');
   }

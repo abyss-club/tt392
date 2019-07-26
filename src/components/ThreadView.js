@@ -48,10 +48,10 @@ const PostWrapper = ({
   console.log('render postwrapper');
 
   useEffect(() => {
-    if (inView) {
+    if (inView && !loading) {
       onLoadMore();
     }
-  }, [inView, onLoadMore]);
+  }, [inView, onLoadMore, loading]);
   if (!entries || loading) return <LoadMore />;
   return (
     <>
@@ -137,6 +137,7 @@ const ThreadView = ({ match }) => {
     },
   });
 
+  console.log(location.state);
   if ((location.state || {}).refetchThread) {
     refetch();
     history.replace({ state: { refetchThread: false } });
@@ -166,7 +167,7 @@ const ThreadView = ({ match }) => {
 ThreadView.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
-      id: PropTypes.string,
+      id: PropTypes.string.isRequired,
     }),
   }).isRequired,
 };

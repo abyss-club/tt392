@@ -113,10 +113,10 @@ const Threads = ({
     threshold: 0.5,
   });
   useEffect(() => {
-    if (inView) {
+    if (inView && !loading) {
       onLoadMore();
     }
-  }, [inView, onLoadMore]);
+  }, [inView, onLoadMore, loading]);
   if (!entries || loading) return <LoadMore />;
   return (
     <>

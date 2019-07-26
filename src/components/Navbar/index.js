@@ -348,7 +348,7 @@ const Navbar = () => {
           if (data) {
             setPublishRdy(false);
             dispatch({ type: 'RESET_DRAFT' });
-            dispatch({ })
+            history.push(`/thread/${threadId}`, { refetchThread: true });
           }
         }
       }

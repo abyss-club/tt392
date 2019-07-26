@@ -21,8 +21,7 @@ import ScrollToTop from 'utils/scrollToTop';
 import * as serviceWorker from './serviceWorker';
 
 import 'normalize.css';
-import 'assets/css/fonts.css';
-
+import 'typeface-roboto-mono';
 import './index.css';
 
 // This is for a11y issue detection

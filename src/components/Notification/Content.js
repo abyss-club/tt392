@@ -101,7 +101,7 @@ const TopRow = styled.div`
 
 const AuthorWrapper = styled.span`
   color: ${colors.regularBlack};
-  font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
+  font-family: ${props => (props.anonymous ? '"Roboto Mono", monospace' : fontFamilies.system)};
   line-height: ${props => (props.anonymous ? '1.3' : 'unset')};
   font-size: .75em;
 `;

@@ -9,6 +9,7 @@ import colors from 'utils/colors';
 
 import LoginContext from 'providers/Login';
 import MainContent, { maxWidth } from 'styles/MainContent';
+import Panel from './Panel';
 
 const SET_NAME = gql`
   mutation SetName($name: String!) {
@@ -58,13 +59,13 @@ const SubmitBtn = styled.button`
 
 const UpperArea = styled.div`
   /* hack */
-  margin: 0 auto;
-  max-width: ${maxWidth}em;
+  margin: 0 auto .5rem;
+  max-width: ${maxWidth}rem;
 
   display: flex;
   flex-flow: row wrap;
   background-color: white;
-
+  border: none;
 `;
 
 const NameRow = styled.div`
@@ -111,6 +112,23 @@ const ErrInfo = styled.p`
   color: white;
 `;
 
+const Type = styled.div`
+  /* flex: 0 1 calc((100% - 4em) / 2); */
+  flex: 0 1 auto;
+
+  text-align: center;
+  font-size: .8em;
+  padding: .625rem 0 .5rem;
+  margin: 0 calc(25% - 3em);
+  ${props => (props.selected ? `border-bottom: 2px solid ${colors.accentGreen};` : 'border: none')}
+  color: ${props => (props.selected ? colors.regularBlack : colors.regularGrey)};
+
+  cursor: pointer;
+  :hover {
+    border-bottom: 2px solid ${colors.accentGreen};
+  }
+`;
+
 const Profile = () => {
   const [{ profile }, dispatch] = useContext(LoginContext);
   const [inputName, setInputName] = useState('');
@@ -118,6 +136,7 @@ const Profile = () => {
   const [errInfo, setErrInfo] = useState('');
   const [disabled, setDisabled] = useState(false);
   const [showInput, setShowInput] = useState(false);
+  const [currentPanel, setCurrentPanel] = useState('threads');
 
   const [setName, { error, loading, data }] = useMutation(SET_NAME,
     { variables: { name: inputName } });
@@ -184,16 +203,23 @@ const Profile = () => {
   );
 
   return (
-    <UpperArea>
-      <TitleText>个人中心</TitleText>
-      {(status === 'COMPLETE' ? firstRowWithName : firstRow)}
-      {(status === 'ERROR') && (
-        <ErrInfo>
-          错误：
-          {errInfo}
-        </ErrInfo>
-      )}
-    </UpperArea>
+    <>
+      <UpperArea>
+        <TitleText>个人中心</TitleText>
+        {(status === 'COMPLETE' ? firstRowWithName : firstRow)}
+        {(status === 'ERROR') && (
+          <ErrInfo>
+            错误：
+            {errInfo}
+          </ErrInfo>
+        )}
+        <Type selected={currentPanel === 'threads'} onClick={() => { setCurrentPanel('threads'); }}>我发出的主题</Type>
+        <Type selected={currentPanel === 'posts'} onClick={() => { setCurrentPanel('posts'); }}>我回复的帖子</Type>
+      </UpperArea>
+      <MainContent>
+        <Panel type={currentPanel} />
+      </MainContent>
+    </>
   );
 };
 

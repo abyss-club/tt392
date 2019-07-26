@@ -36,27 +36,26 @@ EmptyPlaceholder.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
-const Notis = ({
+const Entries = ({
   entries, loading, onLoadMore, hasNext, type,
 }) => {
   const [ref, inView] = useInView({
-    threshold: 1,
+    threshold: 0.5,
   });
 
-  console.log('render notis');
   useEffect(() => {
     if (inView && !loading) {
       onLoadMore();
     }
-  }, [inView, onLoadMore, loading]);
+  }, [loading, inView, onLoadMore]);
   if (loading) return <LoadMore />;
   return (
     <>
-      {entries.length ? entries.map(noti => (
+      {entries.length ? entries.map(entry => (
         <Content
-          key={noti.id}
+          key={entry.id}
           type={type}
-          notification={noti}
+          entry={entry}
         />
       )) : <EmptyPlaceholder type={type} />}
       {hasNext && (
@@ -65,7 +64,7 @@ const Notis = ({
     </>
   );
 };
-Notis.propTypes = {
+Entries.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
   onLoadMore: PropTypes.func.isRequired,
@@ -74,33 +73,37 @@ Notis.propTypes = {
 };
 
 const QueryWrapper = ({ type }) => {
+  const currentQuery = type === 'threads' ? GET_THREADS : GET_POSTS;
   const {
     data, loading, error, fetchMore,
-  } = useQuery(getNotification(type), { variables: { cursor: '' } });
-  const sliceInfo = !loading ? data.notification.sliceInfo : {};
+} = useQuery(currentQuery, { variables: { cursor: '' } });
+  const sliceInfo = !loading ? data.profile[type].sliceInfo : {};
   const onLoadMore = () => fetchMore({
-    query: getNotification(type),
+    query: currentQuery,
     variables: { cursor: sliceInfo.lastCursor },
     updateQuery: (prevResult, { fetchMoreResult }) => {
-      const newNotis = fetchMoreResult.notification[type];
-      const newSliceInfo = fetchMoreResult.notification.sliceInfo;
+      const newEntries = fetchMoreResult.profile[type][type];
+      const newSliceInfo = fetchMoreResult.profile[type].sliceInfo;
       const updatedData = {
         ...prevResult,
-        notification: {
-          ...prevResult.notification,
-          [type]: [...prevResult.notification[type], ...newNotis],
-          sliceInfo: newSliceInfo,
+        profile: {
+          ...prevResult.profile,
+          [type]: {
+            ...prevResult.profile[type],
+            [type]: [...prevResult.profile[type][type], ...newEntries],
+            sliceInfo: newSliceInfo,
+          },
         },
       };
-      return newNotis.length ? updatedData : prevResult;
+      return newEntries.length ? updatedData : prevResult;
     },
   });
   return (
-    <Notis
+    <Entries
       type={type}
       loading={loading}
-      entries={!loading ? data.notification[type] : []}
-      hasNext={!loading ? data.notification.sliceInfo.hasNext : false}
+      entries={!loading ? data.profile[type][type] : []}
+      hasNext={!loading ? data.profile[type].sliceInfo.hasNext : false}
       onLoadMore={onLoadMore}
     />
   );
@@ -109,24 +112,26 @@ QueryWrapper.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
-function getNotification(type) {
-  const fields = {
-    system: 'id, type, eventTime, hasRead, title, content',
-    replied: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createdAt, mainTag, subTags, title, replies(query: { before: "", limit: 3 }) { posts { id, anonymous, content, author, createdAt } }, replyCount }, repliers',
-    quoted: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createdAt, mainTag, subTags, title }, post { id, anonymous, author, content, createdAt }, quotedPost { id, anonymous, author, content, createdAt }',
-  };
-  return gql`
-    query Notification($cursor: String!) {
-      notification(type: "${type}", query: { after: $cursor, limit: 3 }) {
-        ${type} {
-          ${fields[type]}
-        }
-        sliceInfo {
-          firstCursor, lastCursor, hasNext
-        }
+const GET_THREADS = gql`
+  query profile($cursor: String!) {
+    profile {
+      threads(query: { after: $cursor, limit: 1 }) {
+        threads { id, content, createdAt, mainTag, subTags, title }
+        sliceInfo { firstCursor, lastCursor, hasNext }
       }
     }
-  `;
-}
+  }
+`;
+
+const GET_POSTS = gql`
+  query profile($cursor: String!) {
+    profile {
+      posts(query: { after: $cursor, limit: 1 }) {
+        posts { id, author, anonymous, content, createdAt, quotes { id, createdAt, anonymous, author, content } }
+        sliceInfo { firstCursor, lastCursor, hasNext }
+      }
+    }
+  }
+`;
 
 export default QueryWrapper;
