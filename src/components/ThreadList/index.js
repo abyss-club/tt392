@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
-import { useInView } from 'react-intersection-observer';
 
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { useRouter } from 'utils/routerHooks';
@@ -13,7 +12,7 @@ import RefetchContext from 'providers/Refetch';
 import FloatButton from 'styles/FloatButton';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
-import { LoadMore } from 'styles/Loading';
+import ScrollForMore from 'components/ScrollForMore';
 
 import ThreadInList from './ThreadInList';
 
@@ -108,27 +107,18 @@ const SubscribeBtn = styled.button`
 
 const Threads = ({
   entries, loading, onLoadMore, hasNext,
-}) => {
-  const [ref, inView] = useInView({
-    threshold: 0.5,
-  });
-  useEffect(() => {
-    if (inView && !loading) {
-      onLoadMore();
-    }
-  }, [inView, onLoadMore, loading]);
-  if (!entries || loading) return <LoadMore />;
-  return (
-    <>
-      {entries.map(thread => (
-        <ThreadInList key={thread.id} thread={thread} />
-      ))}
-      {hasNext && (
-        <LoadMore ref={ref} />
-      )}
-    </>
-  );
-};
+}) => (
+  <ScrollForMore
+    entries={entries}
+    loading={loading}
+    onLoadMore={onLoadMore}
+    hasNext={hasNext}
+  >
+    {entries.map(thread => (
+      <ThreadInList key={thread.id} thread={thread} />
+    ))}
+  </ScrollForMore>
+);
 Threads.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
@@ -202,6 +192,22 @@ const ThreadList = ({
   const addThread = () => { history.push('/draft/thread/'); };
   const threads = !loading ? data.threadSlice.threads : [];
   const sliceInfo = !loading ? data.threadSlice.sliceInfo : {};
+  const onLoadMore = () => fetchMore({
+    query: THREADSLICE_QUERY,
+    variables: { cursor: sliceInfo.lastCursor, tags: filterByTags },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      const previousEntry = previousResult.threadSlice.threads;
+      const newThreads = fetchMoreResult.threadSlice.threads;
+      const newSliceInfo = fetchMoreResult.threadSlice.sliceInfo;
+      return newThreads.length ? {
+        threadSlice: {
+          __typename: previousResult.threadSlice.__typename,
+          threads: [...previousEntry, ...newThreads],
+          sliceInfo: newSliceInfo,
+        },
+      } : previousResult;
+    },
+  });
   return (
     <>
       {!loading && slug && (
@@ -217,22 +223,7 @@ const ThreadList = ({
         loading={loading}
         entries={threads || []}
         hasNext={sliceInfo.hasNext || false}
-        onLoadMore={() => fetchMore({
-          query: THREADSLICE_QUERY,
-          variables: { cursor: sliceInfo.lastCursor, tags: filterByTags },
-          updateQuery: (previousResult, { fetchMoreResult }) => {
-            const previousEntry = previousResult.threadSlice.threads;
-            const newThreads = fetchMoreResult.threadSlice.threads;
-            const newSliceInfo = fetchMoreResult.threadSlice.sliceInfo;
-            return newThreads.length ? {
-              threadSlice: {
-                __typename: previousResult.threadSlice.__typename,
-                threads: [...previousEntry, ...newThreads],
-                sliceInfo: newSliceInfo,
-              },
-            } : previousResult;
-          },
-        })}
+        onLoadMore={onLoadMore}
       />
       <FloatButton title="Compose new thread" onClick={addThread}>
         <Pen />

@@ -29,7 +29,7 @@ const Scrollbar = ({ catalog }) => {
 
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
-  });
+  }, []);
 
   return (
     <Wrapper>
@@ -40,10 +40,7 @@ const Scrollbar = ({ catalog }) => {
   );
 };
 Scrollbar.propTypes = {
-  catalog: PropTypes.arrayOf(PropTypes.shape({
-    findIndex: PropTypes.func,
-    length: PropTypes.number.isRequired,
-  })).isRequired,
+  catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 export default Scrollbar;

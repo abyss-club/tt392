@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import colors from 'utils/colors';
 import LoadingContext from 'providers/Loading';
 
-const LoadMoreWrapper = styled.article`
+const LoadMoreWrapper = styled.div`
   display: flex;
   align-items: center;
 
@@ -12,6 +12,10 @@ const LoadMoreWrapper = styled.article`
   margin: 1rem 0;
   padding: .5rem;
   border-radius: .5rem;
+
+  :last-of-type {
+    margin: 1rem 0 0;
+  }
 `;
 
 const LoadMoreText = styled.p`

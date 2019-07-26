@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
-import { useInView } from 'react-intersection-observer';
 
 import { useQuery } from '@apollo/react-hooks';
 import colors from 'utils/colors';
-import { LoadMore } from 'styles/Loading';
 import Content from './Content';
+import ScrollForMore from 'components/ScrollForMore';
 
 const EmptyPanel = styled.div`
   background-color: white;
@@ -38,32 +37,22 @@ EmptyPlaceholder.propTypes = {
 
 const Entries = ({
   entries, loading, onLoadMore, hasNext, type,
-}) => {
-  const [ref, inView] = useInView({
-    threshold: 0.5,
-  });
-
-  useEffect(() => {
-    if (inView && !loading) {
-      onLoadMore();
-    }
-  }, [loading, inView, onLoadMore]);
-  if (loading) return <LoadMore />;
-  return (
-    <>
-      {entries.length ? entries.map(entry => (
-        <Content
-          key={entry.id}
-          type={type}
-          entry={entry}
-        />
-      )) : <EmptyPlaceholder type={type} />}
-      {hasNext && (
-        <LoadMore ref={ref} />
-      )}
-    </>
-  );
-};
+}) => (
+  <ScrollForMore
+    entries={entries}
+    loading={loading}
+    onLoadMore={onLoadMore}
+    hasNext={hasNext}
+  >
+    {entries.length ? entries.map(entry => (
+      <Content
+        key={entry.id}
+        type={type}
+        entry={entry}
+      />
+    )) : <EmptyPlaceholder type={type} />}
+  </ScrollForMore>
+);
 Entries.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,

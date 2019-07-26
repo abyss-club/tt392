@@ -2,11 +2,10 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
-import { useInView } from 'react-intersection-observer';
 
+import ScrollForMore from 'components/ScrollForMore';
 import { useQuery } from '@apollo/react-hooks';
 import colors from 'utils/colors';
-import { LoadMore } from 'styles/Loading';
 import Content from './Content';
 
 const EmptyPanel = styled.div`
@@ -38,33 +37,22 @@ EmptyPlaceholder.propTypes = {
 
 const Notis = ({
   entries, loading, onLoadMore, hasNext, type,
-}) => {
-  const [ref, inView] = useInView({
-    threshold: 1,
-  });
-
-  console.log('render notis');
-  useEffect(() => {
-    if (inView && !loading) {
-      onLoadMore();
-    }
-  }, [inView, onLoadMore, loading]);
-  if (loading) return <LoadMore />;
-  return (
-    <>
-      {entries.length ? entries.map(noti => (
-        <Content
-          key={noti.id}
-          type={type}
-          notification={noti}
-        />
-      )) : <EmptyPlaceholder type={type} />}
-      {hasNext && (
-        <LoadMore ref={ref} />
-      )}
-    </>
-  );
-};
+}) => (
+  <ScrollForMore
+    entries={entries}
+    loading={loading}
+    onLoadMore={onLoadMore}
+    hasNext={hasNext}
+  >
+    {entries.length ? entries.map(noti => (
+      <Content
+        key={noti.id}
+        type={type}
+        notification={noti}
+      />
+    )) : <EmptyPlaceholder type={type} />}
+  </ScrollForMore>
+);
 Notis.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,

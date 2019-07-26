@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useContext, useRef,
+} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
-import { useInView } from 'react-intersection-observer';
 
 import MainContent, { breakpoint } from 'styles/MainContent';
-import { LoadMore } from 'styles/Loading';
 import FloatButton from 'styles/FloatButton';
 import Post from 'components/Post';
 import { useQuery } from '@apollo/react-hooks';
 import { useRouter } from 'utils/routerHooks';
+import colors from 'utils/colors';
 import ChatBubble from 'components/icons/ChatBubble';
 import Scrollbar from 'components/Scrollbar';
+import CatalogContext from 'providers/Catalog';
+import ScrollForMore from 'components/ScrollForMore';
 
 const ThreadViewWrapper = styled.div`
   margin: .5rem -0.5rem 0;
@@ -38,26 +41,63 @@ const THREAD_VIEW = gql`
   }
 `;
 
+const ScrolledPostWrapper = styled.div`
+  background-color: ${props => (props.isThread ? 'unset' : 'white')};
+  :not(:last-of-type):after {
+    content: "";
+    display: block;
+    width: calc(100% - 3rem);
+    border-bottom: 1px solid ${colors.borderGrey};
+    margin: 0 1.5rem;
+  }
+  :last-of-type {
+    ${props => (props.inList ? 'padding-bottom: 0;' : 'padding-bottom: 1rem;')}
+    border-bottom: none;
+  }
+  @media (min-width: ${breakpoint}em) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  :not(:last-of-type) {
+    > div {
+      padding-bottom: 0;
+    }
+  }
+`;
+
+const ScrollWrapper = ({ postId, children }) => {
+  const scrollRef = useRef(null);
+  const [{ threadView }, dispatch] = useContext(CatalogContext);
+  useEffect(() => {
+    const tempMap = threadView;
+    threadView.set(postId, scrollRef.current.offsetTop);
+    dispatch({ type: 'SET_THREADVIEW_CATALOG', catalog: tempMap });
+  }, [dispatch, postId, threadView]);
+
+  return (
+    <ScrolledPostWrapper ref={scrollRef}>
+      {children}
+    </ScrolledPostWrapper>
+  );
+};
+ScrollWrapper.propTypes = {
+  postId: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+
 const PostWrapper = ({
   entries, loading, onLoadMore, hasNext, threadId, handleQuoteToggle, quotedPosts,
-}) => {
-  const [ref, inView] = useInView({
-    threshold: 0.5,
-  });
-
-  console.log('render postwrapper');
-
-  useEffect(() => {
-    if (inView && !loading) {
-      onLoadMore();
-    }
-  }, [inView, onLoadMore, loading]);
-  if (!entries || loading) return <LoadMore />;
-  return (
-    <>
-      {entries.map(post => (
+}) => (
+  <ScrollForMore
+    entries={entries}
+    loading={loading}
+    onLoadMore={onLoadMore}
+    hasNext={hasNext}
+  >
+    {entries.map(post => (
+      <ScrollWrapper key={post.id} postId={post.id}>
         <Post
-          key={post.id}
           isThread={false}
           postId={post.id}
           handleQuoteToggle={handleQuoteToggle}
@@ -66,13 +106,10 @@ const PostWrapper = ({
           threadId={threadId}
           {...post}
         />
-      ))}
-      {hasNext && (
-        <LoadMore ref={ref} />
-      )}
-    </>
-  );
-};
+      </ScrollWrapper>
+    ))}
+  </ScrollForMore>
+);
 PostWrapper.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   loading: PropTypes.bool.isRequired,
@@ -87,14 +124,15 @@ PostWrapper.propTypes = {
 };
 
 const ThreadView = ({ match }) => {
+  // const [, dispatchCatalog] = useContext(CatalogContext);
+  // useEffect(() => { dispatchCatalog({ type: 'RESET_CATALOG' }); }, [dispatchCatalog]);
+
   const { history, location } = useRouter();
-  console.log(location);
   const { id } = match.params;
   const [quotedPosts, setQP] = useState(new Set());
   const handleQuoteToggle = ({ postId }) => {
     setQP((prevQP) => {
       const newQuotedPosts = new Set(prevQP);
-      console.log({ prevQP, postId });
       if (newQuotedPosts.has(postId)) {
         newQuotedPosts.delete(postId);
       } else {
@@ -127,17 +165,17 @@ const ThreadView = ({ match }) => {
         thread: {
           ...prevResult.thread,
           replies: {
-            __typename: prevResult.thread.replies.__typename,
+            ...prevResult.thread.replies,
             sliceInfo: newSliceInfo,
             posts: [...prevResult.thread.replies.posts, ...newPosts],
           },
         },
       };
+      console.log({ newPosts, newSliceInfo, updatedData });
       return newPosts.length ? updatedData : prevResult;
     },
   });
 
-  console.log(location.state);
   if ((location.state || {}).refetchThread) {
     refetch();
     history.replace({ state: { refetchThread: false } });
@@ -149,7 +187,7 @@ const ThreadView = ({ match }) => {
         <Post isThread {...thread} threadId={id} />
         <PostWrapper
           loading={loading}
-          entries={data.thread.replies.posts || []}
+          entries={thread.replies.posts || []}
           hasNext={sliceInfo.hasNext || false}
           quotedPosts={quotedPosts}
           threadId={thread.id}
@@ -160,7 +198,7 @@ const ThreadView = ({ match }) => {
       <FloatButton title="Compose new reply" onClick={addReply} aboveScrollbar>
         <ChatBubble />
       </FloatButton>
-      {false && (<Scrollbar catalog={thread.catalog} />)}
+      {!loading && (<Scrollbar catalog={thread.catalog} />)}
     </MainContent>
   );
 };

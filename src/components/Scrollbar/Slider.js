@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import ScrollToContext from 'providers/ScrollTo';
+import CatalogContext from 'providers/Catalog';
 import SliderContext from 'providers/Slider';
 import colors from 'utils/colors';
 
@@ -50,22 +50,27 @@ const SliderWrapper = styled.div`
 
 const Scroller = ({ idx, length, catalog }) => {
   const [{ loc, max }, dispatchSlider] = useContext(SliderContext);
-  const [, dispatchScrollTo] = useContext(ScrollToContext);
+  const [{ threadView }] = useContext(CatalogContext);
 
   useEffect(() => {
     dispatchSlider({ type: 'SET_SLIDER', loc: idx, max: length });
   }, [dispatchSlider, idx, length]);
 
   const handleSliderChange = useCallback((e) => {
-    console.log('changed');
     dispatchSlider({ type: 'SET_SLIDER_LOC', loc: e.target.value });
-    dispatchScrollTo({ type: 'SET_ID', id: catalog[loc].postId });
-  }, [catalog, dispatchScrollTo, dispatchSlider, loc]);
+  }, [catalog, dispatchSlider, idx, threadView]);
+
+  const handleSliderOnMouseUp = useCallback(() => {
+    window.scrollTo({
+      behavior: 'smooth',
+      top: threadView.get(catalog[loc].postId),
+    });
+  });
 
   return (
     <Wrapper>
       <SliderWrapper>
-        <input type="range" min="0" max={max} value={loc} step="1" onChange={handleSliderChange} />
+        <input type="range" min="0" max={max} value={loc} step="1" onChange={handleSliderChange} onMouseUp={handleSliderOnMouseUp} />
         max:
         {' '}
         {max}

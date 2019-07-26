@@ -207,26 +207,6 @@ const PostWrapper = ({ children, postId, createdAt }) => {
   );
 };
 
-const ScrollWrapper = ({ postId, children }) => {
-  // const scrollRef = useRef(null);
-  // const [{ active, id }, dispatch] = useContext(ScrollToContext);
-  // console.log({ active, id, postId });
-  // useEffect(() => {
-  //   if (active && postId === id) {
-  //     console.log({ active, id });
-  //     console.log(scrollRef.current.offsetTop);
-  //     scrollToRef(scrollRef);
-  //     dispatch({ type: 'RESET' });
-  //   }
-  // }, [active, dispatch, id, postId]);
-
-  return (
-    <div>
-      {children}
-    </div>
-  );
-};
-
 const Post = ({
   isThread, title, anonymous, author, createdAt, content, quotes, postId, threadId, replyCount,
   handleQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList,
@@ -298,14 +278,12 @@ const Post = ({
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
       {topRow}
-      <ScrollWrapper postId={postId}>
-        <PostWrapper postId={postId} createdAt={createdAt}>
-          <PostContent inList={inList} onClick={gotoThread}>
-            <QuotedContent quotes={quotes} inList={inList} />
-            <MDPreview text={content} isThread={isThread} inList={inList} />
-          </PostContent>
-        </PostWrapper>
-      </ScrollWrapper>
+      <PostWrapper postId={postId} createdAt={createdAt}>
+        <PostContent inList={inList} onClick={gotoThread}>
+          <QuotedContent quotes={quotes} inList={inList} />
+          <MDPreview text={content} isThread={isThread} inList={inList} />
+        </PostContent>
+      </PostWrapper>
       {viewThread}
     </Wrapper>
   );
