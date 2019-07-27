@@ -1,6 +1,4 @@
-import React, {
-  useState, useContext, useCallback, useEffect,
-} from 'react';
+import React, { useContext, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import CatalogContext from 'providers/Catalog';
@@ -48,7 +46,9 @@ const SliderWrapper = styled.div`
   }
 `;
 
-const Scroller = ({ idx, length, catalog }) => {
+const Scroller = ({
+  idx, length, catalog, setCursor,
+}) => {
   const [{ loc, max }, dispatchSlider] = useContext(SliderContext);
   const [{ threadView }] = useContext(CatalogContext);
 
@@ -57,15 +57,17 @@ const Scroller = ({ idx, length, catalog }) => {
   }, [dispatchSlider, idx, length]);
 
   const handleSliderChange = useCallback((e) => {
-    dispatchSlider({ type: 'SET_SLIDER_LOC', loc: e.target.value });
-  }, [catalog, dispatchSlider, idx, threadView]);
+    dispatchSlider({ type: 'SET_SLIDER_LOC', loc: Number(e.target.value) });
+  }, [dispatchSlider]);
 
   const handleSliderOnMouseUp = useCallback(() => {
-    window.scrollTo({
-      behavior: 'smooth',
-      top: threadView.get(catalog[loc].postId),
-    });
-  });
+    console.log({ idx, loc });
+    setCursor(catalog[loc].postId);
+    // window.scrollTo({
+    //   behavior: 'auto',
+    //   top: threadView.get(catalog[loc].postId),
+    // });
+  }, [catalog, idx, loc, threadView]);
 
   return (
     <Wrapper>

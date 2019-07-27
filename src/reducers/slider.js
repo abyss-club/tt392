@@ -2,6 +2,7 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'SET_SLIDER': {
       const { loc, max } = action;
+      console.log({ loc });
       return {
         ...state,
         loc,
@@ -10,6 +11,7 @@ const reducer = (state, action) => {
     }
     case 'SET_SLIDER_LOC': {
       const { loc } = action;
+      console.log({ loc });
       return {
         ...state,
         loc,

@@ -14,7 +14,7 @@ import colors from 'utils/colors';
 import ChatBubble from 'components/icons/ChatBubble';
 import Scrollbar from 'components/Scrollbar';
 import CatalogContext from 'providers/Catalog';
-import ScrollForMore from 'components/ScrollForMore';
+import { ScrollForMorePosts } from 'components/ScrollForMore';
 
 const ThreadViewWrapper = styled.div`
   margin: .5rem -0.5rem 0;
@@ -28,10 +28,10 @@ const ThreadViewWrapper = styled.div`
 `;
 
 const THREAD_VIEW = gql`
-  query Thread($id: String!, $cursor: String!) {
+  query Thread($id: String!, $before: String, $after: String) {
     thread(id: $id) {
       id, anonymous, title, author, content, createdAt, mainTag, subTags, catalog { postId, createdAt }
-      replies(query: { after: $cursor, limit: 5}) {
+      replies(query: { before: $before, after: $after, limit: 5}) {
         posts {
           id, anonymous, author, content, createdAt, quotes { id, author, content, createdAt }
         }
@@ -85,15 +85,15 @@ ScrollWrapper.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-
 const PostWrapper = ({
-  entries, loading, onLoadMore, hasNext, threadId, handleQuoteToggle, quotedPosts,
+  entries, loading, onLoadMore, hasNext, threadId, handleQuoteToggle, quotedPosts, catalog,
 }) => (
-  <ScrollForMore
+  <ScrollForMorePosts
     entries={entries}
     loading={loading}
     onLoadMore={onLoadMore}
     hasNext={hasNext}
+    catalog={catalog}
   >
     {entries.map(post => (
       <ScrollWrapper key={post.id} postId={post.id}>
@@ -108,7 +108,7 @@ const PostWrapper = ({
         />
       </ScrollWrapper>
     ))}
-  </ScrollForMore>
+  </ScrollForMorePosts>
 );
 PostWrapper.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -121,11 +121,13 @@ PostWrapper.propTypes = {
     has: PropTypes.func.isRequired,
     size: PropTypes.number.isRequired,
   }).isRequired,
+  catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 const ThreadView = ({ match }) => {
-  // const [, dispatchCatalog] = useContext(CatalogContext);
-  // useEffect(() => { dispatchCatalog({ type: 'RESET_CATALOG' }); }, [dispatchCatalog]);
+  const [, dispatchCatalog] = useContext(CatalogContext);
+  const [cursor, setCursor] = useState('');
+  useEffect(() => { dispatchCatalog({ type: 'RESET_CATALOG' }); }, [dispatchCatalog]);
 
   const { history, location } = useRouter();
   const { id } = match.params;
@@ -150,13 +152,13 @@ const ThreadView = ({ match }) => {
 
   const {
     data, loading, fetchMore, refetch,
-  } = useQuery(THREAD_VIEW, { variables: { id, cursor: '' } });
+  } = useQuery(THREAD_VIEW, { variables: { id, after: cursor } });
 
   const thread = !loading ? data.thread : {};
   const sliceInfo = !loading ? data.thread.replies.sliceInfo : {};
-  const onLoadMore = () => fetchMore({
+  const onLoadMore = ({ type }) => fetchMore({
     query: THREAD_VIEW,
-    variables: { id, cursor: sliceInfo.lastCursor },
+    variables: type === 'after' ? { id, after: sliceInfo.lastCursor } : { id, before: sliceInfo.firstCursor },
     updateQuery: (prevResult, { fetchMoreResult }) => {
       const newPosts = fetchMoreResult.thread.replies.posts;
       const newSliceInfo = fetchMoreResult.thread.replies.sliceInfo;
@@ -166,8 +168,12 @@ const ThreadView = ({ match }) => {
           ...prevResult.thread,
           replies: {
             ...prevResult.thread.replies,
-            sliceInfo: newSliceInfo,
-            posts: [...prevResult.thread.replies.posts, ...newPosts],
+            sliceInfo: {
+              ...newSliceInfo,
+              hasBefore: type === 'after' ? false : newSliceInfo.hasNext,
+              hasNext: type === 'after' ? newSliceInfo.hasNext : false,
+            },
+            posts: type === 'after' ? [...prevResult.thread.replies.posts, ...newPosts] : [...newPosts, ...prevResult.thread.replies.posts],
           },
         },
       };
@@ -189,16 +195,18 @@ const ThreadView = ({ match }) => {
           loading={loading}
           entries={thread.replies.posts || []}
           hasNext={sliceInfo.hasNext || false}
+          hasBefore={sliceInfo.hasBefore || false}
           quotedPosts={quotedPosts}
           threadId={thread.id}
           handleQuoteToggle={handleQuoteToggle}
           onLoadMore={onLoadMore}
+          catalog={thread.catalog}
         />
       </ThreadViewWrapper>
       <FloatButton title="Compose new reply" onClick={addReply} aboveScrollbar>
         <ChatBubble />
       </FloatButton>
-      {!loading && (<Scrollbar catalog={thread.catalog} />)}
+      {!loading && (<Scrollbar catalog={thread.catalog} setCursor={setCursor} />)}
     </MainContent>
   );
 };

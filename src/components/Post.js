@@ -10,7 +10,6 @@ import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
 import ScrollbarContext from 'providers/Scrollbar';
-import ScrollToContext from 'providers/ScrollTo';
 import { breakpoint } from 'styles/MainContent';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
@@ -184,18 +183,14 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 
-const scrollToRef = ref => window.scrollTo(0, ref.current.offsetTop);
-
 const PostWrapper = ({ children, postId, createdAt }) => {
   const [ref, inView] = useInView({
-    threshold: 0,
+    threshold: 1,
   });
 
   const [, dispatch] = useContext(ScrollbarContext);
   useEffect(() => {
-
     if (inView && postId) {
-      console.log(postId);
       dispatch({ type: 'SET_POST_LOC_IN_THREAD', postId, createdAt });
     }
   }, [createdAt, dispatch, inView, postId]);
@@ -205,6 +200,11 @@ const PostWrapper = ({ children, postId, createdAt }) => {
       {children}
     </div>
   );
+};
+PostWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+  postId: PropTypes.string.isRequired,
+  createdAt: PropTypes.number.isRequired,
 };
 
 const Post = ({
@@ -277,8 +277,8 @@ const Post = ({
   };
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-      {topRow}
       <PostWrapper postId={postId} createdAt={createdAt}>
+        {topRow}
         <PostContent inList={inList} onClick={gotoThread}>
           <QuotedContent quotes={quotes} inList={inList} />
           <MDPreview text={content} isThread={isThread} inList={inList} />

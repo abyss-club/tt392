@@ -22,7 +22,7 @@ const Wrapper = styled.div`
   background-color: white;
 `;
 
-const Scrollbar = ({ catalog }) => {
+const Scrollbar = ({ catalog, setCursor }) => {
   const [{ threadView }] = useContext(ScrollbarContext);
   const [showSlider, setShowSlider] = useState(true);
   const idx = catalog.findIndex(ele => ele.postId === threadView.postId);
@@ -34,7 +34,7 @@ const Scrollbar = ({ catalog }) => {
   return (
     <Wrapper>
       <p>{idx} of {catalog.length} posts</p>
-      {showSlider && <Slider idx={idx} length={catalog.length} catalog={catalog} />}
+      {showSlider && <Slider idx={idx} length={catalog.length} catalog={catalog} setCursor={setCursor} />}
       <button onClick={handleClick}>show slider</button>
     </Wrapper>
   );
