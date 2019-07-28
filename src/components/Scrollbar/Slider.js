@@ -67,7 +67,7 @@ const Scroller = ({
     //   behavior: 'auto',
     //   top: threadView.get(catalog[loc].postId),
     // });
-  }, [catalog, idx, loc, threadView]);
+  }, [catalog, idx, loc, setCursor]);
 
   return (
     <Wrapper>

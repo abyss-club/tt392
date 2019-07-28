@@ -38,8 +38,10 @@ ScrollForMore.propTypes = {
 };
 
 const ScrollForMorePosts = ({
-  entries, onLoadMore, loading, hasNext, children, catalog,
+  entries, onLoadMore, loading, children, catalog,
 }) => {
+  const [{ threadView }] = useContext(CatalogContext);
+
   const [afterRef, afterInView] = useInView({
     threshold: 1.0,
   });
@@ -51,46 +53,49 @@ const ScrollForMorePosts = ({
   const prevBeforeInView = useRef(null);
 
   useEffect(() => {
-    if (!prevAfterInView.current && afterInView) {
+    if (!loading && !prevAfterInView.current && afterInView) {
+      console.log('loadmore after');
       onLoadMore({ type: 'after' });
     }
     prevAfterInView.current = afterInView;
-  }, [afterInView, onLoadMore]);
+  }, [afterInView, loading, onLoadMore]);
 
   useEffect(() => {
-    const curPos = prevBeforeInView.current ? prevBeforeInView.current.offsetTop : 0;
-    if (!prevBeforeInView.current && beforeInView) {
+    if (!loading && !prevBeforeInView.current && beforeInView) {
+      console.log('loadmore before');
+      const curTopId = entries[0].id;
       onLoadMore({ type: 'before' });
-      // window.scrollTo({
-      //   behavior: 'auto',
-      //   top: curPos,
-      // });
+      window.scrollTo({
+        behavior: 'auto',
+        top: threadView.get(curTopId),
+      });
     }
     prevBeforeInView.current = beforeInView;
-  }, [beforeInView, onLoadMore]);
+  }, [beforeInView, entries, loading, onLoadMore, threadView]);
 
-  if (!entries || loading) return <LoadMore />;
+  if (!entries || catalog.length < 1) return <LoadMore />;
   // console.log({ catalog: catalog[0].postId, entries: entries[0].id });
   return (
     <>
-      {catalog[0].postId !== entries[0].id
-        && <LoadMore ref={beforeRef} />
+      {!loading && catalog[0].postId !== entries[0].id
+        ? <LoadMore ref={null} /> : <LoadMore />
       }
       {children}
-      {hasNext
-        && <LoadMore ref={afterRef} />
+      {catalog.slice(-1)[0].postId !== entries.slice(-1)[0].id
+        && <LoadMore ref={!loading ? afterRef : null} />
       }
     </>
   );
 };
 ScrollForMorePosts.propTypes = {
-  entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  entries: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   onLoadMore: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  hasNext: PropTypes.bool.isRequired,
-  hasBefore: PropTypes.bool.isRequired,
+  // hasNext: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
-  catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  catalog: PropTypes.arrayOf(PropTypes.shape({
+    postId: PropTypes.string.isRequired,
+  })).isRequired,
 };
 
 export default ScrollForMore;

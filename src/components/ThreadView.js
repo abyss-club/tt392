@@ -126,7 +126,6 @@ PostWrapper.propTypes = {
 
 const ThreadView = ({ match }) => {
   const [, dispatchCatalog] = useContext(CatalogContext);
-  const [cursor, setCursor] = useState('');
   useEffect(() => { dispatchCatalog({ type: 'RESET_CATALOG' }); }, [dispatchCatalog]);
 
   const { history, location } = useRouter();
@@ -152,28 +151,32 @@ const ThreadView = ({ match }) => {
 
   const {
     data, loading, fetchMore, refetch,
-  } = useQuery(THREAD_VIEW, { variables: { id, after: cursor } });
+  } = useQuery(THREAD_VIEW, { variables: { id, after: '' }, fetchPolicy: 'cache-and-network', notifyOnNetworkStatusChange: true });
 
-  const thread = !loading ? data.thread : {};
-  const sliceInfo = !loading ? data.thread.replies.sliceInfo : {};
-  const onLoadMore = ({ type }) => fetchMore({
+  const thread = data.thread || {};
+  const sliceInfo = data.thread ? data.thread.replies.sliceInfo : {};
+  const onLoadMore = ({
+    type, skipping = false, toCursor = null,
+  }) => fetchMore({
     query: THREAD_VIEW,
-    variables: type === 'after' ? { id, after: sliceInfo.lastCursor } : { id, before: sliceInfo.firstCursor },
+    variables: type === 'after' ? { id, after: toCursor || sliceInfo.lastCursor || '' } : { id, before: toCursor || sliceInfo.firstCursor || '' },
     updateQuery: (prevResult, { fetchMoreResult }) => {
       const newPosts = fetchMoreResult.thread.replies.posts;
       const newSliceInfo = fetchMoreResult.thread.replies.sliceInfo;
+      let posts;
+      if (skipping) {
+        posts = newPosts;
+      } else {
+        posts = type === 'after' ? [...prevResult.thread.replies.posts, ...newPosts] : [...newPosts, ...prevResult.thread.replies.posts];
+      }
       const updatedData = {
         ...prevResult,
         thread: {
           ...prevResult.thread,
           replies: {
             ...prevResult.thread.replies,
-            sliceInfo: {
-              ...newSliceInfo,
-              hasBefore: type === 'after' ? false : newSliceInfo.hasNext,
-              hasNext: type === 'after' ? newSliceInfo.hasNext : false,
-            },
-            posts: type === 'after' ? [...prevResult.thread.replies.posts, ...newPosts] : [...newPosts, ...prevResult.thread.replies.posts],
+            sliceInfo: newSliceInfo,
+            posts,
           },
         },
       };
@@ -182,31 +185,33 @@ const ThreadView = ({ match }) => {
     },
   });
 
+  const setCursor = (cursor) => {
+    onLoadMore({ type: 'after', skipping: true, toCursor: cursor });
+  };
+
   if ((location.state || {}).refetchThread) {
     refetch();
     history.replace({ state: { refetchThread: false } });
   }
 
-  return !loading && (
+  return (
     <MainContent>
       <ThreadViewWrapper>
         <Post isThread {...thread} threadId={id} />
         <PostWrapper
           loading={loading}
-          entries={thread.replies.posts || []}
-          hasNext={sliceInfo.hasNext || false}
-          hasBefore={sliceInfo.hasBefore || false}
+          entries={data.thread ? data.thread.replies.posts : []}
           quotedPosts={quotedPosts}
           threadId={thread.id}
           handleQuoteToggle={handleQuoteToggle}
           onLoadMore={onLoadMore}
-          catalog={thread.catalog}
+          catalog={data.thread ? data.thread.catalog : []}
         />
       </ThreadViewWrapper>
       <FloatButton title="Compose new reply" onClick={addReply} aboveScrollbar>
         <ChatBubble />
       </FloatButton>
-      {!loading && (<Scrollbar catalog={thread.catalog} setCursor={setCursor} />)}
+      {/* <Scrollbar catalog={data.thread ? data.thread.catalog : []} setCursor={setCursor} /> */}
     </MainContent>
   );
 };
