@@ -1,8 +1,10 @@
-import React, { useContext, useCallback, useEffect } from 'react';
+import React, {
+  useContext, useCallback, useEffect, useState
+} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import CatalogContext from 'providers/Catalog';
-import SliderContext from 'providers/Slider';
+import { withRouter } from 'react-router-dom';
+import { useRouter } from 'utils/routerHooks';
 import colors from 'utils/colors';
 
 const Wrapper = styled.div`
@@ -46,36 +48,34 @@ const SliderWrapper = styled.div`
   }
 `;
 
-const Scroller = ({
-  idx, length, catalog, setCursor,
+const Slider = ({
+  idx, length, catalog, setCursor, threadId,
 }) => {
-  const [{ loc, max }, dispatchSlider] = useContext(SliderContext);
-  const [{ threadView }] = useContext(CatalogContext);
-
+  // const { history } = useRouter();
+  const [loc, setLoc] = useState(idx);
   useEffect(() => {
-    dispatchSlider({ type: 'SET_SLIDER', loc: idx, max: length });
-  }, [dispatchSlider, idx, length]);
-
+    setLoc(idx);
+  }, [idx]);
   const handleSliderChange = useCallback((e) => {
-    dispatchSlider({ type: 'SET_SLIDER_LOC', loc: Number(e.target.value) });
-  }, [dispatchSlider]);
+    setLoc(Number(e.target.value));
+  }, []);
 
   const handleSliderOnMouseUp = useCallback(() => {
-    console.log({ idx, loc });
     setCursor(catalog[loc].postId);
+    // history.replace(`/t/${threadId}/${catalog[loc].postId}`, { silent: true });
     // window.scrollTo({
     //   behavior: 'auto',
     //   top: threadView.get(catalog[loc].postId),
     // });
-  }, [catalog, idx, loc, setCursor]);
+  }, [catalog, loc, setCursor]);
 
   return (
     <Wrapper>
       <SliderWrapper>
-        <input type="range" min="0" max={max} value={loc} step="1" onChange={handleSliderChange} onMouseUp={handleSliderOnMouseUp} />
+        <input type="range" min="0" max={length} value={loc} step="1" onChange={handleSliderChange} onMouseUp={handleSliderOnMouseUp} />
         max:
         {' '}
-        {max}
+        {length}
         , loc:
         {' '}
         {loc}
@@ -83,5 +83,14 @@ const Scroller = ({
     </Wrapper>
   );
 };
+Slider.propTypes = {
+  idx: PropTypes.number.isRequired,
+  length: PropTypes.number.isRequired,
+  setCursor: PropTypes.func.isRequired,
+  catalog: PropTypes.arrayOf(PropTypes.shape({
+    postId: PropTypes.string.isRequired,
+  })).isRequired,
+  threadId: PropTypes.string.isRequired,
+};
 
-export default Scroller;
+export default Slider;

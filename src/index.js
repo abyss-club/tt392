@@ -9,13 +9,9 @@ import { LoginProvider } from 'providers/Login';
 import { DraftProvider } from 'providers/Draft';
 import { TagsProvider } from 'providers/Tags';
 import { RefetchProvider } from 'providers/Refetch';
-import { ScrollbarProvider } from 'providers/Scrollbar';
-import { SliderProvider } from 'providers/Slider';
-import { ScrollToProvider } from 'providers/ScrollTo';
 import { HookedLoadingBar } from 'styles/Loading';
-import { CatalogProvider } from 'providers/Catalog';
 import {
-  login, draft, notification, tags, refetch, scrollbar, scrollTo, slider, catalog,
+  login, draft, notification, tags, refetch,
 } from 'reducers';
 import { HookedBrowserRouter } from 'utils/routerHooks';
 import ScrollToTop from 'utils/scrollToTop';
@@ -36,29 +32,21 @@ const Root = () => (
   <React.StrictMode>
     <HookedBrowserRouter>
       <HookedLoadingBar>
-        <ScrollbarProvider reducer={scrollbar}>
-          <ScrollToProvider reducer={scrollTo}>
-            <SliderProvider reducer={slider}>
-              <RefetchProvider reducer={refetch}>
-                <TagsProvider reducer={tags}>
-                  <DraftProvider reducer={draft}>
-                    <LoginProvider reducer={login}>
-                      <NotiProvider reducer={notification}>
-                        <CatalogProvider reducer={catalog}>
-                          <ApolloProvider client={client}>
-                            <ScrollToTop>
-                              <App />
-                            </ScrollToTop>
-                          </ApolloProvider>
-                        </CatalogProvider>
-                      </NotiProvider>
-                    </LoginProvider>
-                  </DraftProvider>
-                </TagsProvider>
-              </RefetchProvider>
-            </SliderProvider>
-          </ScrollToProvider>
-        </ScrollbarProvider>
+        <RefetchProvider reducer={refetch}>
+          <TagsProvider reducer={tags}>
+            <DraftProvider reducer={draft}>
+              <LoginProvider reducer={login}>
+                <NotiProvider reducer={notification}>
+                  <ApolloProvider client={client}>
+                    <ScrollToTop>
+                      <App />
+                    </ScrollToTop>
+                  </ApolloProvider>
+                </NotiProvider>
+              </LoginProvider>
+            </DraftProvider>
+          </TagsProvider>
+        </RefetchProvider>
       </HookedLoadingBar>
     </HookedBrowserRouter>
   </React.StrictMode>

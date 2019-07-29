@@ -7,8 +7,7 @@ import gql from 'graphql-tag';
 import { useInView } from 'react-intersection-observer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { breakpoint, maxWidth } from 'styles/MainContent';
-import ScrollbarContext from 'providers/Scrollbar';
-import SliderContext from 'providers/Slider';
+import { PositionContext } from 'components/ThreadView/Thread';
 
 import Slider from './Slider';
 
@@ -22,10 +21,12 @@ const Wrapper = styled.div`
   background-color: white;
 `;
 
-const Scrollbar = ({ catalog, setCursor }) => {
-  const [{ threadView }] = useContext(ScrollbarContext);
+const Scrollbar = ({
+  catalog, setCursor, threadId,
+}) => {
   const [showSlider, setShowSlider] = useState(true);
-  const idx = catalog ? catalog.findIndex(ele => ele.postId === threadView.postId) : 0;
+  const [postId] = useContext(PositionContext);
+  const idx = catalog ? catalog.findIndex(ele => ele.postId === postId) : 0;
 
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
@@ -34,13 +35,15 @@ const Scrollbar = ({ catalog, setCursor }) => {
   return (
     <Wrapper>
       <p>{idx} of {catalog ? catalog.length : 0} posts</p>
-      {showSlider && <Slider idx={idx} length={catalog ? catalog.length : 0} catalog={catalog} setCursor={setCursor} />}
+      {showSlider && <Slider idx={idx} length={catalog ? catalog.length : 0} catalog={catalog} setCursor={setCursor} threadId={threadId}/>}
       <button onClick={handleClick}>show slider</button>
     </Wrapper>
   );
 };
 Scrollbar.propTypes = {
   catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  setCursor: PropTypes.func.isRequired,
+  threadId: PropTypes.string.isRequired,
 };
 
 export default Scrollbar;

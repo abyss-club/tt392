@@ -24,7 +24,5 @@ LoginProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// const LoginConsumer = LoginContext.Consumer;
-
 export default LoginContext;
 export { LoginProvider };

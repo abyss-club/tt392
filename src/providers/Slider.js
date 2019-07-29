@@ -20,7 +20,5 @@ SliderProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// const StoreConsumer = StoreContext.Consumer;
-
 export default SliderContext;
 export { SliderProvider };

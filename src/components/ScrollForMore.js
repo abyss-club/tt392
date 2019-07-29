@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useInView } from 'react-intersection-observer';
 import { LoadMore } from 'styles/Loading';
-import CatalogContext from 'providers/Catalog';
+import { OffsetPosContext } from 'components/ThreadView/Thread';
 
 const ScrollForMore = ({
   entries, onLoadMore, loading, hasNext, children,
@@ -40,7 +40,7 @@ ScrollForMore.propTypes = {
 const ScrollForMorePosts = ({
   entries, onLoadMore, loading, children, catalog,
 }) => {
-  const [{ threadView }] = useContext(CatalogContext);
+  const [posMap] = useContext(OffsetPosContext);
 
   const [afterRef, afterInView] = useInView({
     threshold: 1.0,
@@ -63,22 +63,23 @@ const ScrollForMorePosts = ({
   useEffect(() => {
     if (!loading && !prevBeforeInView.current && beforeInView) {
       console.log('loadmore before');
-      const curTopId = entries[0].id;
+      const curTopId = entries[0].id.slice();
+      console.log(curTopId);
       onLoadMore({ type: 'before' });
       window.scrollTo({
         behavior: 'auto',
-        top: threadView.get(curTopId),
+        top: posMap.get(curTopId) + 48,
       });
     }
     prevBeforeInView.current = beforeInView;
-  }, [beforeInView, entries, loading, onLoadMore, threadView]);
+  }, [beforeInView, entries, loading, onLoadMore, posMap]);
 
   if (!entries || catalog.length < 1) return <LoadMore />;
   // console.log({ catalog: catalog[0].postId, entries: entries[0].id });
   return (
     <>
       {!loading && catalog[0].postId !== entries[0].id
-        ? <LoadMore ref={null} /> : <LoadMore />
+        && <LoadMore ref={!loading ? beforeRef : null} />
       }
       {children}
       {catalog.slice(-1)[0].postId !== entries.slice(-1)[0].id
@@ -88,7 +89,9 @@ const ScrollForMorePosts = ({
   );
 };
 ScrollForMorePosts.propTypes = {
-  entries: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  entries: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  })).isRequired,
   onLoadMore: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   // hasNext: PropTypes.bool.isRequired,

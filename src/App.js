@@ -56,7 +56,7 @@ const App = () => (
       <Route path="/profile/" component={Profile} exact />
       <Route path="/tags/" component={TagSelector} exact />
       <Route path="/tag/:slug" component={TagView} exact />
-      <Route path="/thread/:id" component={ThreadView} exact />
+      <Route path={['/t/:threadId/', '/t/:threadId/:postId']} component={ThreadView} exact />
       <Route path="/notification/" component={Notification} exact />
       <Route path="/draft/:mode" component={Draft} exact />
       <Route path="/graphiql/" component={GraphiQL} exact />

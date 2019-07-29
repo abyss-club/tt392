@@ -17,7 +17,5 @@ CatalogProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// const CatalogConsumer = CatalogContext.Consumer;
-
 export default CatalogContext;
 export { CatalogProvider };

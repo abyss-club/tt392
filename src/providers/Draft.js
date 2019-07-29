@@ -23,7 +23,5 @@ DraftProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// const DraftConsumer = DraftContext.Consumer;
-
 export default DraftContext;
 export { DraftProvider };

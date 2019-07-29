@@ -11,10 +11,6 @@ const initialState = {
     replied: null,
     quoted: null,
   },
-  scroll: {
-    y: 0,
-    diff: 0,
-  },
 };
 
 const NotiProvider = ({ reducer, children }) => (
@@ -26,8 +22,6 @@ NotiProvider.propTypes = {
   reducer: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
 };
-
-// const StoreConsumer = StoreContext.Consumer;
 
 export default NotiContext;
 export { NotiProvider };

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useRouter } from 'utils/routerHooks';
@@ -9,7 +9,7 @@ import { useInView } from 'react-intersection-observer';
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
-import ScrollbarContext from 'providers/Scrollbar';
+import { PositionContext } from 'components/ThreadView/Thread';
 import { breakpoint } from 'styles/MainContent';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
@@ -188,12 +188,12 @@ const PostWrapper = ({ children, postId, createdAt }) => {
     threshold: 1,
   });
 
-  const [, dispatch] = useContext(ScrollbarContext);
+  const [, setPostId] = useContext(PositionContext);
   useEffect(() => {
     if (inView && postId) {
-      dispatch({ type: 'SET_POST_LOC_IN_THREAD', postId, createdAt });
+      setPostId(postId);
     }
-  }, [createdAt, dispatch, inView, postId]);
+  }, [createdAt, inView, postId, setPostId]);
 
   return (
     <div ref={ref}>
@@ -277,7 +277,7 @@ const Post = ({
   };
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-      <PostWrapper postId={postId} createdAt={createdAt}>
+      <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt}>
         {topRow}
         <PostContent inList={inList} onClick={gotoThread}>
           <QuotedContent quotes={quotes} inList={inList} />
