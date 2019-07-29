@@ -4,12 +4,21 @@ import React, {
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import MainContent, { breakpoint } from 'styles/MainContent';
+import MainContent, { breakpoint, maxWidth } from 'styles/MainContent';
 import Post from 'components/Post';
 
 import colors from 'utils/colors';
 import Scrollbar from 'components/Scrollbar';
 import { ScrollForMorePosts } from 'components/ScrollForMore';
+
+const ThreadMainContent = styled(MainContent)`
+  margin: 0 .5rem 3rem;
+  /* trigger is (maxWidth + margin * 2); */
+  @media (min-width: ${breakpoint}em) {
+    max-width: ${maxWidth}rem;
+    margin: 0 auto 3rem;
+  }
+`;
 
 const ThreadViewWrapper = styled.div`
   margin: .5rem -0.5rem 0;
@@ -137,7 +146,7 @@ const Thread = ({
 }) => {
   const { thread } = data;
   return (
-    <MainContent>
+    <ThreadMainContent>
       <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
         <ThreadViewWrapper>
           {!loading && <Post isThread {...thread} threadId={threadId} />}
@@ -157,7 +166,7 @@ const Thread = ({
           threadId={threadId}
         />
       </PositionProvider>
-    </MainContent>
+    </ThreadMainContent>
   );
 };
 Thread.propTypes = {

@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   left: 0;
   bottom: 0;
   width: 100%;
-  background: transparent;
+  background: ${colors.mainBg};
   z-index: 15;
 `;
 
@@ -67,8 +67,8 @@ const Scrollbar = ({
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
   }, []);
-  const pageNum = `${idx} of ${catalog.length} posts`;
-  const percent = Math.round(1000 * idx / catalog.length) / 10;
+  const pageNum = `${idx + 1} of ${catalog.length} posts`;
+  const percent = Math.round(1000 * (idx + 1) / catalog.length) / 10;
   /*
    * {showSlider &&
    * <Slider idx={idx} length={catalog.length} catalog={catalog}
