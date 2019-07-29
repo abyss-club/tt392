@@ -6,9 +6,8 @@ import refetch from './refetch';
 import scrollbar from './scrollbar';
 import scrollTo from './scrollTo';
 import slider from './slider';
-import loading from './loading';
 import catalog from './catalog';
 
 export {
-  login, notification, draft, tags, refetch, scrollbar, slider, scrollTo, loading, catalog,
+  login, notification, draft, tags, refetch, scrollbar, slider, scrollTo, catalog,
 };

@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import TagsContext from 'providers/Tags';
 import LoginContext from 'providers/Login';
-import LoadingContext from 'providers/Loading';
+import { useLoadingBar } from 'styles/Loading';
 import { UNAUTHENTICATED } from 'utils/errorCodes';
 
 const Tags = () => {
@@ -13,33 +13,32 @@ const Tags = () => {
   console.log('render init');
   console.log({ loading, data, error });
   const [, dispatchTags] = useContext(TagsContext);
-  const [, dispatchLoading] = useContext(LoadingContext);
+  const [, { startLoading, stopLoading }] = useLoadingBar();
 
   useEffect(() => {
-    if (loading) dispatchLoading({ type: 'START_LOADING' });
+    if (loading) startLoading();
 
     if (!loading && !error) {
       const { mainTags, recommended } = data;
       dispatchTags({ type: 'INIT', tags: { mainTags, recommended } });
-      dispatchLoading({ type: 'STOP_LOADING' });
+      stopLoading();
     }
-  }, [data, dispatchTags, loading, error, dispatchLoading]);
-
+  }, [data, dispatchTags, loading, error, startLoading, stopLoading]);
   return null;
 };
 
 const Login = () => {
   const [, dispatchLogin] = useContext(LoginContext);
   const [, dispatchTags] = useContext(TagsContext);
-  const [, dispatchLoading] = useContext(LoadingContext);
+  const [, { startLoading, stopLoading }] = useLoadingBar();
   const { loading, data, error } = useQuery(PROFILE);
   console.log('render login');
   useEffect(() => {
-    if (loading) dispatchLoading({ type: 'START_LOADING' });
+    if (loading) startLoading();
     if (!loading) {
       if (error && error.graphQLErrors[0].extensions.code === UNAUTHENTICATED) {
         dispatchLogin({ type: 'INIT' });
-        dispatchLoading({ type: 'STOP_LOADING' });
+        startLoading();
       }
       if (data && data.profile) {
         const { profile, mainTags, recommended } = data;
@@ -52,10 +51,10 @@ const Login = () => {
           profile,
           tags: { mainTags, recommended },
         });
-        dispatchLoading({ type: 'STOP_LOADING' });
+        stopLoading();
       }
     }
-  }, [dispatchLogin, dispatchTags, loading, error, data, dispatchLoading]);
+  }, [dispatchLogin, dispatchTags, loading, error, data, startLoading, stopLoading]);
 
   return null;
 };
