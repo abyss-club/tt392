@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 import MainContent, { breakpoint } from 'styles/MainContent';
 import Post from 'components/Post';
+
 import colors from 'utils/colors';
 import Scrollbar from 'components/Scrollbar';
 import { ScrollForMorePosts } from 'components/ScrollForMore';
@@ -80,28 +81,30 @@ OffsetPosWrapper.propTypes = {
 };
 
 const PostWrapper = ({
-  entries, loading, onLoadMore, hasNext, threadId, handleQuoteToggle, quotedPosts, catalog,
+  entries, loading, onLoadMore, threadId, handleQuoteToggle, quotedPosts, catalog,
 }) => (
-  <ScrollForMorePosts
-    entries={entries}
-    loading={loading}
-    onLoadMore={onLoadMore}
-    catalog={catalog}
-  >
-    {entries.map(post => (
-      <OffsetPosWrapper key={post.id} postId={post.id}>
-        <Post
-          isThread={false}
-          postId={post.id}
-          handleQuoteToggle={handleQuoteToggle}
-          isQuoted={quotedPosts.has(post.id)}
-          quotable={quotedPosts.size < 3}
-          threadId={threadId}
-          {...post}
-        />
-      </OffsetPosWrapper>
-    ))}
-  </ScrollForMorePosts>
+  <OffsetPosProvider>
+    <ScrollForMorePosts
+      entries={entries}
+      loading={loading}
+      onLoadMore={onLoadMore}
+      catalog={catalog}
+    >
+      {entries.map(post => (
+        <OffsetPosWrapper key={post.id} postId={post.id}>
+          <Post
+            isThread={false}
+            postId={post.id}
+            handleQuoteToggle={handleQuoteToggle}
+            isQuoted={quotedPosts.has(post.id)}
+            quotable={quotedPosts.size < 3}
+            threadId={threadId}
+            {...post}
+          />
+        </OffsetPosWrapper>
+      ))}
+    </ScrollForMorePosts>
+  </OffsetPosProvider>
 );
 PostWrapper.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -135,27 +138,25 @@ const Thread = ({
   const { thread } = data;
   return (
     <MainContent>
-      <OffsetPosProvider>
-        <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
-          <ThreadViewWrapper>
-            {!loading && <Post isThread {...thread} threadId={threadId} />}
-            <PostWrapper
-              loading={loading}
-              entries={thread ? thread.replies.posts : []}
-              quotedPosts={quotedPosts}
-              threadId={threadId}
-              handleQuoteToggle={handleQuoteToggle}
-              onLoadMore={onLoadMore}
-              catalog={thread ? thread.catalog : []}
-            />
-          </ThreadViewWrapper>
-          <Scrollbar
-            catalog={thread ? thread.catalog : []}
-            setCursor={setCursor}
+      <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
+        <ThreadViewWrapper>
+          {!loading && <Post isThread {...thread} threadId={threadId} />}
+          <PostWrapper
+            loading={loading}
+            entries={thread ? thread.replies.posts : []}
+            quotedPosts={quotedPosts}
             threadId={threadId}
+            handleQuoteToggle={handleQuoteToggle}
+            onLoadMore={onLoadMore}
+            catalog={thread ? thread.catalog : []}
           />
-        </PositionProvider>
-      </OffsetPosProvider>
+        </ThreadViewWrapper>
+        <Scrollbar
+          catalog={thread ? thread.catalog : []}
+          setCursor={setCursor}
+          threadId={threadId}
+        />
+      </PositionProvider>
     </MainContent>
   );
 };

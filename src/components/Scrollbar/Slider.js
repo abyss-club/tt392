@@ -3,8 +3,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { HookedCosmeticRouter, useCosmeticRouter } from 'utils/cosmeticHistory';
 import { withRouter } from 'react-router-dom';
-import { useRouter } from 'utils/routerHooks';
 import colors from 'utils/colors';
 
 const Wrapper = styled.div`
@@ -51,7 +51,8 @@ const SliderWrapper = styled.div`
 const Slider = ({
   idx, length, catalog, setCursor, threadId,
 }) => {
-  // const { history } = useRouter();
+  const { history } = useCosmeticRouter();
+  console.log(history)
   const [loc, setLoc] = useState(idx);
   useEffect(() => {
     setLoc(idx);
@@ -61,13 +62,13 @@ const Slider = ({
   }, []);
 
   const handleSliderOnMouseUp = useCallback(() => {
-    setCursor(catalog[loc].postId);
-    // history.replace(`/t/${threadId}/${catalog[loc].postId}`, { silent: true });
+    // setCursor(catalog[loc].postId);
+    history.replace(`/t/${threadId}/${catalog[loc].postId}`);
     // window.scrollTo({
     //   behavior: 'auto',
     //   top: threadView.get(catalog[loc].postId),
     // });
-  }, [catalog, loc, setCursor]);
+  }, [catalog, history, loc, threadId]);
 
   return (
     <Wrapper>
@@ -93,4 +94,9 @@ Slider.propTypes = {
   threadId: PropTypes.string.isRequired,
 };
 
-export default Slider;
+
+export default props => (
+  <HookedCosmeticRouter>
+    <Slider {...props} />
+  </HookedCosmeticRouter>
+);

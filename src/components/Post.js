@@ -11,9 +11,11 @@ import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
 import { PositionContext } from 'components/ThreadView/Thread';
 import { breakpoint } from 'styles/MainContent';
+import { HookedCosmeticRouter, useCosmeticRouter } from 'utils/cosmeticHistory';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
+
 
 import More from 'components/icons/More';
 
@@ -183,7 +185,10 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 
-const PostWrapper = ({ children, postId, createdAt }) => {
+const PostWrapper = ({
+  children, postId, createdAt, threadId,
+}) => {
+  const { history } = useCosmeticRouter();
   const [ref, inView] = useInView({
     threshold: 1,
   });
@@ -191,9 +196,10 @@ const PostWrapper = ({ children, postId, createdAt }) => {
   const [, setPostId] = useContext(PositionContext);
   useEffect(() => {
     if (inView && postId) {
+      history.replace(`/t/${threadId}/${postId}`);
       setPostId(postId);
     }
-  }, [createdAt, inView, postId, setPostId]);
+  }, [createdAt, history, inView, postId, setPostId, threadId]);
 
   return (
     <div ref={ref}>
@@ -204,6 +210,7 @@ const PostWrapper = ({ children, postId, createdAt }) => {
 PostWrapper.propTypes = {
   children: PropTypes.node.isRequired,
   postId: PropTypes.string.isRequired,
+  threadId: PropTypes.string.isRequired,
   createdAt: PropTypes.number.isRequired,
 };
 
@@ -277,13 +284,15 @@ const Post = ({
   };
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-      <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt}>
-        {topRow}
-        <PostContent inList={inList} onClick={gotoThread}>
-          <QuotedContent quotes={quotes} inList={inList} />
-          <MDPreview text={content} isThread={isThread} inList={inList} />
-        </PostContent>
-      </PostWrapper>
+      <HookedCosmeticRouter>
+        <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt} threadId={threadId}>
+          {topRow}
+          <PostContent inList={inList} onClick={gotoThread}>
+            <QuotedContent quotes={quotes} inList={inList} />
+            <MDPreview text={content} isThread={isThread} inList={inList} />
+          </PostContent>
+        </PostWrapper>
+      </HookedCosmeticRouter>
       {viewThread}
     </Wrapper>
   );
