@@ -13,5 +13,13 @@ const MainContent = styled.main`
   }
 `;
 
+const ContentWrapper = styled.div`
+  /* trigger is (maxWidth + margin * 2); */
+  @media (min-width: ${breakpoint}em) {
+    max-width: ${maxWidth}rem;
+    margin: 0 auto;
+  }
+`;
+
 export default MainContent;
-export { breakpoint, maxWidth };
+export { ContentWrapper, breakpoint, maxWidth };

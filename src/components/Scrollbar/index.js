@@ -1,24 +1,60 @@
 import React, {
-  useState, useContext, useEffect, useCallback
+  useState, useContext, useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import gql from 'graphql-tag';
-import { useInView } from 'react-intersection-observer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { breakpoint, maxWidth } from 'styles/MainContent';
-import { PositionContext } from 'components/ThreadView/Thread';
 
-import Slider from './Slider';
+import { ContentWrapper } from 'styles/MainContent';
+import colors from 'utils/colors';
+import { PositionContext } from 'components/ThreadView/Thread';
+// import Slider from './Slider';
 
 const Wrapper = styled.div`
   position: fixed;
+  left: 0;
   bottom: 0;
-  width: ${maxWidth}em;
-
+  width: 100%;
+  background: transparent;
   z-index: 15;
-  height: 10rem;
+`;
+
+const Content = styled(ContentWrapper)`
+  height: calc(3rem);
   background-color: white;
+`;
+
+const ProgressBar = styled.div`
+  height: 2px;
+  width: ${props => props.percent}%;
+  background-color: ${colors.accentGreen};
+  transition: width 0.25s ease-in-out;
+`;
+
+const PageNumber = styled.div`
+  height: 100%;
+  padding: 0 0 2px 0;
+  text-align: center;
+`;
+
+const PagesIcon = styled(FontAwesomeIcon)`
+  margin-left: 0.25rem;
+`;
+
+const CatalogBtn = styled.button`
+  height: calc(3rem - 4px);
+  font-weight: bold;
+  font-size: 0.875rem;
+  line-height: 1rem;
+  padding: calc(1rem - 2px) 1rem;
+  color: ${colors.accentGreen};
+  text-align: center;
+  border: 0;
+  margin: 0 auto;
+  background: white;
+  :focus {
+    outline: none;
+  }
 `;
 
 const Scrollbar = ({
@@ -31,12 +67,25 @@ const Scrollbar = ({
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
   }, []);
-
+  const pageNum = `${idx} of ${catalog.length} posts`;
+  const percent = Math.round(1000 * idx / catalog.length) / 10;
+  /*
+   * {showSlider &&
+   * <Slider idx={idx} length={catalog.length} catalog={catalog}
+   * setCursor={setCursor} threadId={threadId}/>}
+   * <button type="button" onClick={handleClick}>show slider</button>
+   */
   return (
     <Wrapper>
-      <p>{idx} of {catalog ? catalog.length : 0} posts</p>
-      {showSlider && <Slider idx={idx} length={catalog ? catalog.length : 0} catalog={catalog} setCursor={setCursor} threadId={threadId}/>}
-      <button onClick={handleClick}>show slider</button>
+      <Content>
+        <ProgressBar percent={percent} />
+        <PageNumber>
+          <CatalogBtn>
+            {pageNum}
+            <PagesIcon icon="sort" />
+          </CatalogBtn>
+        </PageNumber>
+      </Content>
     </Wrapper>
   );
 };
