@@ -220,7 +220,7 @@ const Post = ({
 }) => {
   const titleRow = isThread ? (
     <Title inList={inList}>
-      <Link to={`/thread/${threadId}`}>{title || titlePlaceholder}</Link>
+      <Link to={`/t/${threadId}`}>{title || titlePlaceholder}</Link>
     </Title>
   ) : null;
   const authorText = anonymous ? (
@@ -239,7 +239,7 @@ const Post = ({
   );
   const viewThread = (isThread) && (inList) && (replyCount > 0) && (
     <ViewThread>
-      <Link to={`/thread/${threadId}`}>
+      <Link to={`/t/${threadId}`}>
         {`查看全部 ${replyCount} 个回复`}
       </Link>
     </ViewThread>
@@ -279,20 +279,29 @@ const Post = ({
   const { history } = useRouter();
   const gotoThread = () => {
     if (inList) {
-      history.push(`/thread/${threadId}/`);
+      history.push(`/t/${threadId}/`);
     }
   };
+
+  const post = (
+    <>
+      {topRow}
+      <PostContent inList={inList} onClick={gotoThread}>
+        <QuotedContent quotes={quotes} inList={inList} />
+        <MDPreview text={content} isThread={isThread} inList={inList} />
+      </PostContent>
+    </>
+  );
+
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-      <HookedCosmeticRouter>
-        <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt} threadId={threadId}>
-          {topRow}
-          <PostContent inList={inList} onClick={gotoThread}>
-            <QuotedContent quotes={quotes} inList={inList} />
-            <MDPreview text={content} isThread={isThread} inList={inList} />
-          </PostContent>
-        </PostWrapper>
-      </HookedCosmeticRouter>
+      {inList ? post : (
+        <HookedCosmeticRouter>
+          <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt} threadId={threadId}>
+            {post}
+          </PostWrapper>
+        </HookedCosmeticRouter>
+      )}
       {viewThread}
     </Wrapper>
   );

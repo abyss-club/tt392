@@ -31,7 +31,7 @@ const MoreWrapper = styled.div`
 
 const More = ({ threadId }) => (
   <MoreWrapper>
-    <Link to={`/thread/${threadId}`}>查看整串</Link>
+    <Link to={`/t/${threadId}`}>查看整串</Link>
   </MoreWrapper>
 );
 More.propTypes = {

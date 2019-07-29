@@ -329,7 +329,7 @@ const Navbar = () => {
             setPublishRdy(false);
             dispatch({ type: 'RESET_DRAFT' });
             dispatchRefetch({ type: 'REFETCH_THREADLIST', status: true });
-            history.push(`/thread/${data.pubThread.id}`);
+            history.push(`/t/${data.pubThread.id}`);
           }
         }
       }
@@ -348,7 +348,7 @@ const Navbar = () => {
           if (data) {
             setPublishRdy(false);
             dispatch({ type: 'RESET_DRAFT' });
-            history.push(`/thread/${threadId}`, { refetchThread: true });
+            history.push(`/t/${threadId}`, { refetchThread: true });
           }
         }
       }

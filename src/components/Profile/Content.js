@@ -157,7 +157,7 @@ const Content = ({ type, entry }) => {
   const threads = (type === 'threads') && (
     <ContentWrapper>
       {tags}
-      <StyledLink to={`/thread/${entry.id}`}>
+      <StyledLink to={`/t/${entry.id}`}>
         <Title>{entry.title || titlePlaceholder}</Title>
       </StyledLink>
       <PostContent>{entry.content}</PostContent>

@@ -184,7 +184,7 @@ const Content = ({ type, notification }) => {
       />
       {/* Duplicate the array, then reverse it. */}
       <ViewThread>
-        <Link to={`/thread/${notification.thread.id}`}>
+        <Link to={`/t/${notification.thread.id}`}>
           {`查看全部 ${notification.thread.replyCount} 个帖`}
         </Link>
       </ViewThread>
@@ -206,7 +206,7 @@ const Content = ({ type, notification }) => {
         <PostContent>{notification.post.content}</PostContent>
       </article>
       <ViewThread>
-        <Link to={`/thread/${notification.thread.id}`}>
+        <Link to={`/t/${notification.thread.id}`}>
           {'查看原帖'}
         </Link>
       </ViewThread>
