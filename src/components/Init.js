@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import gql from 'graphql-tag';
 
 // import Query from 'components/Query';
@@ -11,7 +11,6 @@ import { UNAUTHENTICATED } from 'utils/errorCodes';
 const Tags = () => {
   const { loading, data, error } = useQuery(TAGS);
   console.log('render init');
-  console.log({ loading, data, error });
   const [, dispatchTags] = useContext(TagsContext);
   const [, { startLoading, stopLoading }] = useLoadingBar();
 
@@ -31,14 +30,20 @@ const Login = () => {
   const [, dispatchLogin] = useContext(LoginContext);
   const [, dispatchTags] = useContext(TagsContext);
   const [, { startLoading, stopLoading }] = useLoadingBar();
-  const { loading, data, error } = useQuery(PROFILE);
+  const [errCode, setErrCode] = useState('');
+
+  const handleOnErr = useCallback((e) => {
+    setErrCode(e.graphQLErrors[0].extensions.code);
+  }, []);
+  const { loading, data } = useQuery(PROFILE, { onError: handleOnErr });
+
   console.log('render login');
   useEffect(() => {
     if (loading) startLoading();
     if (!loading) {
-      if (error && error.graphQLErrors[0].extensions.code === UNAUTHENTICATED) {
+      if (errCode === UNAUTHENTICATED) {
         dispatchLogin({ type: 'INIT' });
-        startLoading();
+        stopLoading();
       }
       if (data && data.profile) {
         const { profile, mainTags, recommended } = data;
@@ -54,7 +59,7 @@ const Login = () => {
         stopLoading();
       }
     }
-  }, [dispatchLogin, dispatchTags, loading, error, data, startLoading, stopLoading]);
+  }, [dispatchLogin, dispatchTags, loading, errCode, data, startLoading, stopLoading]);
 
   return null;
 };

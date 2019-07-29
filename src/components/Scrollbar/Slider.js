@@ -52,7 +52,7 @@ const Slider = ({
   idx, length, catalog, setCursor, threadId,
 }) => {
   const { history } = useCosmeticRouter();
-  console.log(history)
+  // console.log(history)
   const [loc, setLoc] = useState(idx);
   useEffect(() => {
     setLoc(idx);

@@ -63,13 +63,16 @@ const ScrollForMorePosts = ({
   useEffect(() => {
     if (!loading && !prevBeforeInView.current && beforeInView) {
       console.log('loadmore before');
-      const curTopId = entries[0].id.slice();
-      console.log(curTopId);
-      onLoadMore({ type: 'before' });
-      window.scrollTo({
-        behavior: 'auto',
-        top: posMap.get(curTopId) + 48,
-      });
+      if (entries.length < 1) {
+        onLoadMore({ type: 'before' });
+      } else {
+        const curTopId = entries[0].id.slice();
+        onLoadMore({ type: 'before' });
+        window.scrollTo({
+          behavior: 'auto',
+          top: posMap.get(curTopId) + 48,
+        });
+      }
     }
     prevBeforeInView.current = beforeInView;
   }, [beforeInView, entries, loading, onLoadMore, posMap]);
@@ -78,11 +81,11 @@ const ScrollForMorePosts = ({
   // console.log({ catalog: catalog[0].postId, entries: entries[0].id });
   return (
     <>
-      {!loading && catalog[0].postId !== entries[0].id
+      {!loading && (entries.length < 1 || catalog[0].postId !== entries[0].id)
         && <LoadMore ref={!loading ? beforeRef : null} />
       }
       {children}
-      {catalog.slice(-1)[0].postId !== entries.slice(-1)[0].id
+      {entries.length > 0 && catalog.slice(-1)[0].postId !== entries.slice(-1)[0].id
         && <LoadMore ref={!loading ? afterRef : null} />
       }
     </>
