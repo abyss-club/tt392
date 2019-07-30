@@ -66,11 +66,12 @@ const ScrollForMorePosts = ({
       if (entries.length < 1) {
         onLoadMore({ type: 'before' });
       } else {
-        const curTopId = entries[0].id.slice();
+        const curTopId = entries[0].id;
+        const topOffset = posMap.get(curTopId);
         onLoadMore({ type: 'before' });
         window.scrollTo({
           behavior: 'auto',
-          top: posMap.get(curTopId) + 48,
+          top: topOffset - 48,
         });
       }
     }

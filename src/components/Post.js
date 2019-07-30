@@ -191,7 +191,7 @@ const PostWrapper = ({
   const { history } = useCosmeticRouter();
   const [ref, inView] = useInView({
     threshold: 1,
-    rootMargin: '-20% 0% -20% 0%',
+    rootMargin: '0% 0% -60% 0%',
   });
 
   const [, setPostId] = useContext(PositionContext);
@@ -299,6 +299,7 @@ const Post = ({
       {inList ? post : (
         <HookedCosmeticRouter>
           <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt} threadId={threadId}>
+            {isThread ? '' : postId}
             {post}
           </PostWrapper>
         </HookedCosmeticRouter>

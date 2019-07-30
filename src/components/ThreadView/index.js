@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useCallback, useMemo,
+} from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 
 import FloatButton from 'styles/FloatButton';
-import { useQuery } from '@apollo/react-hooks';
+import { useLoadingBar } from 'styles/Loading';
 import { useRouter } from 'utils/routerHooks';
+import { INTERNAL_ERROR, NOT_FOUND } from 'utils/errorCodes';
 import ChatBubble from 'components/icons/ChatBubble';
 import Thread from './Thread';
 
@@ -22,6 +26,15 @@ const THREAD_VIEW = gql`
   }
 `;
 
+const GET_POST_CATALOG = gql`
+  query PostWithCatalog($threadId: String!, $postId: String!) {
+    thread(id: $threadId) { id, anonymous, title, author, content, createdAt, mainTag, subTags, catalog { postId, createdAt } }
+    post(id: $postId) {
+      id, anonymous, author, content, createdAt, quotes { id, author, content, createdAt }
+    }
+  }
+`;
+
 const ThreadViewQuery = ({
   threadId, postId, quotedPosts, handleQuoteToggle,
 }) => {
@@ -32,7 +45,7 @@ const ThreadViewQuery = ({
 
   const { thread } = data;
 
-  const onLoadMore = ({
+  const onLoadMore = useCallback(({
     type, skipping = false, toCursor = null,
   }) => fetchMore({
     query: THREAD_VIEW,
@@ -62,11 +75,11 @@ const ThreadViewQuery = ({
       console.log({ newPosts, newSliceInfo, updatedData });
       return newPosts.length ? updatedData : prevResult;
     },
-  });
+  }), [fetchMore, thread, threadId]);
 
-  const setCursor = (cursor) => {
+  const setCursor = useCallback((cursor) => {
     onLoadMore({ type: 'after', skipping: true, toCursor: cursor });
-  };
+  }, [onLoadMore]);
 
   if ((location.state || {}).refetchThread) {
     refetch();
@@ -94,12 +107,61 @@ ThreadViewQuery.propTypes = {
 };
 ThreadViewQuery.whyDidYouRender = true;
 
+const PostQuery = ({
+  postId, threadId, quotedPosts, handleQuoteToggle,
+}) => {
+  const { history } = useRouter();
+  const [errCode, setErrCode] = useState('');
+  const [offsetPostId, setOffsetPostId] = useState('');
+  const [, { startLoading, stopLoading }] = useLoadingBar();
+  console.log('render PostQuery');
+  const handleOnErr = useCallback((e) => {
+    setErrCode(e.graphQLErrors[0].extensions.code);
+  }, []);
+  const { data, loading } = useQuery(GET_POST_CATALOG,
+    { variables: { postId, threadId }, onError: handleOnErr },
+  );
+
+  useEffect(() => {
+    if (loading) {
+      startLoading();
+    }
+    if (!loading) {
+      if (errCode === INTERNAL_ERROR || errCode === NOT_FOUND) {
+        history.push('/error/NOT_FOUND');
+      }
+      if (data && data.thread && data.post) {
+        const idx = data.thread.catalog.findIndex(ele => ele.postId === postId);
+        if (idx > 0) {
+          setOffsetPostId(data.thread.catalog[idx - 1].postId);
+        }
+      }
+      stopLoading();
+    }
+  }, [data, errCode, history, loading, postId, startLoading, stopLoading]);
+  return useMemo(() => (
+    <ThreadViewQuery
+      threadId={threadId}
+      postId={offsetPostId}
+      quotedPosts={quotedPosts}
+      handleQuoteToggle={handleQuoteToggle}
+    />
+  ), [handleQuoteToggle, offsetPostId, quotedPosts, threadId]);
+};
+PostQuery.propTypes = {
+  threadId: PropTypes.string.isRequired,
+  postId: PropTypes.string.isRequired,
+  quotedPosts: PropTypes.shape({}).isRequired,
+  handleQuoteToggle: PropTypes.func.isRequired,
+};
+PostQuery.whyDidYouRender = true;
+
 const ThreadView = ({ match }) => {
-  const { history, location } = useRouter();
+  const { history } = useRouter();
   const { params } = match;
 
   const [quotedPosts, setQP] = useState(new Set());
-  const handleQuoteToggle = ({ pid }) => {
+  const handleQuoteToggle = ({ postId: pid }) => {
     setQP((prevQP) => {
       const newQuotedPosts = new Set(prevQP);
       if (newQuotedPosts.has(pid)) {
@@ -119,12 +181,21 @@ const ThreadView = ({ match }) => {
 
   return (
     <>
-      <ThreadViewQuery
-        threadId={params.threadId}
-        postId={params.postId || ''}
-        quotedPosts={quotedPosts}
-        handleQuoteToggle={handleQuoteToggle}
-      />
+      {params.postId ? (
+        <PostQuery
+          postId={params.postId}
+          threadId={params.threadId}
+          handleQuoteToggle={handleQuoteToggle}
+          quotedPosts={quotedPosts}
+        />
+      ) : (
+        <ThreadViewQuery
+          threadId={params.threadId}
+          postId={params.postId || ''}
+          quotedPosts={quotedPosts}
+          handleQuoteToggle={handleQuoteToggle}
+        />
+      )}
       <FloatButton title="Compose new reply" onClick={addReply} aboveScrollbar>
         <ChatBubble />
       </FloatButton>
