@@ -1,14 +1,10 @@
 const reducer = (state, action) => {
   switch (action.type) {
     case 'INIT': {
+      if (state.initialized) return state;
       return {
         ...state,
         initialized: true,
-        profile: {
-          isSignedIn: false,
-          email: '',
-          name: '',
-        },
       };
     }
     case 'INIT_WITH_LOGIN': {

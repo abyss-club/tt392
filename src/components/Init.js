@@ -1,4 +1,6 @@
-import { useContext, useEffect, useState, useCallback } from 'react';
+import React, {
+  useContext, useEffect, useState, useCallback,
+} from 'react';
 import gql from 'graphql-tag';
 
 // import Query from 'components/Query';
@@ -15,19 +17,21 @@ const Tags = () => {
   const [, { startLoading, stopLoading }] = useLoadingBar();
 
   useEffect(() => {
-    if (loading) startLoading();
-
+    if (loading) {
+      startLoading();
+    }
     if (!loading && !error) {
       const { mainTags, recommended } = data;
       dispatchTags({ type: 'INIT', tags: { mainTags, recommended } });
       stopLoading();
     }
-  }, [data, dispatchTags, loading, error, startLoading, stopLoading]);
+  }, [data, loading, error, startLoading, stopLoading, dispatchTags]);
   return null;
 };
+Tags.whyDidYouRender = true;
 
 const Login = () => {
-  const [, dispatchLogin] = useContext(LoginContext);
+  const [{ initialized }, dispatchLogin] = useContext(LoginContext);
   const [, dispatchTags] = useContext(TagsContext);
   const [, { startLoading, stopLoading }] = useLoadingBar();
   const [errCode, setErrCode] = useState('');
@@ -39,36 +43,42 @@ const Login = () => {
 
   console.log('render login');
   useEffect(() => {
-    if (loading) startLoading();
-    if (!loading) {
-      if (errCode === UNAUTHENTICATED) {
-        dispatchLogin({ type: 'INIT' });
-        stopLoading();
+    if (!initialized) {
+      if (loading) {
+        startLoading();
       }
-      if (data && data.profile) {
-        const { profile, mainTags, recommended } = data;
-        dispatchLogin({
-          type: 'INIT_WITH_LOGIN',
-          profile,
-        });
-        dispatchTags({
-          type: 'INIT_WITH_LOGIN',
-          profile,
-          tags: { mainTags, recommended },
-        });
-        stopLoading();
+      if (!loading) {
+        if (errCode === UNAUTHENTICATED) {
+          dispatchLogin({ type: 'INIT' });
+          stopLoading();
+        }
+        if (data && data.profile) {
+          const { profile, mainTags, recommended } = data;
+          dispatchLogin({
+            type: 'INIT_WITH_LOGIN',
+            profile,
+          });
+          dispatchTags({
+            type: 'INIT_WITH_LOGIN',
+            profile,
+            tags: { mainTags, recommended },
+          });
+          stopLoading();
+        }
       }
     }
-  }, [dispatchLogin, dispatchTags, loading, errCode, data, startLoading, stopLoading]);
+  }, [loading, errCode, data, startLoading, stopLoading, dispatchLogin, dispatchTags, initialized]);
 
   return null;
 };
+Login.whyDidYouRender = true;
 
-const Init = () => {
-  Tags();
-  Login();
-  return null;
-};
+const Init = () => (
+  <>
+    <Tags />
+    <Login />
+  </>
+);
 
 const PROFILE = gql`
   query {
