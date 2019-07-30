@@ -127,6 +127,7 @@ PostWrapper.propTypes = {
   }).isRequired,
   catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
+PostWrapper.whyDidYouRender = true;
 
 const PositionContext = React.createContext();
 const PositionProvider = ({ children }) => {
@@ -180,6 +181,7 @@ Thread.propTypes = {
   onLoadMore: PropTypes.func.isRequired,
   setCursor: PropTypes.func.isRequired,
 };
+Thread.whyDidYouRender = true;
 
 export default Thread;
 export { PositionContext, OffsetPosContext };
