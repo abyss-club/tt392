@@ -191,6 +191,7 @@ const PostWrapper = ({
   const { history } = useCosmeticRouter();
   const [ref, inView] = useInView({
     threshold: 1,
+    rootMargin: '-20% 0% -20% 0%',
   });
 
   const [, setPostId] = useContext(PositionContext);
