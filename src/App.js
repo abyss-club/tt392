@@ -41,13 +41,16 @@ const GQLVoyager = Loadable({
 const App = () => (
   <Wrapper>
     <LoadingBar />
-    <Route render={({ location }) => !location.pathname.startsWith('/error') && (
-      <>
-        <Init />
-        <Navbar />
-      </>
-    )}
-    />
+    <Switch>
+      <Route path="/error" component={null} />
+      <Route render={() => (
+        <>
+          <Init />
+          <Navbar />
+        </>
+      )}
+      />
+    </Switch>
     <Route path="/error/:errCode" component={Error} />
     <Route path={['/', '/t/:id']} exact component={NavTags} />
     <Switch>
