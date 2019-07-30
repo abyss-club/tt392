@@ -189,7 +189,7 @@ const ThreadList = ({
     }
   }, [dispatch, loading, refetch, shouldThreadListRefetch]);
 
-  const addThread = () => { history.push('/draft/t/'); };
+  const addThread = () => { history.push('/draft/thread/'); };
   const threads = !loading ? data.threadSlice.threads : [];
   const sliceInfo = !loading ? data.threadSlice.sliceInfo : {};
   const onLoadMore = () => fetchMore({
