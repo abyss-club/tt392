@@ -30,13 +30,15 @@ const ThreadViewQuery = ({
     data, loading, fetchMore, refetch,
   } = useQuery(THREAD_VIEW, { variables: { id: threadId, after: postId || '' }, fetchPolicy: 'cache-and-network', notifyOnNetworkStatusChange: true });
 
+  const { thread } = data;
+
   const onLoadMore = ({
     type, skipping = false, toCursor = null,
   }) => fetchMore({
     query: THREAD_VIEW,
     variables: type === 'after'
-      ? { id: threadId, after: toCursor || data.thread.replies.posts.slice(-1)[0].id || '' }
-      : { id: threadId, before: toCursor || data.thread.replies.posts[0].id || '' },
+      ? { id: threadId, after: toCursor || (thread && thread.replies.posts.length > 0 && thread.replies.posts.slice(-1)[0].id) || '' }
+      : { id: threadId, before: toCursor || (thread && thread.replies.posts.length > 0 && thread.replies.posts[0].id) || '' },
     updateQuery: (prevResult, { fetchMoreResult }) => {
       const newPosts = fetchMoreResult.thread.replies.posts;
       const newSliceInfo = fetchMoreResult.thread.replies.sliceInfo;
@@ -90,20 +92,11 @@ ThreadViewQuery.propTypes = {
   quotedPosts: PropTypes.shape({}).isRequired,
   handleQuoteToggle: PropTypes.func.isRequired,
 };
+ThreadViewQuery.whyDidYouRender = true;
 
 const ThreadView = ({ match }) => {
   const { history, location } = useRouter();
-  // const [postId, setPostId] = useState('');
   const { params } = match;
-
-  // console.log(location.state, match.params.postId);
-  //
-  // useEffect(() => {
-  //   console.log(location.state, match.params.postId);
-  //   if ((!location.state || !location.state.silent) && match.params.postId) {
-  //     setPostId(match.params.postId);
-  //   }
-  // }, [location.state, match.params.postId]);
 
   const [quotedPosts, setQP] = useState(new Set());
   const handleQuoteToggle = ({ pid }) => {
@@ -146,5 +139,6 @@ ThreadView.propTypes = {
     }),
   }).isRequired,
 };
+ThreadView.whyDidYouRender = true;
 
 export default ThreadView;
