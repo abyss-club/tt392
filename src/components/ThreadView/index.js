@@ -39,19 +39,37 @@ const ThreadViewQuery = ({
   threadId, postId, quotedPosts, handleQuoteToggle,
 }) => {
   const { history, location } = useRouter();
+  // const [errCode, setErrCode] = useState('');
+  // const handleOnErr = useCallback((e) => {
+  //   console.log(e);
+  //   setErrCode(e.graphQLErrors[0].extensions.code);
+  // }, []);
   const {
-    data, loading, fetchMore, refetch,
-  } = useQuery(THREAD_VIEW, { variables: { id: threadId, after: postId || '' }, fetchPolicy: 'cache-and-network', notifyOnNetworkStatusChange: true });
-
-  const { thread } = data;
+    data, loading, fetchMore, refetch, error,
+  } = useQuery(THREAD_VIEW, {
+    variables: { id: threadId, after: postId || '' },
+    fetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
+    // onError: handleOnErr,
+  });
+  // useEffect(() => {
+  //   if (!loading) {
+  //     if (errCode === INTERNAL_ERROR || errCode === NOT_FOUND) {
+  //       history.push('/error/NOT_FOUND');
+  //     }
+  //   }
+  // }, [errCode, history, loading]);
+  if (error) {
+    history.push('/error/NOT_FOUND');
+  }
 
   const onLoadMore = useCallback(({
     type, skipping = false, toCursor = null,
   }) => fetchMore({
     query: THREAD_VIEW,
     variables: type === 'after'
-      ? { id: threadId, after: toCursor || (thread && thread.replies.posts.length > 0 && thread.replies.posts.slice(-1)[0].id) || '' }
-      : { id: threadId, before: toCursor || (thread && thread.replies.posts.length > 0 && thread.replies.posts[0].id) || '' },
+      ? { id: threadId, after: toCursor || (data.thread && data.thread.replies.posts.length > 0 && data.thread.replies.posts.slice(-1)[0].id) || '' }
+      : { id: threadId, before: toCursor || (data.thread && data.thread.replies.posts.length > 0 && data.thread.replies.posts[0].id) || '' },
     updateQuery: (prevResult, { fetchMoreResult }) => {
       const newPosts = fetchMoreResult.thread.replies.posts;
       const newSliceInfo = fetchMoreResult.thread.replies.sliceInfo;
@@ -75,7 +93,7 @@ const ThreadViewQuery = ({
       console.log({ newPosts, newSliceInfo, updatedData });
       return newPosts.length ? updatedData : prevResult;
     },
-  }), [fetchMore, thread, threadId]);
+  }), [fetchMore, data, threadId]);
 
   const setCursor = useCallback((cursor) => {
     onLoadMore({ type: 'after', skipping: true, toCursor: cursor });
@@ -86,7 +104,7 @@ const ThreadViewQuery = ({
     history.replace({ state: { refetchThread: false } });
   }
 
-  return (
+  return !error && (
     <Thread
       data={data}
       loading={loading}
@@ -119,8 +137,7 @@ const PostQuery = ({
     setErrCode(e.graphQLErrors[0].extensions.code);
   }, []);
   const { data, loading } = useQuery(GET_POST_CATALOG,
-    { variables: { postId, threadId }, onError: handleOnErr },
-  );
+    { variables: { postId, threadId }, onError: handleOnErr });
 
   useEffect(() => {
     if (loading) {
@@ -139,14 +156,14 @@ const PostQuery = ({
       stopLoading();
     }
   }, [data, errCode, history, loading, postId, startLoading, stopLoading]);
-  return useMemo(() => (
+  return useMemo(() => !errCode && (
     <ThreadViewQuery
       threadId={threadId}
       postId={offsetPostId}
       quotedPosts={quotedPosts}
       handleQuoteToggle={handleQuoteToggle}
     />
-  ), [handleQuoteToggle, offsetPostId, quotedPosts, threadId]);
+  ), [errCode, handleQuoteToggle, offsetPostId, quotedPosts, threadId]);
 };
 PostQuery.propTypes = {
   threadId: PropTypes.string.isRequired,
@@ -191,7 +208,7 @@ const ThreadView = ({ match }) => {
       ) : (
         <ThreadViewQuery
           threadId={params.threadId}
-          postId={params.postId || ''}
+          postId=""
           quotedPosts={quotedPosts}
           handleQuoteToggle={handleQuoteToggle}
         />
