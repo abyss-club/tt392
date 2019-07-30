@@ -28,8 +28,14 @@ import './index.css';
 //   axe(React, ReactDOM, 5000);
 // }
 
+if (process.env.NODE_ENV !== 'production') {
+  // eslint-disable-next-line global-require, import/no-extraneous-dependencies
+  const whyDidYouRender = require('@welldone-software/why-did-you-render');
+  whyDidYouRender(React);
+}
+
 const Root = () => (
-  <React.StrictMode>
+  <>
     <HookedBrowserRouter>
       <HookedLoadingBar>
         <RefetchProvider reducer={refetch}>
@@ -49,7 +55,7 @@ const Root = () => (
         </RefetchProvider>
       </HookedLoadingBar>
     </HookedBrowserRouter>
-  </React.StrictMode>
+  </>
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'));
