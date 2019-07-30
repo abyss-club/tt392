@@ -103,6 +103,7 @@ function getNotification(type) {
     replied: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createdAt, mainTag, subTags, title, replies(query: { before: "", limit: 3 }) { posts { id, anonymous, content, author, createdAt } }, replyCount }, repliers',
     quoted: 'id, eventTime, hasRead, thread { id, anonymous, author, content, createdAt, mainTag, subTags, title }, post { id, anonymous, author, content, createdAt }, quotedPost { id, anonymous, author, content, createdAt }',
   };
+  /* eslint-disable graphql/template-strings */
   return gql`
     query Notification($cursor: String!) {
       notification(type: "${type}", query: { after: $cursor, limit: 3 }) {
@@ -115,6 +116,7 @@ function getNotification(type) {
       }
     }
   `;
+  /* eslint-enable graphql/template-strings */
 }
 
 export default QueryWrapper;

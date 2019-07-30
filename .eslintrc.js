@@ -2,8 +2,13 @@ module.exports = {
   "extends": "airbnb",
   "plugins": [
     "react-hooks",
+    "graphql",
   ],
   "rules": {
+    "graphql/template-strings": ['error', {
+      env: 'apollo',
+      schemaJson: require('./schema.json'),
+    }],
     "react/jsx-filename-extension": [1, {
       "extensions": [".js", ".jsx"]
     }],
