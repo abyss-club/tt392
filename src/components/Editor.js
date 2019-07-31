@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   font-size: .875em;
   width: 100%;
   @media screen and (-webkit-min-device-pixel-ratio:0) {
-    *[contenteditable="true"] {
+    textarea {
       font-size: 16px;
     }
   }

@@ -12,7 +12,7 @@ const ThreadWrapper = styled.article`
   padding-top: 0.5rem;
   border-radius: .5rem;
   :last-of-type {
-    margin: 1rem 0 0;
+    margin: .5rem 0 0;
   }
 `;
 

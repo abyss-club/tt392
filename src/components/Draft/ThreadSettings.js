@@ -135,7 +135,7 @@ const ListInput = styled.input`
   margin-right: .5em;
 
   font-size: .6875em;
-  line-height: 1.2;
+  line-height: unset;
 
   appearance: none;
   cursor: pointer;
@@ -146,6 +146,9 @@ const ListInput = styled.input`
 `;
 
 const TitleInput = styled(Input)`
+  @media screen and (-webkit-min-device-pixel-ratio:0) {
+    font-size: 1em;
+  }
   font-size: .875em;
   font-weight: 700;
 `;

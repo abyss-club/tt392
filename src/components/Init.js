@@ -8,7 +8,7 @@ import { useQuery } from '@apollo/react-hooks';
 import TagsContext from 'providers/Tags';
 import LoginContext from 'providers/Login';
 import { useLoadingBar } from 'styles/Loading';
-import { UNAUTHENTICATED } from 'utils/errorCodes';
+import { UNAUTHENTICATED, UNKNOWN_ERROR } from 'utils/errorCodes';
 
 const Tags = () => {
   const { loading, data, error } = useQuery(TAGS);
@@ -37,7 +37,11 @@ const Login = () => {
   const [errCode, setErrCode] = useState('');
 
   const handleOnErr = useCallback((e) => {
-    setErrCode(e.graphQLErrors[0].extensions.code);
+    if (e.graphQLErrors) {
+      setErrCode(e.graphQLErrors[0].extensions.code);
+    } else {
+      setErrCode(UNKNOWN_ERROR);
+    }
   }, []);
   const { loading, data } = useQuery(PROFILE, { onError: handleOnErr });
 

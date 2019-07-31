@@ -87,16 +87,15 @@ const CompleteText = styled.p`
   color: ${colors.regularGrey};
   margin-top: 1rem;
   font-size: .75em;
-
-  > span {
-    color: ${colors.titleBlack};
-    font-size: calc(14em / 12);
-    font-weight: 600;
-  }
 `;
 
-const SignIn = ({ history }) => {
-  const [{ profile }] = useContext(LoginContext);
+const CompleteEmail = styled.p`
+  color: ${colors.titleBlack};
+  font-size: .875em;
+  font-weight: 600;
+`;
+
+const SignIn = () => {
   const [status, setStatus] = useState('INIT');
   const [email, setEmail] = useState('');
   const [disabled, setDisabled] = useState(true);
@@ -146,9 +145,9 @@ const SignIn = ({ history }) => {
     <div>
       <CompleteTitle><h2>检查你的邮箱</h2></CompleteTitle>
       <CompleteText>
-          一封包含了登录链接的电子邮件已被发送到：
-        <span>{email}</span>
+        一封包含了登录链接的电子邮件已被发送到：
       </CompleteText>
+      <CompleteEmail>{email}</CompleteEmail>
     </div>
   );
   return (
@@ -183,11 +182,5 @@ const SIGN_IN = gql`
     auth(email: $email)
   }
 `;
-
-SignIn.propTypes = {
-  history: PropTypes.shape({
-    replace: PropTypes.func.isRequired,
-  }).isRequired,
-};
 
 export default SignIn;
