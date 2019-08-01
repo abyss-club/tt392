@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useContext } from 'react';
+import React, {
+  useEffect, useRef, useContext, useState, useLayoutEffect,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useInView } from 'react-intersection-observer';
 import { LoadMore } from 'styles/Loading';
@@ -40,6 +42,7 @@ ScrollForMore.propTypes = {
 const ScrollForMorePosts = ({
   entries, onLoadMore, loading, children, catalog,
 }) => {
+  const [scrollLoc, setScrollLoc] = useState(0);
   const [posMap] = useContext(OffsetPosContext);
 
   const [afterRef, afterInView] = useInView({
@@ -54,35 +57,47 @@ const ScrollForMorePosts = ({
 
   useEffect(() => {
     if (!loading && !prevAfterInView.current && afterInView) {
-      console.log('loadmore after');
       onLoadMore({ type: 'after' });
     }
     prevAfterInView.current = afterInView;
   }, [afterInView, loading, onLoadMore]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (loading && beforeInView) {
+      setScrollLoc(document.body.scrollHeight - window.scrollY);
+    }
+  }, [beforeInView, loading, posMap]);
+
+  useLayoutEffect(() => {
     if (!loading && !prevBeforeInView.current && beforeInView) {
       console.log('loadmore before');
       if (entries.length < 1) {
         onLoadMore({ type: 'before' });
       } else {
-        const curTopId = entries[0].id;
-        const topOffset = posMap.get(curTopId);
         onLoadMore({ type: 'before' });
+        // window.scrollTo({
+        //   behavior: 'auto',
+        //   top: document.body.scrollHeight - curScrollPos - 48,
+        // });
+      }
+    }
+    if (prevBeforeInView.current && beforeInView) {
+      if (entries.length < 1 || catalog[0].postId !== entries[0].id) {
         window.scrollTo({
           behavior: 'auto',
-          top: topOffset - 48,
+          // top: document.body.scrollHeight - curScrollPos - 48,
+          top: document.body.scrollHeight - scrollLoc - 48,
         });
       }
     }
     prevBeforeInView.current = beforeInView;
-  }, [beforeInView, entries, loading, onLoadMore, posMap]);
+  }, [beforeInView, entries, loading, onLoadMore, posMap, catalog, scrollLoc]);
 
-  if (!entries || catalog.length < 1) return <LoadMore />;
-  // console.log({ catalog: catalog[0].postId, entries: entries[0].id });
+  if (catalog.length === 0) return null;
+  if (!entries) return <LoadMore />;
   return (
     <>
-      {!loading && (entries.length < 1 || catalog[0].postId !== entries[0].id)
+      {(entries.length < 1 || catalog[0].postId !== entries[0].id)
         && <LoadMore ref={!loading ? beforeRef : null} />
       }
       {children}
