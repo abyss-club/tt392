@@ -25,6 +25,7 @@ const colors = {
   regularBlack: '#1A1A1A',
   anonBlack: '#191919',
   bgGrey: '#FAFAFA',
+  bgGreen: '#45B46C',
   iconGrey: '#D0D4DB',
   regularGrey: '#919499',
   borderGrey: '#E6E8EB',
