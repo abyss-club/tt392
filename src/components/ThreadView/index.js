@@ -1,10 +1,11 @@
 import React, {
-  useState, useEffect, useCallback, useMemo,
+  useState, useEffect, useCallback, useMemo, useContext,
 } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
+import QuotedPostsContext from 'providers/QuotedPosts';
 import FloatButton from 'styles/FloatButton';
 import { useLoadingBar } from 'styles/Loading';
 import { useRouter } from 'utils/routerHooks';
@@ -35,9 +36,7 @@ const GET_POST_CATALOG = gql`
   }
 `;
 
-const ThreadViewQuery = ({
-  threadId, postId, quotedPosts, handleQuoteToggle,
-}) => {
+const ThreadViewQuery = ({ threadId, postId }) => {
   const { history, location } = useRouter();
   // const [errCode, setErrCode] = useState('');
   // const handleOnErr = useCallback((e) => {
@@ -111,8 +110,6 @@ const ThreadViewQuery = ({
       refetch={refetch}
       setCursor={setCursor}
       threadId={threadId}
-      quotedPosts={quotedPosts}
-      handleQuoteToggle={handleQuoteToggle}
       onLoadMore={onLoadMore}
     />
   );
@@ -120,14 +117,10 @@ const ThreadViewQuery = ({
 ThreadViewQuery.propTypes = {
   threadId: PropTypes.string.isRequired,
   postId: PropTypes.string.isRequired,
-  quotedPosts: PropTypes.shape({}).isRequired,
-  handleQuoteToggle: PropTypes.func.isRequired,
 };
 ThreadViewQuery.whyDidYouRender = true;
 
-const PostQuery = ({
-  postId, threadId, quotedPosts, handleQuoteToggle,
-}) => {
+const PostQuery = ({ postId, threadId }) => {
   const { history } = useRouter();
   const [errCode, setErrCode] = useState('');
   const [offsetPostId, setOffsetPostId] = useState('');
@@ -160,39 +153,18 @@ const PostQuery = ({
     <ThreadViewQuery
       threadId={threadId}
       postId={offsetPostId}
-      quotedPosts={quotedPosts}
-      handleQuoteToggle={handleQuoteToggle}
     />
-  ), [errCode, handleQuoteToggle, offsetPostId, quotedPosts, threadId]);
+  ), [errCode, offsetPostId, threadId]);
 };
 PostQuery.propTypes = {
   threadId: PropTypes.string.isRequired,
   postId: PropTypes.string.isRequired,
-  quotedPosts: PropTypes.shape({}).isRequired,
   handleQuoteToggle: PropTypes.func.isRequired,
 };
 PostQuery.whyDidYouRender = true;
 
 const ThreadView = ({ match }) => {
-  const { history } = useRouter();
   const { params } = match;
-
-  const [quotedPosts, setQP] = useState(new Set());
-  const handleQuoteToggle = ({ postId: pid }) => {
-    setQP((prevQP) => {
-      const newQuotedPosts = new Set(prevQP);
-      if (newQuotedPosts.has(pid)) {
-        newQuotedPosts.delete(pid);
-      } else {
-        newQuotedPosts.add(pid);
-      }
-      return newQuotedPosts;
-    });
-  };
-  const addReply = () => {
-    const quotedIdQueryString = quotedPosts.size > 0 ? `&p=${[...quotedPosts].join('&p=')}` : '';
-    history.push(`/draft/post/?reply=${params.threadId}${quotedIdQueryString}`);
-  };
 
   console.log('render threadview');
 
@@ -202,20 +174,14 @@ const ThreadView = ({ match }) => {
         <PostQuery
           postId={params.postId}
           threadId={params.threadId}
-          handleQuoteToggle={handleQuoteToggle}
-          quotedPosts={quotedPosts}
         />
       ) : (
         <ThreadViewQuery
           threadId={params.threadId}
           postId=""
-          quotedPosts={quotedPosts}
-          handleQuoteToggle={handleQuoteToggle}
         />
       )}
-      <FloatButton title="Compose new reply" onClick={addReply} aboveScrollbar>
-        <ChatBubble />
-      </FloatButton>
+      <FloatBtnWrapper threadId={params.threadId} />
     </>
   );
 };
@@ -228,5 +194,22 @@ ThreadView.propTypes = {
   }).isRequired,
 };
 ThreadView.whyDidYouRender = true;
+
+const FloatBtnWrapper = ({ threadId }) => {
+  const [quotedPosts] = useContext(QuotedPostsContext);
+  const { history } = useRouter();
+  const addReply = () => {
+    const quotedIdQueryString = quotedPosts.size > 0 ? `&p=${[...quotedPosts].join('&p=')}` : '';
+    history.push(`/draft/post/?reply=${threadId}${quotedIdQueryString}`);
+  };
+  return (
+    <FloatButton title="Compose new reply" onClick={addReply} aboveScrollbar>
+      <ChatBubble />
+    </FloatButton>
+  );
+};
+FloatBtnWrapper.propTypes = {
+  threadId: PropTypes.string.isRequired,
+};
 
 export default ThreadView;

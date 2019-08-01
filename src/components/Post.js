@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useRouter } from 'utils/routerHooks';
@@ -10,12 +10,12 @@ import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
 import { PositionContext } from 'components/ThreadView/Thread';
+import QuotedPostsContext from 'providers/QuotedPosts';
 import { breakpoint } from 'styles/MainContent';
 import { HookedCosmeticRouter, useCosmeticRouter } from 'utils/cosmeticHistory';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
-
 
 import More from 'components/icons/More';
 
@@ -156,9 +156,21 @@ const AuthorWrapper = styled.span`
   font-weight: 600;
 `;
 
-const QuoteSelectorWrapper = ({
-  postId, handleQuoteToggle, isQuoted, quotable,
-}) => {
+const QuoteSelectorWrapper = ({ postId }) => {
+  const [quotedPosts, setQuotedPosts] = useContext(QuotedPostsContext);
+  const isQuoted = quotedPosts.has(postId);
+  const quotable = quotedPosts.size < 3;
+  const handleQuoteToggle = useCallback(() => {
+    setQuotedPosts((prevQP) => {
+      const newQuotedPosts = new Set(prevQP);
+      if (newQuotedPosts.has(postId)) {
+        newQuotedPosts.delete(postId);
+      } else {
+        newQuotedPosts.add(postId);
+      }
+      return newQuotedPosts;
+    });
+  }, [postId, setQuotedPosts]);
   const disabled = (!isQuoted) && (!quotable);
   return (
     <QuoteSelectorBtn
@@ -175,9 +187,6 @@ const QuoteSelectorWrapper = ({
 };
 QuoteSelectorWrapper.propTypes = {
   postId: PropTypes.string,
-  handleQuoteToggle: PropTypes.func.isRequired,
-  isQuoted: PropTypes.bool.isRequired,
-  quotable: PropTypes.bool.isRequired,
 };
 QuoteSelectorWrapper.defaultProps = {
   postId: null,
@@ -214,10 +223,11 @@ PostWrapper.propTypes = {
   threadId: PropTypes.string.isRequired,
   createdAt: PropTypes.number.isRequired,
 };
+// PostWrapper.whyDidYouRender = true;
 
 const Post = ({
   isThread, title, anonymous, author, createdAt, content, quotes, postId, threadId, replyCount,
-  handleQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList,
+  mainTag, subTags, hasReplies, inList,
 }) => {
   const titleRow = isThread ? (
     <Title inList={inList}>
@@ -232,12 +242,11 @@ const Post = ({
   ) : (
     <AuthorWrapper>{author}</AuthorWrapper>
   );
-  const quoteSelector = (!isThread) && handleQuoteToggle && (
-    <QuoteSelectorWrapper {...{
-      postId, handleQuoteToggle, isQuoted, quotable,
-    }}
-    />
+
+  const quoteSelector = (!isThread && !inList) && (
+    <QuoteSelectorWrapper postId={postId} />
   );
+
   const viewThread = (isThread) && (inList) && (replyCount > 0) && (
     <ViewThread>
       <Link to={`/t/${threadId}`}>
@@ -280,7 +289,7 @@ const Post = ({
   const { history } = useRouter();
   const gotoThread = () => {
     if (inList) {
-      history.push(`/t/${threadId}/`);
+      history.push(`/t/${threadId}/${isThread ? '' : postId}`);
     }
   };
 
@@ -296,14 +305,14 @@ const Post = ({
 
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-      {inList ? post : (
+      {(!inList && !isThread) ? (
         <HookedCosmeticRouter>
           <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt} threadId={threadId}>
             {isThread ? '' : postId}
             {post}
           </PostWrapper>
         </HookedCosmeticRouter>
-      )}
+      ) : post}
       {viewThread}
     </Wrapper>
   );
@@ -319,9 +328,6 @@ Post.propTypes = {
   quotes: PropTypes.arrayOf(PropTypes.shape()),
   postId: PropTypes.string,
   threadId: PropTypes.string,
-  handleQuoteToggle: PropTypes.func,
-  isQuoted: PropTypes.bool,
-  quotable: PropTypes.bool,
   mainTag: PropTypes.string,
   subTags: PropTypes.arrayOf(PropTypes.string),
   inList: PropTypes.bool,
@@ -331,9 +337,6 @@ Post.propTypes = {
 Post.defaultProps = {
   postId: null,
   threadId: null,
-  handleQuoteToggle: null,
-  isQuoted: false,
-  quotable: false,
   isThread: false,
   quotes: null,
   title: '',

@@ -2,6 +2,7 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'REFETCH_THREADLIST': {
       const { status } = action;
+      if (!!status === state.threadList) return state;
       return {
         ...state,
         threadList: !!status,
@@ -9,6 +10,7 @@ const reducer = (state, action) => {
     }
     case 'REFETCH_THREAD': {
       const { status } = action;
+      if (!!status === state.thread) return state;
       return {
         ...state,
         thread: !!status,

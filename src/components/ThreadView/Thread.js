@@ -90,7 +90,7 @@ OffsetPosWrapper.propTypes = {
 };
 
 const PostWrapper = ({
-  entries, loading, onLoadMore, threadId, handleQuoteToggle, quotedPosts, catalog,
+  entries, loading, onLoadMore, threadId, catalog,
 }) => (
   <OffsetPosProvider>
     <ScrollForMorePosts
@@ -104,9 +104,6 @@ const PostWrapper = ({
           <Post
             isThread={false}
             postId={post.id}
-            handleQuoteToggle={handleQuoteToggle}
-            isQuoted={quotedPosts.has(post.id)}
-            quotable={quotedPosts.size < 3}
             threadId={threadId}
             {...post}
           />
@@ -120,11 +117,6 @@ PostWrapper.propTypes = {
   loading: PropTypes.bool.isRequired,
   onLoadMore: PropTypes.func.isRequired,
   threadId: PropTypes.string.isRequired,
-  handleQuoteToggle: PropTypes.func.isRequired,
-  quotedPosts: PropTypes.shape({
-    has: PropTypes.func.isRequired,
-    size: PropTypes.number.isRequired,
-  }).isRequired,
   catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 PostWrapper.whyDidYouRender = true;
@@ -143,20 +135,20 @@ PositionProvider.propTypes = {
 };
 
 const Thread = ({
-  data, loading, onLoadMore, setCursor, threadId, handleQuoteToggle, quotedPosts,
+  data, loading, onLoadMore, setCursor, threadId,
 }) => {
   const { thread } = data;
+  console.log({ thread });
+  const showOp = thread && (thread.replies.posts.length < 1 || thread.replies.posts[0].id === thread.catalog[0].postId);
   return (
     <ThreadMainContent>
       <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
         <ThreadViewWrapper>
-          {!loading && <Post isThread {...thread} threadId={threadId} />}
+          {showOp && <Post isThread {...thread} threadId={threadId} />}
           <PostWrapper
             loading={loading}
             entries={thread ? thread.replies.posts : []}
-            quotedPosts={quotedPosts}
             threadId={threadId}
-            handleQuoteToggle={handleQuoteToggle}
             onLoadMore={onLoadMore}
             catalog={thread ? thread.catalog : []}
           />
@@ -172,8 +164,6 @@ const Thread = ({
 };
 Thread.propTypes = {
   threadId: PropTypes.string.isRequired,
-  quotedPosts: PropTypes.shape({}).isRequired,
-  handleQuoteToggle: PropTypes.func.isRequired,
   data: PropTypes.shape({
     thread: PropTypes.shape.isRequired,
   }).isRequired,

@@ -50,7 +50,19 @@ const ThreadInList = ({ thread }) => {
         {...thread}
       />
       <div>
-        {replies.map(post => <Post inList key={post.id} threadId={thread.id} {...post} />)}
+        {replies.map(post => (
+          <Post
+            inList
+            key={post.id}
+            threadId={thread.id}
+            postId={post.id}
+            quotes={post.quotes}
+            createdAt={post.createdAt}
+            content={post.content}
+            author={post.author}
+            anonymous={post.anonymous}
+          />
+        ))}
       </div>
       {(replies.length > 0) && (<More threadId={thread.id} />)}
     </ThreadWrapper>
