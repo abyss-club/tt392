@@ -1,10 +1,8 @@
 import React, {
-  useContext, useCallback, useEffect, useState, useRef,
+  useCallback, useEffect, useState, useRef,
 } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { HookedCosmeticRouter, useCosmeticRouter } from 'utils/cosmeticHistory';
-import { withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import colors from 'utils/colors';
 
@@ -57,7 +55,6 @@ const ScrollWrapper = styled.div`
 
 const Head = styled.div`
   height: 1rem;
-  lint-height: 1rem;
   font-size: 0.75rem;
   color: ${colors.textGrey};
   margin-left: -0.25em;
@@ -76,6 +73,7 @@ const Handle = styled.div`
   padding: 0.25rem 0;
   display: flex;
   justify-content: flex-start;
+  cursor: ns-resize;
 `;
 
 const Bar = styled.div`
@@ -101,72 +99,66 @@ const DateInfo = styled.p`
   color: ${colors.textGrey};
 `;
 
-const drag = {
-  handleMouseDown: (e) => {
-    console.log('down', e.clientY);
-    this.setState({
-      isDragging: true,
-      prevy: e.clientY,
-    });
-  },
-  handleMouseUp: (e) => {
-    console.log('up');
-    this.setState({
-      isDragging: false,
-    });
-  },
-  handleMouseLeave: (e) => {
-    console.log('leave');
-    this.setState({
-      isDragging: false,
-    });
-  },
-  handleMouseMove: (e) => {
-    if (this.state.isDragging) {
-      console.log('move', e.clientY);
-      this.setState({
-        y: e.clientY - this.state.prevy,
-      });
-    }
-  },
-};
-
 const Slider = ({
   idx, length, catalog, setCursor, threadId, close,
 }) => {
-  const { history } = useCosmeticRouter();
-  // console.log(history)
+  const handleRef = useRef(null);
+  const scrollRef = useRef(null);
   const [loc, setLoc] = useState(idx);
+  const [isDragging, setIsDragging] = useState(false);
+  const [sliderHeight, setSliderHeight] = useState(0);
+  const [sliderTop, setSliderTop] = useState(0);
+  const [posY, setPosY] = useState(0);
+  const [jumpReady, setJumpReady] = useState(false);
+
   useEffect(() => {
     setLoc(idx);
   }, [idx]);
-  const handleSliderChange = useCallback((e) => {
-    setLoc(Number(e.target.value));
+  // const handleSliderChange = useCallback((e) => {
+  //   setLoc(Number(e.target.value));
+  // }, []);
+
+  // const handleSliderOnMouseUp = useCallback(() => {
+  //   // setCursor(catalog[loc].postId);
+  //   // window.scrollTo({
+  //   //   behavior: 'auto',
+  //   //   top: threadView.get(catalog[loc].postId),
+  //   // });
+  // }, [catalog, history, loc, setCursor, threadId]);
+
+  const handleOnMouseDown = useCallback((e) => {
+    setIsDragging(true);
+    setPosY(e.clientY);
   }, []);
+  const handleOnMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+  const handleOnMouseLeave = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+  const handleOnMouseMove = useCallback((e) => {
+    const { clientY } = e;
+    if (isDragging) {
+      setPosY(clientY);
+      setJumpReady(true);
+    }
+  }, [isDragging]);
 
-  const handleSliderOnMouseUp = useCallback(() => {
-    // setCursor(catalog[loc].postId);
-    history.replace(`/t/${threadId}/${catalog[loc].postId}`);
-    // window.scrollTo({
-    //   behavior: 'auto',
-    //   top: threadView.get(catalog[loc].postId),
-    // });
-  }, [catalog, history, loc, threadId]);
+  useEffect(() => {
+    if (scrollRef.current && (sliderHeight === 0 || sliderTop === 0 || posY === 0)) {
+      setSliderHeight(scrollRef.current.getBoundingClientRect().height);
+      setSliderTop(scrollRef.current.getBoundingClientRect().top);
+      setPosY(sliderTop + (loc / length) * sliderHeight);
+    }
+  }, [length, loc, posY, scrollRef, sliderHeight, sliderTop]);
 
-  const onHandleMouseDown = (e) => {
-    console.log('down', e.clientY);
-  };
-  const onHandleMouseUp = (e) => {
-    console.log('up');
-  };
-  const onHandleMouseLeave = (e) => {
-    console.log('leave');
-  };
-  const onHandleMouseMove = (e) => {
-    // if (this.state.isDragging) {
-    console.log('move', e.clientY);
-    // }
-  };
+  useEffect(() => {
+    if (!isDragging && jumpReady) {
+      const newLoc = Math.round((posY - sliderTop) / sliderHeight * length) - 1;
+      setCursor(catalog[newLoc].postId);
+      setJumpReady(false);
+    }
+  }, [catalog, isDragging, jumpReady, length, loc, posY, setCursor, sliderHeight, sliderTop]);
 
   // click outside, close this
   const ref = useRef(null);
@@ -193,8 +185,9 @@ const Slider = ({
   //     </SliderWrapper>
   //   </Wrapper>
   // );
-  const page = `${loc + 1} of ${length} posts`;
-  const before = Math.round(100 * loc / (length - 1)) / 100;
+  const page = `${isDragging ? Math.round((posY - sliderTop) / sliderHeight * length) : loc + 1} of ${length} posts`;
+  // const before = isDragging ? ((posY - sliderTop) / sliderHeight) : Math.round(100 * loc / (length - 1)) / 100;
+  const before = (posY - sliderTop) / sliderHeight;
   const after = 1 - before;
   return (
     <Wrapper ref={ref}>
@@ -202,13 +195,14 @@ const Slider = ({
         <FontAwesomeIcon icon="angle-double-up" />
         <span>最早</span>
       </Head>
-      <ScrollWrapper>
+      <ScrollWrapper ref={scrollRef}>
         <PlaceHolder height={`calc(17rem * ${before})`} />
         <Handle
-          onMouseDown={onHandleMouseDown}
-          onMouseUp={onHandleMouseUp}
-          onMouseLeave={onHandleMouseLeave}
-          onMouseMove={onHandleMouseMove}
+          ref={handleRef}
+          onMouseDown={handleOnMouseDown}
+          onMouseUp={handleOnMouseUp}
+          onMouseLeave={handleOnMouseLeave}
+          onMouseMove={handleOnMouseMove}
         >
           <Bar />
           <Info>
@@ -237,8 +231,4 @@ Slider.propTypes = {
 };
 
 
-export default props => (
-  <HookedCosmeticRouter>
-    <Slider {...props} />
-  </HookedCosmeticRouter>
-);
+export default Slider;
