@@ -159,7 +159,6 @@ const PostQuery = ({ postId, threadId }) => {
 PostQuery.propTypes = {
   threadId: PropTypes.string.isRequired,
   postId: PropTypes.string.isRequired,
-  handleQuoteToggle: PropTypes.func.isRequired,
 };
 PostQuery.whyDidYouRender = true;
 
@@ -181,7 +180,7 @@ const ThreadView = ({ match }) => {
           postId=""
         />
       )}
-      <FloatBtnWrapper threadId={params.threadId} />
+      <FloatBtnWrapper threadId={params.threadId} match={match} />
     </>
   );
 };
@@ -195,9 +194,14 @@ ThreadView.propTypes = {
 };
 ThreadView.whyDidYouRender = true;
 
-const FloatBtnWrapper = ({ threadId }) => {
-  const [quotedPosts] = useContext(QuotedPostsContext);
+const FloatBtnWrapper = ({ threadId, match }) => {
+  const [quotedPosts, setQuotedPosts] = useContext(QuotedPostsContext);
   const { history } = useRouter();
+
+  useEffect(() => {
+    setQuotedPosts(new Set());
+  }, [match.params, setQuotedPosts]);
+
   const addReply = () => {
     const quotedIdQueryString = quotedPosts.size > 0 ? `&p=${[...quotedPosts].join('&p=')}` : '';
     history.push(`/draft/post/?reply=${threadId}${quotedIdQueryString}`);
@@ -210,6 +214,12 @@ const FloatBtnWrapper = ({ threadId }) => {
 };
 FloatBtnWrapper.propTypes = {
   threadId: PropTypes.string.isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      threadId: PropTypes.string.isRequired,
+      postId: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
 export default ThreadView;
