@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect, useState, useRef, useContext,
+} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -65,8 +67,9 @@ const DateInfo = styled.p`
 `;
 
 const Slider = ({
-  idx, length, catalog, setCursor, close,
+  idx, length, catalog, setCursor, close, OffsetPosContext,
 }) => {
+  const [posMap] = useContext(OffsetPosContext);
   // click outside, close this
   const ref = useRef(null);
   useEffect(() => {
@@ -127,17 +130,18 @@ const Slider = ({
   const dragEnd = () => {
     if (isDragging) {
       setIsDragging(false);
-      // TODO: best solution
-      const goto = state.index - 2;
-      if (goto >= 0) {
-        setCursor(catalog[goto].postId);
+      if (posMap.has(catalog[index - 1].postId)) {
+        window.scrollTo({
+          behaviro: 'smooth',
+          top: posMap.get(catalog[index - 1].postId) - 48,
+        });
       } else {
-        setCursor('');
+        setCursor(state.index > 1 ? catalog[state.index - 2].postId : '');
+        window.scrollTo({
+          behavior: 'auto',
+          top: 84,
+        });
       }
-      window.scrollTo({
-        behavior: 'auto',
-        top: 84,
-      });
       close();
     }
   };
@@ -195,6 +199,7 @@ Slider.propTypes = {
     createdAt: PropTypes.number.isRequired,
   })).isRequired,
   close: PropTypes.func.isRequired,
+  OffsetPosContext: PropTypes.shape().isRequired,
 };
 
 

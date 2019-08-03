@@ -66,7 +66,7 @@ const ScrollForMorePosts = ({
     if (loading && beforeInView) {
       setScrollLoc(document.body.scrollHeight - window.scrollY);
     }
-  }, [beforeInView, loading, posMap]);
+  }, [beforeInView, loading]);
 
   useLayoutEffect(() => {
     if (!loading && !prevBeforeInView.current && beforeInView) {
@@ -91,7 +91,7 @@ const ScrollForMorePosts = ({
       }
     }
     prevBeforeInView.current = beforeInView;
-  }, [beforeInView, entries, loading, onLoadMore, posMap, catalog, scrollLoc]);
+  }, [beforeInView, entries, loading, onLoadMore, catalog, scrollLoc]);
 
   if (catalog.length === 0) return null;
   if (!entries) return <LoadMore />;

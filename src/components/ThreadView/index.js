@@ -67,8 +67,8 @@ const ThreadViewQuery = ({ threadId, postId }) => {
   }) => fetchMore({
     query: THREAD_VIEW,
     variables: type === 'after'
-      ? { id: threadId, after: toCursor || (data.thread && data.thread.replies.posts.length > 0 && data.thread.replies.posts.slice(-1)[0].id) || '' }
-      : { id: threadId, before: toCursor || (data.thread && data.thread.replies.posts.length > 0 && data.thread.replies.posts[0].id) || '' },
+      ? { id: threadId, after: skipping ? toCursor : toCursor || (data.thread && data.thread.replies.posts.length > 0 && data.thread.replies.posts.slice(-1)[0].id) || '' }
+      : { id: threadId, before: skipping ? toCursor : toCursor || (data.thread && data.thread.replies.posts.length > 0 && data.thread.replies.posts[0].id) || '' },
     updateQuery: (prevResult, { fetchMoreResult }) => {
       const newPosts = fetchMoreResult.thread.replies.posts;
       const newSliceInfo = fetchMoreResult.thread.replies.sliceInfo;
@@ -89,7 +89,6 @@ const ThreadViewQuery = ({ threadId, postId }) => {
           },
         },
       };
-      console.log({ newPosts, newSliceInfo, updatedData });
       return newPosts.length ? updatedData : prevResult;
     },
   }), [fetchMore, data, threadId]);

@@ -68,7 +68,7 @@ OffsetPosProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-const OffsetPosWrapper = ({ postId, children }) => {
+const OffsetPosWrapper = ({ postId, children, length }) => {
   const scrollRef = useRef(null);
   const [, setPosMap] = useContext(OffsetPosContext);
   useEffect(() => {
@@ -76,7 +76,7 @@ const OffsetPosWrapper = ({ postId, children }) => {
       prevMap.set(postId, scrollRef.current.offsetTop);
       return prevMap;
     });
-  }, [postId, setPosMap]);
+  }, [postId, setPosMap, length]);
 
   return (
     <ScrolledPostWrapper ref={scrollRef}>
@@ -87,30 +87,29 @@ const OffsetPosWrapper = ({ postId, children }) => {
 OffsetPosWrapper.propTypes = {
   postId: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
+  length: PropTypes.number.isRequired,
 };
 
 const PostWrapper = ({
   entries, loading, onLoadMore, threadId, catalog,
 }) => (
-  <OffsetPosProvider>
-    <ScrollForMorePosts
-      entries={entries}
-      loading={loading}
-      onLoadMore={onLoadMore}
-      catalog={catalog}
-    >
-      {entries.map(post => (
-        <OffsetPosWrapper key={post.id} postId={post.id}>
-          <Post
-            isThread={false}
-            postId={post.id}
-            threadId={threadId}
-            {...post}
-          />
-        </OffsetPosWrapper>
-      ))}
-    </ScrollForMorePosts>
-  </OffsetPosProvider>
+  <ScrollForMorePosts
+    entries={entries}
+    loading={loading}
+    onLoadMore={onLoadMore}
+    catalog={catalog}
+  >
+    {entries.map(post => (
+      <OffsetPosWrapper key={post.id} postId={post.id} length={entries.length}>
+        <Post
+          isThread={false}
+          postId={post.id}
+          threadId={threadId}
+          {...post}
+        />
+      </OffsetPosWrapper>
+    ))}
+  </ScrollForMorePosts>
 );
 PostWrapper.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
@@ -142,23 +141,26 @@ const Thread = ({
   const showOp = thread && (thread.replies.posts.length < 1 || thread.replies.posts[0].id === thread.catalog[0].postId);
   return (
     <ThreadMainContent>
-      <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
-        <ThreadViewWrapper>
-          {showOp && <Post isThread {...thread} threadId={threadId} />}
-          <PostWrapper
-            loading={loading}
-            entries={thread ? thread.replies.posts : []}
-            threadId={threadId}
-            onLoadMore={onLoadMore}
+      <OffsetPosProvider>
+        <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
+          <ThreadViewWrapper>
+            {showOp && <Post isThread {...thread} threadId={threadId} />}
+            <PostWrapper
+              loading={loading}
+              entries={thread ? thread.replies.posts : []}
+              threadId={threadId}
+              onLoadMore={onLoadMore}
+              catalog={thread ? thread.catalog : []}
+            />
+          </ThreadViewWrapper>
+          <Scrollbar
             catalog={thread ? thread.catalog : []}
+            setCursor={setCursor}
+            threadId={threadId}
+            OffsetPosContext={OffsetPosContext}
           />
-        </ThreadViewWrapper>
-        <Scrollbar
-          catalog={thread ? thread.catalog : []}
-          setCursor={setCursor}
-          threadId={threadId}
-        />
-      </PositionProvider>
+        </PositionProvider>
+      </OffsetPosProvider>
     </ThreadMainContent>
   );
 };
