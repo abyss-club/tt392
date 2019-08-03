@@ -1,52 +1,15 @@
-import React, {
-  useCallback, useEffect, useState, useRef,
-} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import colors from 'utils/colors';
+import timeElapsed from 'utils/calculateTime';
 
 const Wrapper = styled.div`
   background-color: white;
   padding: 2rem;
   height: 26rem;
   border-top: 1px solid ${colors.borderGrey};
-`;
-
-const thumb = `
-  appearance: none;
-  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  border: 1px solid #000000;
-  height: 36px;
-  width: 16px;
-  border-radius: 3px;
-  background: ${colors.accentGreen};
-  cursor: ns-resize;
-`;
-
-const SliderWrapper = styled.div`
-  display: inline-block;
-  width: 20px;
-  height: 150px;
-  padding: 0;
-
-  > input {
-    appearance: none;
-    color: ${colors.accentGreen};
-    background-color: ${colors.borderGrey};
-    width: 32rem;
-    height: 1px;
-    margin: 0;
-    transform-origin: 75px 75px;
-    transform: rotate(90deg);
-
-    ::-webkit-slider-thumb {
-      ${thumb}
-    }
-    ::-moz-range-thumb {
-      ${thumb}
-    }
-  }
 `;
 
 const ScrollWrapper = styled.div`
@@ -92,74 +55,18 @@ const Info = styled.div`
 const PageInfo = styled.p`
   font-weight: bold;
   font-size: 0.875rem;
+  user-select: none;
 `;
 
 const DateInfo = styled.p`
   font-size: 0.75rem;
   color: ${colors.textGrey};
+  user-select: none;
 `;
 
 const Slider = ({
-  idx, length, catalog, setCursor, threadId, close,
+  idx, length, catalog, setCursor, close,
 }) => {
-  const handleRef = useRef(null);
-  const scrollRef = useRef(null);
-  const [loc, setLoc] = useState(idx);
-  const [isDragging, setIsDragging] = useState(false);
-  const [sliderHeight, setSliderHeight] = useState(0);
-  const [sliderTop, setSliderTop] = useState(0);
-  const [posY, setPosY] = useState(0);
-  const [jumpReady, setJumpReady] = useState(false);
-
-  useEffect(() => {
-    setLoc(idx);
-  }, [idx]);
-  // const handleSliderChange = useCallback((e) => {
-  //   setLoc(Number(e.target.value));
-  // }, []);
-
-  // const handleSliderOnMouseUp = useCallback(() => {
-  //   // setCursor(catalog[loc].postId);
-  //   // window.scrollTo({
-  //   //   behavior: 'auto',
-  //   //   top: threadView.get(catalog[loc].postId),
-  //   // });
-  // }, [catalog, history, loc, setCursor, threadId]);
-
-  const handleOnMouseDown = useCallback((e) => {
-    setIsDragging(true);
-    setPosY(e.clientY);
-  }, []);
-  const handleOnMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-  const handleOnMouseLeave = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-  const handleOnMouseMove = useCallback((e) => {
-    const { clientY } = e;
-    if (isDragging) {
-      setPosY(clientY);
-      setJumpReady(true);
-    }
-  }, [isDragging]);
-
-  useEffect(() => {
-    if (scrollRef.current && (sliderHeight === 0 || sliderTop === 0 || posY === 0)) {
-      setSliderHeight(scrollRef.current.getBoundingClientRect().height);
-      setSliderTop(scrollRef.current.getBoundingClientRect().top);
-      setPosY(sliderTop + (loc / length) * sliderHeight);
-    }
-  }, [length, loc, posY, scrollRef, sliderHeight, sliderTop]);
-
-  useEffect(() => {
-    if (!isDragging && jumpReady) {
-      const newLoc = Math.round((posY - sliderTop) / sliderHeight * length) - 1;
-      setCursor(catalog[newLoc].postId);
-      setJumpReady(false);
-    }
-  }, [catalog, isDragging, jumpReady, length, loc, posY, setCursor, sliderHeight, sliderTop]);
-
   // click outside, close this
   const ref = useRef(null);
   useEffect(() => {
@@ -172,47 +79,98 @@ const Slider = ({
     return () => { document.removeEventListener('click', handleClick); };
   });
 
-  // return (
-  //   <Wrapper>
-  //     <SliderWrapper>
-  //       <input type="range" min="0" max={length} value={loc} step="1" onChange={handleSliderChange} onMouseUp={handleSliderOnMouseUp} />
-  //       max:
-  //       {' '}
-  //       {length}
-  //       , loc:
-  //       {' '}
-  //       {loc}
-  //     </SliderWrapper>
-  //   </Wrapper>
-  // );
-  const page = `${isDragging ? Math.round((posY - sliderTop) / sliderHeight * length) : loc + 1} of ${length} posts`;
-  // const before = isDragging ? ((posY - sliderTop) / sliderHeight) : Math.round(100 * loc / (length - 1)) / 100;
-  const before = (posY - sliderTop) / sliderHeight;
-  const after = 1 - before;
+  const init = {
+    index: idx + 1,
+    progress: idx / (length - 1),
+  };
+  const [state, setState] = useState(init);
+
+  const scrollRef = useRef(null);
+  const handleRef = useRef(null);
+  useEffect(() => {
+    scrollRef.current.rect = scrollRef.current.getBoundingClientRect();
+    handleRef.current.rect = handleRef.current.getBoundingClientRect();
+    scrollRef.current.addEventListener('touchmove', (e) => {
+      dragMove(e.touches[0]);
+      e.preventDefault();
+    }, { passive: false });
+  });
+
+  // drag events
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDragged, setIsDragged] = useState(false);
+  const dragStart = ({ clientY, target }) => {
+    if (handleRef.current.contains(target)) {
+      scrollRef.current.initY = clientY;
+      setIsDragging(true);
+      setIsDragged(true);
+    }
+  };
+  const dragMove = ({ clientY }) => {
+    if (isDragging) {
+      const offset = clientY - scrollRef.current.initY;
+      const { height: rh } = scrollRef.current.rect;
+      const { height: hh } = handleRef.current.rect;
+      let nextProgress = init.progress + offset / (rh - hh);
+      if (nextProgress < 0) {
+        nextProgress = 0;
+      } else if (nextProgress > 1) {
+        nextProgress = 1;
+      }
+      const nextIndex = Math.round(nextProgress * (length - 1) + 1);
+      setState({
+        index: nextIndex,
+        progress: nextProgress,
+      });
+    }
+  };
+  const dragEnd = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      console.log(`set to post id ${catalog[state.index - 1].postId}`);
+      setCursor(catalog[state.index - 1].postId);
+      close();
+    }
+  };
+  const goToOriginPost = () => {
+    setCursor('');
+    close();
+  };
+  const goToLastPost = () => {
+    setCursor(catalog[catalog.length - 1].postId);
+    close();
+  };
+  const index = isDragged ? state.index : init.index;
+  const progress = isDragged ? state.progress : init.progress;
+  const time = timeElapsed(catalog[index - 1].createdAt).formatted;
+
   return (
     <Wrapper ref={ref}>
-      <Head>
+      <Head onClick={goToOriginPost}>
         <FontAwesomeIcon icon="angle-double-up" />
         <span>最早</span>
       </Head>
-      <ScrollWrapper ref={scrollRef}>
-        <PlaceHolder height={`calc(17rem * ${before})`} />
+      <ScrollWrapper
+        ref={scrollRef}
+        onMouseDown={dragStart}
+        onMouseMove={dragMove}
+        onMouseUp={dragEnd}
+        onTouchStart={(e) => { dragStart(e.touches[0]); }}
+        onTouchEnd={dragEnd}
+      >
+        <PlaceHolder height={`calc(17rem * ${progress})`} />
         <Handle
           ref={handleRef}
-          onMouseDown={handleOnMouseDown}
-          onMouseUp={handleOnMouseUp}
-          onMouseLeave={handleOnMouseLeave}
-          onMouseMove={handleOnMouseMove}
         >
           <Bar />
           <Info>
-            <PageInfo>{page}</PageInfo>
-            <DateInfo>2019年7月</DateInfo>
+            <PageInfo>{`${index} of ${length} posts`}</PageInfo>
+            <DateInfo>{time}</DateInfo>
           </Info>
         </Handle>
-        <PlaceHolder height={`calc(17rem * ${after})`} />
+        <PlaceHolder height={`calc(17rem * ${1 - progress})`} />
       </ScrollWrapper>
-      <Head>
+      <Head onClick={goToLastPost}>
         <FontAwesomeIcon icon="angle-double-down" />
         <span>最新</span>
       </Head>
@@ -225,8 +183,8 @@ Slider.propTypes = {
   setCursor: PropTypes.func.isRequired,
   catalog: PropTypes.arrayOf(PropTypes.shape({
     postId: PropTypes.string.isRequired,
+    createdAt: PropTypes.number.isRequired,
   })).isRequired,
-  threadId: PropTypes.string.isRequired,
   close: PropTypes.func.isRequired,
 };
 
