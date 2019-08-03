@@ -236,9 +236,14 @@ const AuthorPosition = ({
 
   const [, setPostId] = useContext(PositionContext);
   useEffect(() => {
-    if (inView && postId) {
-      history.replace(`/t/${threadId}/${postId}`);
-      setPostId(postId);
+    if (inView) {
+      if (postId === '') {
+        history.replace(`/t/${threadId}`);
+      }
+      if (postId) {
+        history.replace(`/t/${threadId}/${postId}`);
+        setPostId(postId);
+      }
     }
   }, [history, inView, postId, setPostId, threadId]);
 
@@ -285,7 +290,7 @@ const Post = ({
       {titleRow}
       <MetaRow>
         <AuthorPosition
-          postId={postId}
+          postId=""
           threadId={threadId}
           anonymous={anonymous}
           author={author}
@@ -337,15 +342,15 @@ const Post = ({
 
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-      {(!inList && !isThread) ? (
-        <HookedCosmeticRouter>
+      <HookedCosmeticRouter>
+        {(!inList && !isThread) ? (
           <>
             {isThread ? '' : postId}
             {post}
           </>
-        </HookedCosmeticRouter>
-      ) : post}
-      {viewThread}
+        ) : post}
+        {viewThread}
+      </HookedCosmeticRouter>
     </Wrapper>
   );
 };
