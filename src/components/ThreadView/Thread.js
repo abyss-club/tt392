@@ -55,20 +55,9 @@ const ScrolledPostWrapper = styled.div`
   }
 `;
 
-const OffsetPosContext = React.createContext();
-const OffsetPosProvider = ({ children }) => {
-  const [posMap, setPosMap] = useState(new Map());
-  return (
-    <OffsetPosContext.Provider value={[posMap, setPosMap]}>
-      {children}
-    </OffsetPosContext.Provider>
-  );
-};
-OffsetPosProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-const OffsetPosWrapper = ({ postId, children, length }) => {
+const OffsetPosWrapper = ({
+  postId, children, length, OffsetPosContext,
+}) => {
   const scrollRef = useRef(null);
   const [, setPosMap] = useContext(OffsetPosContext);
   useEffect(() => {
@@ -88,10 +77,11 @@ OffsetPosWrapper.propTypes = {
   postId: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   length: PropTypes.number.isRequired,
+  OffsetPosContext: PropTypes.shape().isRequired,
 };
 
 const PostWrapper = ({
-  entries, loading, onLoadMore, threadId, catalog,
+  entries, loading, onLoadMore, threadId, catalog, OffsetPosContext,
 }) => (
   <ScrollForMorePosts
     entries={entries}
@@ -100,7 +90,12 @@ const PostWrapper = ({
     catalog={catalog}
   >
     {entries.map(post => (
-      <OffsetPosWrapper key={post.id} postId={post.id} length={entries.length}>
+      <OffsetPosWrapper
+        key={post.id}
+        postId={post.id}
+        length={entries.length}
+        OffsetPosContext={OffsetPosContext}
+      >
         <Post
           isThread={false}
           postId={post.id}
@@ -117,6 +112,7 @@ PostWrapper.propTypes = {
   onLoadMore: PropTypes.func.isRequired,
   threadId: PropTypes.string.isRequired,
   catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  OffsetPosContext: PropTypes.shape().isRequired,
 };
 PostWrapper.whyDidYouRender = true;
 
@@ -134,33 +130,31 @@ PositionProvider.propTypes = {
 };
 
 const Thread = ({
-  data, loading, onLoadMore, setCursor, threadId,
+  data, loading, onLoadMore, setCursor, threadId, OffsetPosContext,
 }) => {
   const { thread } = data;
   console.log({ thread });
   const showOp = thread && (thread.replies.posts.length < 1 || thread.replies.posts[0].id === thread.catalog[0].postId);
   return (
     <ThreadMainContent>
-      <OffsetPosProvider>
-        <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
-          <ThreadViewWrapper>
-            {showOp && <Post isThread {...thread} threadId={threadId} />}
-            <PostWrapper
-              loading={loading}
-              entries={thread ? thread.replies.posts : []}
-              threadId={threadId}
-              onLoadMore={onLoadMore}
-              catalog={thread ? thread.catalog : []}
-            />
-          </ThreadViewWrapper>
-          <Scrollbar
-            catalog={thread ? thread.catalog : []}
-            setCursor={setCursor}
+      <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
+        <ThreadViewWrapper>
+          {showOp && <Post isThread {...thread} threadId={threadId} />}
+          <PostWrapper
+            loading={loading}
+            entries={thread ? thread.replies.posts : []}
             threadId={threadId}
+            onLoadMore={onLoadMore}
+            catalog={thread ? thread.catalog : []}
             OffsetPosContext={OffsetPosContext}
           />
-        </PositionProvider>
-      </OffsetPosProvider>
+        </ThreadViewWrapper>
+        <Scrollbar
+          catalog={thread ? thread.catalog : []}
+          setCursor={setCursor}
+          threadId={threadId}
+        />
+      </PositionProvider>
     </ThreadMainContent>
   );
 };
@@ -172,8 +166,9 @@ Thread.propTypes = {
   loading: PropTypes.bool.isRequired,
   onLoadMore: PropTypes.func.isRequired,
   setCursor: PropTypes.func.isRequired,
+  OffsetPosContext: PropTypes.shape().isRequired,
 };
 Thread.whyDidYouRender = true;
 
 export default Thread;
-export { PositionContext, OffsetPosContext };
+export { PositionContext };

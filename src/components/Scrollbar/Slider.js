@@ -1,6 +1,4 @@
-import React, {
-  useEffect, useState, useRef, useContext,
-} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -67,9 +65,8 @@ const DateInfo = styled.p`
 `;
 
 const Slider = ({
-  idx, length, catalog, setCursor, close, OffsetPosContext,
+  idx, length, catalog, setCursor, close,
 }) => {
-  const [posMap] = useContext(OffsetPosContext);
   // click outside, close this
   const ref = useRef(null);
   useEffect(() => {
@@ -130,32 +127,21 @@ const Slider = ({
   const dragEnd = () => {
     if (isDragging) {
       setIsDragging(false);
-      if (posMap.has(catalog[index - 1].postId)) {
-        window.scrollTo({
-          behaviro: 'smooth',
-          top: posMap.get(catalog[index - 1].postId) - 48,
-        });
-      } else {
-        setCursor(state.index > 1 ? catalog[state.index - 2].postId : '');
-        window.scrollTo({
-          behavior: 'auto',
-          top: 84,
-        });
-      }
+      setCursor(state.index > 1 ? catalog[state.index - 2].postId : '', index - 1);
       close();
     }
   };
   const goToOriginPost = () => {
-    setCursor('');
+    setCursor('', 0);
     close();
   };
   const goToLastPost = () => {
-    setCursor(catalog[catalog.length - 1].postId);
+    setCursor(catalog[catalog.length - 2].postId, length - 1);
     close();
   };
   const index = isDragged ? state.index : init.index;
   const progress = isDragged ? state.progress : init.progress;
-  const time = timeElapsed(catalog[index - 1].createdAt).formatted;
+  const time = timeElapsed(catalog[index - 1].createdAt, index).formatted;
 
   return (
     <Wrapper ref={ref}>
@@ -199,7 +185,6 @@ Slider.propTypes = {
     createdAt: PropTypes.number.isRequired,
   })).isRequired,
   close: PropTypes.func.isRequired,
-  OffsetPosContext: PropTypes.shape().isRequired,
 };
 
 

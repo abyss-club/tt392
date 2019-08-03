@@ -4,7 +4,6 @@ import React, {
 import PropTypes from 'prop-types';
 import { useInView } from 'react-intersection-observer';
 import { LoadMore } from 'styles/Loading';
-import { OffsetPosContext } from 'components/ThreadView/Thread';
 
 const ScrollForMore = ({
   entries, onLoadMore, loading, hasNext, children,
@@ -43,7 +42,6 @@ const ScrollForMorePosts = ({
   entries, onLoadMore, loading, children, catalog,
 }) => {
   const [scrollLoc, setScrollLoc] = useState(0);
-  const [posMap] = useContext(OffsetPosContext);
 
   const [afterRef, afterInView] = useInView({
     threshold: 1.0,

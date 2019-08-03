@@ -58,7 +58,7 @@ const CatalogBtn = styled.button`
 `;
 
 const Scrollbar = ({
-  catalog, setCursor, threadId, OffsetPosContext,
+  catalog, setCursor, threadId,
 }) => {
   const [showSlider, setShowSlider] = useState(false);
   const [postId] = useContext(PositionContext);
@@ -91,7 +91,6 @@ const Scrollbar = ({
           setCursor={setCursor}
           threadId={threadId}
           close={handleClick}
-          OffsetPosContext={OffsetPosContext}
         />
       </>
     );
@@ -108,7 +107,6 @@ Scrollbar.propTypes = {
   catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   setCursor: PropTypes.func.isRequired,
   threadId: PropTypes.string.isRequired,
-  OffsetPosContext: PropTypes.shape().isRequired,
 };
 
 export default Scrollbar;

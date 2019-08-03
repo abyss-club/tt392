@@ -36,8 +36,24 @@ const GET_POST_CATALOG = gql`
   }
 `;
 
+
+const OffsetPosContext = React.createContext();
+const OffsetPosProvider = ({ children }) => {
+  const [posMap, setPosMap] = useState(new Map());
+  return (
+    <OffsetPosContext.Provider value={[posMap, setPosMap]}>
+      {children}
+    </OffsetPosContext.Provider>
+  );
+};
+OffsetPosProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 const ThreadViewQuery = ({ threadId, postId }) => {
   const { history, location } = useRouter();
+  const [posMap, setPosMap] = useContext(OffsetPosContext);
+  console.log('render threadqueryview');
   // const [errCode, setErrCode] = useState('');
   // const handleOnErr = useCallback((e) => {
   //   console.log(e);
@@ -93,16 +109,29 @@ const ThreadViewQuery = ({ threadId, postId }) => {
     },
   }), [fetchMore, data, threadId]);
 
-  const setCursor = useCallback((cursor) => {
-    onLoadMore({ type: 'after', skipping: true, toCursor: cursor });
-  }, [onLoadMore]);
+  const catalog = data.thread ? data.thread.catalog : null;
+  const setCursor = useCallback((cursor, index) => {
+    if (posMap.has(catalog[index].postId)) {
+      window.scrollTo({
+        behaviro: 'smooth',
+        top: posMap.get(catalog[index].postId) - 48,
+      });
+    } else {
+      onLoadMore({ type: 'after', skipping: true, toCursor: cursor });
+      setPosMap(new Map());
+      window.scrollTo({
+        behavior: 'auto',
+        top: 84,
+      });
+    }
+  }, [posMap, catalog, setPosMap, onLoadMore]);
 
   if ((location.state || {}).refetchThread) {
     refetch();
     history.replace({ state: { refetchThread: false } });
   }
 
-  return !error && (
+  return useMemo(() => !error && (
     <Thread
       data={data}
       loading={loading}
@@ -110,8 +139,9 @@ const ThreadViewQuery = ({ threadId, postId }) => {
       setCursor={setCursor}
       threadId={threadId}
       onLoadMore={onLoadMore}
+      OffsetPosContext={OffsetPosContext}
     />
-  );
+  ), [data, error, loading, onLoadMore, refetch, setCursor, threadId]);
 };
 ThreadViewQuery.propTypes = {
   threadId: PropTypes.string.isRequired,
@@ -149,10 +179,12 @@ const PostQuery = ({ postId, threadId }) => {
     }
   }, [data, errCode, history, loading, postId, startLoading, stopLoading]);
   return useMemo(() => !errCode && (
-    <ThreadViewQuery
-      threadId={threadId}
-      postId={offsetPostId}
-    />
+    <OffsetPosProvider>
+      <ThreadViewQuery
+        threadId={threadId}
+        postId={offsetPostId}
+      />
+    </OffsetPosProvider>
   ), [errCode, offsetPostId, threadId]);
 };
 PostQuery.propTypes = {
