@@ -129,6 +129,10 @@ const Slider = ({
       setIsDragging(false);
       console.log(`set to post id ${catalog[state.index - 1].postId}`);
       setCursor(catalog[state.index - 1].postId);
+      window.scrollTo({
+        behavior: 'auto',
+        top: 84,
+      });
       close();
     }
   };
