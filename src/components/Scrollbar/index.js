@@ -63,8 +63,6 @@ const Scrollbar = ({
   const [showSlider, setShowSlider] = useState(false);
   const [postId] = useContext(PositionContext);
   const idx = catalog && postId ? catalog.findIndex(ele => ele.postId === postId) : 0;
-  console.log('cal idx', { catalog, postId, idx });
-
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
   }, []);
