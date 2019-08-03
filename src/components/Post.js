@@ -68,18 +68,6 @@ const MetaRow = styled.div`
   margin-bottom: .5rem;
 `;
 
-const MoreBtn = styled.button`
-  margin: 0 0 0 auto;
-  background-color: unset;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  padding: 0;
-  font-size: 1.5em;
-  line-height: 0;
-  visibility: hidden;
-`;
-
 const Title = styled.div`
   width: 100%;
   font-family: ${fontFamilies.system};
@@ -225,6 +213,10 @@ AuthorPosition.propTypes = {
   threadId: PropTypes.string.isRequired,
   anonymous: PropTypes.bool.isRequired,
   author: PropTypes.string.isRequired,
+  PositionContext: PropTypes.shape({}),
+};
+AuthorPosition.defaultProps = {
+  PositionContext: {},
 };
 
 const Post = ({
@@ -310,14 +302,8 @@ const Post = ({
 
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-
-        {(!inList && !isThread) ? (
-          <>
-            {isThread ? '' : postId}
-            {post}
-          </>
-        ) : post}
-        {viewThread}
+      {post}
+      {viewThread}
     </Wrapper>
   );
 };
