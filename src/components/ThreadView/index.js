@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
 import QuotedPostsContext from 'providers/QuotedPosts';
+import OffsetPosContext from 'providers/OffsetPos';
 import FloatButton from 'styles/FloatButton';
 import { useLoadingBar } from 'styles/Loading';
 import { useRouter } from 'utils/routerHooks';
@@ -36,20 +37,6 @@ const GET_POST_CATALOG = gql`
   }
 `;
 
-
-const OffsetPosContext = React.createContext();
-const OffsetPosProvider = ({ children }) => {
-  const [posMap, setPosMap] = useState(new Map());
-  return (
-    <OffsetPosContext.Provider value={[posMap, setPosMap]}>
-      {children}
-    </OffsetPosContext.Provider>
-  );
-};
-OffsetPosProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
 const ThreadViewQuery = ({ threadId, postId }) => {
   const { history, location } = useRouter();
   const [posMap, setPosMap] = useContext(OffsetPosContext);
@@ -59,6 +46,11 @@ const ThreadViewQuery = ({ threadId, postId }) => {
   //   console.log(e);
   //   setErrCode(e.graphQLErrors[0].extensions.code);
   // }, []);
+
+  useEffect(() => {
+    setPosMap(new Map());
+  }, [threadId, setPosMap]);
+
   const {
     data, loading, fetchMore, refetch, error,
   } = useQuery(THREAD_VIEW, {
@@ -139,7 +131,6 @@ const ThreadViewQuery = ({ threadId, postId }) => {
       setCursor={setCursor}
       threadId={threadId}
       onLoadMore={onLoadMore}
-      OffsetPosContext={OffsetPosContext}
     />
   ), [data, error, loading, onLoadMore, refetch, setCursor, threadId]);
 };
@@ -179,12 +170,10 @@ const PostQuery = ({ postId, threadId }) => {
     }
   }, [data, errCode, history, loading, postId, startLoading, stopLoading]);
   return useMemo(() => !errCode && (
-    <OffsetPosProvider>
-      <ThreadViewQuery
-        threadId={threadId}
-        postId={offsetPostId}
-      />
-    </OffsetPosProvider>
+    <ThreadViewQuery
+      threadId={threadId}
+      postId={offsetPostId}
+    />
   ), [errCode, offsetPostId, threadId]);
 };
 PostQuery.propTypes = {

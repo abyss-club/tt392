@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import MainContent, { breakpoint, maxWidth } from 'styles/MainContent';
 import Post from 'components/Post';
-
+import OffsetPosContext from 'providers/OffsetPos';
 import colors from 'utils/colors';
 import Scrollbar from 'components/Scrollbar';
 import { ScrollForMorePosts } from 'components/ScrollForMore';
@@ -55,11 +55,24 @@ const ScrolledPostWrapper = styled.div`
   }
 `;
 
+const PositionContext = React.createContext([]);
+const PositionProvider = ({ children }) => {
+  const [postId, setPostId] = useState(0);
+  return (
+    <PositionContext.Provider value={[postId, setPostId]}>
+      {children}
+    </PositionContext.Provider>
+  );
+};
+PositionProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 const OffsetPosWrapper = ({
-  postId, children, length, OffsetPosContext,
+  postId, children, length,
 }) => {
-  const scrollRef = useRef(null);
   const [, setPosMap] = useContext(OffsetPosContext);
+  const scrollRef = useRef(null);
   useEffect(() => {
     setPosMap((prevMap) => {
       prevMap.set(postId, scrollRef.current.offsetTop);
@@ -77,11 +90,10 @@ OffsetPosWrapper.propTypes = {
   postId: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
   length: PropTypes.number.isRequired,
-  OffsetPosContext: PropTypes.shape().isRequired,
 };
 
 const PostWrapper = ({
-  entries, loading, onLoadMore, threadId, catalog, OffsetPosContext,
+  entries, loading, onLoadMore, threadId, catalog,
 }) => (
   <ScrollForMorePosts
     entries={entries}
@@ -94,12 +106,12 @@ const PostWrapper = ({
         key={post.id}
         postId={post.id}
         length={entries.length}
-        OffsetPosContext={OffsetPosContext}
       >
         <Post
           isThread={false}
           postId={post.id}
           threadId={threadId}
+          PositionContext={PositionContext}
           {...post}
         />
       </OffsetPosWrapper>
@@ -112,25 +124,11 @@ PostWrapper.propTypes = {
   onLoadMore: PropTypes.func.isRequired,
   threadId: PropTypes.string.isRequired,
   catalog: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  OffsetPosContext: PropTypes.shape().isRequired,
 };
 PostWrapper.whyDidYouRender = true;
 
-const PositionContext = React.createContext();
-const PositionProvider = ({ children }) => {
-  const [postId, setPostId] = useState(0);
-  return (
-    <PositionContext.Provider value={[postId, setPostId]}>
-      {children}
-    </PositionContext.Provider>
-  );
-};
-PositionProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
 const Thread = ({
-  data, loading, onLoadMore, setCursor, threadId, OffsetPosContext,
+  data, loading, onLoadMore, setCursor, threadId,
 }) => {
   const { thread } = data;
   console.log({ thread });
@@ -139,14 +137,13 @@ const Thread = ({
     <ThreadMainContent>
       <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
         <ThreadViewWrapper>
-          {showOp && <Post isThread {...thread} threadId={threadId} />}
+          {showOp && <Post isThread {...thread} threadId={threadId} PositionContext={PositionContext} />}
           <PostWrapper
             loading={loading}
             entries={thread ? thread.replies.posts : []}
             threadId={threadId}
             onLoadMore={onLoadMore}
             catalog={thread ? thread.catalog : []}
-            OffsetPosContext={OffsetPosContext}
           />
         </ThreadViewWrapper>
         <Scrollbar
@@ -166,7 +163,6 @@ Thread.propTypes = {
   loading: PropTypes.bool.isRequired,
   onLoadMore: PropTypes.func.isRequired,
   setCursor: PropTypes.func.isRequired,
-  OffsetPosContext: PropTypes.shape().isRequired,
 };
 Thread.whyDidYouRender = true;
 

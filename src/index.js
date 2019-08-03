@@ -9,6 +9,7 @@ import { LoginProvider } from 'providers/Login';
 import { DraftProvider } from 'providers/Draft';
 import { TagsProvider } from 'providers/Tags';
 import { QuotedPostsProvider } from 'providers/QuotedPosts';
+import { OffsetPosProvider } from 'providers/OffsetPos';
 import { RefetchProvider } from 'providers/Refetch';
 import { HookedLoadingBar } from 'styles/Loading';
 import {
@@ -45,11 +46,13 @@ const Root = () => (
               <LoginProvider reducer={login}>
                 <NotiProvider reducer={notification}>
                   <QuotedPostsProvider>
-                    <ApolloProvider client={client}>
-                      <ScrollToTop>
-                        <App />
-                      </ScrollToTop>
-                    </ApolloProvider>
+                    <OffsetPosProvider>
+                      <ApolloProvider client={client}>
+                        <ScrollToTop>
+                          <App />
+                        </ScrollToTop>
+                      </ApolloProvider>
+                    </OffsetPosProvider>
                   </QuotedPostsProvider>
                 </NotiProvider>
               </LoginProvider>

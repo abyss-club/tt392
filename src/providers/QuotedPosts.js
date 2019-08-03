@@ -1,7 +1,7 @@
 import React, { createContext, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const QuotedPostsContext = createContext({});
+const QuotedPostsContext = createContext([]);
 const QuotedPostsProvider = ({ children }) => {
   const [quotedPosts, setQuotedPosts] = useState(new Set());
   return (

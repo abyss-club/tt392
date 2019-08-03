@@ -53,7 +53,7 @@ const LoadingWrapper = styled.div`
   animation: ${frames} 1.5s ease infinite;
 `;
 
-const LoadingContext = React.createContext({});
+const LoadingContext = React.createContext([]);
 
 const HookedLoadingBar = ({ children }) => {
   const [show, setShow] = useState(0);

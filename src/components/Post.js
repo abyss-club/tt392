@@ -9,15 +9,12 @@ import { useInView } from 'react-intersection-observer';
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
-import { PositionContext } from 'components/ThreadView/Thread';
 import QuotedPostsContext from 'providers/QuotedPosts';
 import { breakpoint } from 'styles/MainContent';
 import { HookedCosmeticRouter, useCosmeticRouter } from 'utils/cosmeticHistory';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
-
-import More from 'components/icons/More';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : 'white')};
@@ -194,39 +191,8 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 
-// const PostWrapper = ({
-//   children, postId, createdAt, threadId,
-// }) => {
-//   const { history } = useCosmeticRouter();
-//   const [ref, inView] = useInView({
-//     threshold: 1,
-//     rootMargin: '0% 0% -60% 0%',
-//   });
-
-//   const [, setPostId] = useContext(PositionContext);
-//   useEffect(() => {
-//     if (inView && postId) {
-//       history.replace(`/t/${threadId}/${postId}`);
-//       setPostId(postId);
-//     }
-//   }, [createdAt, history, inView, postId, setPostId, threadId]);
-
-//   return (
-//     <div ref={ref}>
-//       {children}
-//     </div>
-//   );
-// };
-// PostWrapper.propTypes = {
-//   children: PropTypes.node.isRequired,
-//   postId: PropTypes.string.isRequired,
-//   threadId: PropTypes.string.isRequired,
-//   createdAt: PropTypes.number.isRequired,
-// };
-// PostWrapper.whyDidYouRender = true;
-
 const AuthorPosition = ({
-  anonymous, author, postId, threadId,
+  anonymous, author, postId, threadId, PositionContext,
 }) => {
   const { history } = useCosmeticRouter();
   const [ref, inView] = useInView({
@@ -263,7 +229,7 @@ AuthorPosition.propTypes = {
 
 const Post = ({
   isThread, title, anonymous, author, createdAt, content, quotes, postId, threadId, replyCount,
-  mainTag, subTags, hasReplies, inList,
+  mainTag, subTags, hasReplies, inList, PositionContext,
 }) => {
   const titleRow = isThread ? (
     <Title inList={inList}>
@@ -281,6 +247,18 @@ const Post = ({
       </Link>
     </ViewThread>
   );
+
+  const authorRow = inList ? (
+    <AuthorWrapper anonymous={anonymous}>
+      {anonymous && '匿名'}
+      {author}
+    </AuthorWrapper>
+  ) : (
+    <HookedCosmeticRouter>
+      <AuthorPosition PositionContext={PositionContext} postId={isThread ? '' : postId} threadId={threadId} anonymous={anonymous} author={author} />
+    </HookedCosmeticRouter>
+  );
+
   const topRow = isThread ? (
     <TopRowWrapper inList={inList}>
       <TagRow>
@@ -289,12 +267,7 @@ const Post = ({
       </TagRow>
       {titleRow}
       <MetaRow>
-        <AuthorPosition
-          postId=""
-          threadId={threadId}
-          anonymous={anonymous}
-          author={author}
-        />
+        {authorRow}
         <PublishTime>
           {' '}
           ·
@@ -306,12 +279,7 @@ const Post = ({
   ) : (
     <TopRowWrapper inList={inList}>
       <MetaRow>
-        <AuthorPosition
-          postId={postId}
-          threadId={threadId}
-          anonymous={anonymous}
-          author={author}
-        />
+        {authorRow}
         <PublishTime>
           {' '}
           ·
@@ -342,7 +310,7 @@ const Post = ({
 
   return (
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
-      <HookedCosmeticRouter>
+
         {(!inList && !isThread) ? (
           <>
             {isThread ? '' : postId}
@@ -350,7 +318,6 @@ const Post = ({
           </>
         ) : post}
         {viewThread}
-      </HookedCosmeticRouter>
     </Wrapper>
   );
 };
@@ -370,6 +337,7 @@ Post.propTypes = {
   inList: PropTypes.bool,
   hasReplies: PropTypes.bool,
   replyCount: PropTypes.number,
+  PositionContext: PropTypes.shape({}),
 };
 Post.defaultProps = {
   postId: null,
@@ -382,6 +350,7 @@ Post.defaultProps = {
   inList: false,
   hasReplies: false,
   replyCount: 0,
+  PositionContext: {},
 };
 
 export default Post;

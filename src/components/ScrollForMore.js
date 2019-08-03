@@ -91,8 +91,9 @@ const ScrollForMorePosts = ({
     prevBeforeInView.current = beforeInView;
   }, [beforeInView, entries, loading, onLoadMore, catalog, scrollLoc]);
 
-  if (catalog.length === 0) return null;
   if (!entries) return <LoadMore />;
+  if (catalog.length === 0) return null;
+
   return (
     <>
       {(entries.length < 1 || catalog[0].postId !== entries[0].id)
