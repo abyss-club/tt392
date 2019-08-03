@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ContentWrapper } from 'styles/MainContent';
 import colors from 'utils/colors';
 import { PositionContext } from 'components/ThreadView/Thread';
-// import Slider from './Slider';
+import Slider from './Slider';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 `;
 
 const Content = styled(ContentWrapper)`
-  height: calc(3rem);
+  height: ${props => (props.showSlider ? '26rem' : '3rem')};
   background-color: white;
 `;
 
@@ -60,31 +60,47 @@ const CatalogBtn = styled.button`
 const Scrollbar = ({
   catalog, setCursor, threadId,
 }) => {
-  const [showSlider, setShowSlider] = useState(true);
+  const [showSlider, setShowSlider] = useState(false);
   const [postId] = useContext(PositionContext);
-  const idx = catalog ? catalog.findIndex(ele => ele.postId === postId) : 0;
+  const idx = catalog && postId ? catalog.findIndex(ele => ele.postId === postId) : 0;
+  console.log('cal idx', { catalog, postId, idx });
 
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
   }, []);
-  const pageNum = `${idx + 1} of ${catalog.length} posts`;
-  const percent = Math.round(1000 * (idx + 1) / catalog.length) / 10;
-  /*
-   * {showSlider &&
-   * <Slider idx={idx} length={catalog.length} catalog={catalog}
-   * setCursor={setCursor} threadId={threadId}/>}
-   * <button type="button" onClick={handleClick}>show slider</button>
-   */
-  return (
-    <Wrapper>
-      <Content>
+  let content;
+  if (!showSlider) {
+    const pageNum = `${idx + 1} of ${catalog.length} posts`;
+    const percent = Math.round(1000 * (idx + 1) / catalog.length) / 10;
+    content = (
+      <>
         <ProgressBar percent={percent} />
         <PageNumber>
-          <CatalogBtn>
+          <CatalogBtn onClick={handleClick}>
             {pageNum}
             <PagesIcon icon="sort" />
           </CatalogBtn>
         </PageNumber>
+      </>
+    );
+  } else {
+    content = (
+      <>
+        <Slider
+          idx={idx}
+          length={catalog.length}
+          catalog={catalog}
+          setCursor={setCursor}
+          threadId={threadId}
+          close={handleClick}
+        />
+      </>
+    );
+  }
+  return (
+    <Wrapper>
+      <Content showSlider={showSlider}>
+        {content}
       </Content>
     </Wrapper>
   );
