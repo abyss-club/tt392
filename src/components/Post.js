@@ -194,12 +194,43 @@ QuoteSelectorWrapper.defaultProps = {
 
 const titlePlaceholder = '无题';
 
-const PostWrapper = ({
-  children, postId, createdAt, threadId,
+// const PostWrapper = ({
+//   children, postId, createdAt, threadId,
+// }) => {
+//   const { history } = useCosmeticRouter();
+//   const [ref, inView] = useInView({
+//     threshold: 1,
+//     rootMargin: '0% 0% -60% 0%',
+//   });
+
+//   const [, setPostId] = useContext(PositionContext);
+//   useEffect(() => {
+//     if (inView && postId) {
+//       history.replace(`/t/${threadId}/${postId}`);
+//       setPostId(postId);
+//     }
+//   }, [createdAt, history, inView, postId, setPostId, threadId]);
+
+//   return (
+//     <div ref={ref}>
+//       {children}
+//     </div>
+//   );
+// };
+// PostWrapper.propTypes = {
+//   children: PropTypes.node.isRequired,
+//   postId: PropTypes.string.isRequired,
+//   threadId: PropTypes.string.isRequired,
+//   createdAt: PropTypes.number.isRequired,
+// };
+// PostWrapper.whyDidYouRender = true;
+
+const AuthorPosition = ({
+  anonymous, author, postId, threadId,
 }) => {
   const { history } = useCosmeticRouter();
   const [ref, inView] = useInView({
-    threshold: 1,
+    threshold: 0.5,
     rootMargin: '0% 0% -60% 0%',
   });
 
@@ -209,21 +240,21 @@ const PostWrapper = ({
       history.replace(`/t/${threadId}/${postId}`);
       setPostId(postId);
     }
-  }, [createdAt, history, inView, postId, setPostId, threadId]);
+  }, [history, inView, postId, setPostId, threadId]);
 
   return (
-    <div ref={ref}>
-      {children}
-    </div>
+    <AuthorWrapper anonymous={anonymous} ref={ref}>
+      {anonymous && '匿名'}
+      {author}
+    </AuthorWrapper>
   );
 };
-PostWrapper.propTypes = {
-  children: PropTypes.node.isRequired,
+AuthorPosition.propTypes = {
   postId: PropTypes.string.isRequired,
   threadId: PropTypes.string.isRequired,
-  createdAt: PropTypes.number.isRequired,
+  anonymous: PropTypes.bool.isRequired,
+  author: PropTypes.string.isRequired,
 };
-// PostWrapper.whyDidYouRender = true;
 
 const Post = ({
   isThread, title, anonymous, author, createdAt, content, quotes, postId, threadId, replyCount,
@@ -234,15 +265,6 @@ const Post = ({
       <Link to={`/t/${threadId}`}>{title || titlePlaceholder}</Link>
     </Title>
   ) : null;
-  const authorText = anonymous ? (
-    <AuthorWrapper anonymous>
-      匿名
-      {author}
-    </AuthorWrapper>
-  ) : (
-    <AuthorWrapper>{author}</AuthorWrapper>
-  );
-
   const quoteSelector = (!isThread && !inList) && (
     <QuoteSelectorWrapper postId={postId} />
   );
@@ -259,13 +281,19 @@ const Post = ({
       <TagRow>
         <Tag text={mainTag} isMain isCompact />
         {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
-        <MoreBtn><More /></MoreBtn>
       </TagRow>
       {titleRow}
       <MetaRow>
-        {authorText}
+        <AuthorPosition
+          postId={postId}
+          threadId={threadId}
+          anonymous={anonymous}
+          author={author}
+        />
         <PublishTime>
-          &nbsp;·&nbsp;
+          {' '}
+          ·
+          {' '}
           {timeElapsed(createdAt).formatted}
         </PublishTime>
       </MetaRow>
@@ -273,7 +301,12 @@ const Post = ({
   ) : (
     <TopRowWrapper inList={inList}>
       <MetaRow>
-        {authorText}
+        <AuthorPosition
+          postId={postId}
+          threadId={threadId}
+          anonymous={anonymous}
+          author={author}
+        />
         <PublishTime>
           {' '}
           ·
@@ -281,7 +314,6 @@ const Post = ({
           {timeElapsed(createdAt).formatted}
         </PublishTime>
         {quoteSelector}
-        <MoreBtn><More /></MoreBtn>
       </MetaRow>
     </TopRowWrapper>
   );
@@ -307,10 +339,10 @@ const Post = ({
     <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
       {(!inList && !isThread) ? (
         <HookedCosmeticRouter>
-          <PostWrapper postId={isThread ? '' : postId} createdAt={createdAt} threadId={threadId}>
+          <>
             {isThread ? '' : postId}
             {post}
-          </PostWrapper>
+          </>
         </HookedCosmeticRouter>
       ) : post}
       {viewThread}
