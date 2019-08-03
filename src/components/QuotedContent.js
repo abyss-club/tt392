@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import colors from 'utils/colors';
 import timeElapsed from 'utils/calculateTime';
 import fontFamilies from 'utils/fontFamilies';
+import DraftContext from 'providers/Draft';
+import Cross from 'components/icons/Cross';
 
 const QuotedContentArea = styled.article`
   font-size: .75rem;
@@ -12,7 +14,7 @@ const QuotedContentArea = styled.article`
 
   display: inline-flex;
   flex-flow: row wrap;
-  padding: 1rem;
+  padding: .5rem;
 
   ${(props) => {
     if (props.inNotiReply) {
@@ -54,13 +56,14 @@ const QuotedContentArea = styled.article`
   ${(props) => {
     if (props.inList) return 'margin: 0 1rem .75rem;';
     if (props.inDraft) return 'margin: 0 0 .75rem;';
+    if (props.inUser) return 'margin: 0 1rem .75rem;';
     if (props.inNotiReply || props.inNotiQuote) return 'margin: 0 1rem;';
     return 'margin: 0 1.5rem .75rem;';
   }}
   ${(props) => {
     if (props.inList) return 'width: calc(100% - 2rem);';
     if (props.inDraft) return 'width: 100%;';
-    if (props.inNotiReply || props.inNotiQuote) return 'width: calc(100% - 2rem);';
+    if (props.inNotiReply || props.inNotiQuote || props.inUser) return 'width: calc(100% - 2rem);';
     return 'width: calc(100% - 3rem);';
   }}
 `;
@@ -74,10 +77,16 @@ const QuotedContentArea = styled.article`
 const QuotedMeta = styled.div`
   width: 100%;
   color: ${colors.regularGrey};
-  border: none
-  cursor: pointer;
+  border: none;
   outline: none;
   border-radius: .3125rem;
+`;
+
+const QuotedInDraftWrapper = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+
+  width: calc(100% - 1rem);
 `;
 
 const QuotedText = styled.p`
@@ -89,12 +98,32 @@ const QuotedText = styled.p`
 
 const AuthorWrapper = styled.span`
   color: ${colors.regularBlack};
-  font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
+  font-weight: 600;
+  font-family: ${props => (props.anonymous ? '"Roboto Mono", monospace' : fontFamilies.system)};
   line-height: ${props => (props.anonymous ? '1.3' : 'unset')};
 `;
 
+const DelBtn = styled.button`
+  border: none;
+  appearance: none;
+  background: none;
+  line-height: 0;
+  padding: 0 1em;
+  margin: 0 -1em;
+  cursor: pointer;
+
+  > svg {
+    > path {
+      stroke: ${colors.regularGrey};
+    }
+  }
+`;
+
 const authorText = ({ anonymous, author }) => (anonymous ? (
-  <AuthorWrapper anonymous>匿名{author}</AuthorWrapper>
+  <AuthorWrapper anonymous>
+    匿名
+    {author}
+  </AuthorWrapper>
 ) : (
   <AuthorWrapper>{author}</AuthorWrapper>
 ));
@@ -104,14 +133,14 @@ authorText.propTypes = {
 };
 
 const QuotedContent = ({
-  quotes, inList, inDraft, inNotiReply, inNotiQuote,
+  quotes, inList, inNotiReply, inNotiQuote, inUser,
 }) => (quotes) && quotes.map(quote => (
   <QuotedContentArea
     key={quote.id}
     inList={inList}
-    inDraft={inDraft}
     inNotiReply={inNotiReply}
     inNotiQuote={inNotiQuote}
+    inUser={inUser}
   >
     <QuotedMeta>
       {authorText({
@@ -130,6 +159,42 @@ QuotedContent.propTypes = {
   inDraft: PropTypes.bool,
   inNotiQuote: PropTypes.bool,
   inNotiReply: PropTypes.bool,
+  inUser: PropTypes.bool,
+};
+
+const QuotedInDraft = ({ quote }) => {
+  const [, dispatch] = useContext(DraftContext);
+
+  const handleClick = useCallback(() => {
+    dispatch({ type: 'REMOVE_QUOTEID', quoteId: quote.id });
+  }, [dispatch, quote.id]);
+
+  return (
+    <QuotedContentArea inDraft>
+      <QuotedInDraftWrapper>
+        <QuotedMeta>
+          {authorText({
+            anonymous: quote.anonymous,
+            author: quote.author,
+          })}
+          {' · '}
+          {timeElapsed(quote.createdAt).formatted}
+        </QuotedMeta>
+        <QuotedText>{quote.content}</QuotedText>
+      </QuotedInDraftWrapper>
+      <DelBtn type="button" onClick={handleClick}><Cross /></DelBtn>
+    </QuotedContentArea>
+  );
+};
+QuotedInDraft.propTypes = {
+  quote: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    anonymous: PropTypes.bool.isRequired,
+    author: PropTypes.string.isRequired,
+    createdAt: PropTypes.number.isRequired,
+    content: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default QuotedContent;
+export { QuotedInDraft };

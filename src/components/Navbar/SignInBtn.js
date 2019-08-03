@@ -24,7 +24,7 @@ const SignInText = styled.p`
 const SignInBtn = ({ profile }) => {
   if ((profile.email || '') !== '') {
     return (
-      <Link to="/profile/">
+      <Link to="/profile/" title="Profile">
         <IconWrapper />
       </Link>
     );

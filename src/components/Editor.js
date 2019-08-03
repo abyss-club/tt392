@@ -1,16 +1,17 @@
 import React, {
-  forwardRef, useState, useImperativeHandle, createRef,
+  forwardRef, useState, useImperativeHandle, createRef, useContext,
 } from 'react';
-import PropTypes from 'prop-types';
 import isURL from 'validator/lib/isURL';
 import styled from 'styled-components';
+
+import DraftContext from 'providers/Draft';
 
 const Wrapper = styled.div`
   min-height: 6em;
   font-size: .875em;
   width: 100%;
   @media screen and (-webkit-min-device-pixel-ratio:0) {
-    *[contenteditable="true"] {
+    textarea {
       font-size: 16px;
     }
   }
@@ -24,19 +25,19 @@ const ContentArea = styled.textarea`
   resize: none;
 `;
 
-const TextEditor = forwardRef(({ text, save }, ref) => {
+const TextEditor = forwardRef((_, ref) => {
   // Set the initial value when the app is first constructed
-  const [value, setValue] = useState(text);
   const baseRow = 2;
   const [row, setRow] = useState(baseRow);
   const textareaRef = createRef();
+
+  const [{ content }, dispatch] = useContext(DraftContext);
 
   // On change, update the app's React state with the new editor value.
   const onChange = (e) => {
     // setTimeout(setRow(baseRow), 0);
     resize();
-    setValue(e.target.value);
-    save(value);
+    dispatch({ type: 'SET_CONTENT', content: e.target.value });
   };
 
   const resize = () => {
@@ -56,39 +57,38 @@ const TextEditor = forwardRef(({ text, save }, ref) => {
       const insertText = ({ description, url }) => (type === 'link' ? `[${description || '标题'}](${url || ''})` : `![${description || '描述'}](${url || ''})`);
 
       const { selectionStart, selectionEnd } = getSelection();
-      let newVal = value;
+      let newVal = content;
       const newRange = { start: 0, end: 0 };
 
       // when nothing is selected
       if (selectionStart === selectionEnd) {
-        if (selectionStart === value.length) {
-          newVal = `${value} ${insertText({})}`;
+        if (selectionStart === content.length) {
+          newVal = `${content} ${insertText({})}`;
         } else {
-          newVal = `${value.substring(0, selectionStart)} ${insertText({})} ${value.substring(selectionStart, value.length)}`;
+          newVal = `${content.substring(0, selectionStart)} ${insertText({})} ${content.substring(selectionStart, content.length)}`;
         }
         // trying to manipulate cursor selection
         newRange.start = selectionStart - 2;
         newRange.end = selectionStart - 2;
       } else {
         // when something is selected
-        const selectedText = value.slice(selectionStart, selectionEnd);
+        const selectedText = content.slice(selectionStart, selectionEnd);
         // if selection is a URL, insert '[Title](${selection})'
         if (isURL(selectedText, { require_protocol: true })) {
-          newVal = `${value.substring(0, selectionStart)} ${insertText({ url: selectedText })} ${value.substring(selectionEnd, value.length)}`;
+          newVal = `${content.substring(0, selectionStart)} ${insertText({ url: selectedText })} ${content.substring(selectionEnd, content.length)}`;
           // try to manipulate cursor selection
           newRange.start = selectionStart - type === 'link' ? 7 : 13;
           newRange.end = selectionStart - 2;
         } else {
           // if selection isn't a URL, insert '[${selection}]()'
-          newVal = `${value.substring(0, selectionStart)} ${insertText({ description: selectedText })} ${value.substring(selectionEnd, value.length)}`;
+          newVal = `${content.substring(0, selectionStart)} ${insertText({ description: selectedText })} ${content.substring(selectionEnd, content.length)}`;
           // try to manipulate cursor selection
           newRange.start = selectionEnd + type === 'link' ? 2 : 3;
           newRange.end = selectionStart + type === 'link' ? 2 : 3;
         }
       }
 
-      setValue(newVal);
-      save(newVal);
+      dispatch({ type: 'SET_CONTENT', content: newVal });
 
       // currently broken for unknown reason
       // textareaRef.current.setSelectionRange(newRange.start, newRange.end);
@@ -101,7 +101,7 @@ const TextEditor = forwardRef(({ text, save }, ref) => {
     <Wrapper>
       <ContentArea
         ref={textareaRef}
-        value={value}
+        value={content}
         onChange={onChange}
         placeholder="说点什么…"
         rows={row}
@@ -111,10 +111,5 @@ const TextEditor = forwardRef(({ text, save }, ref) => {
     </Wrapper>
   );
 });
-
-TextEditor.propTypes = {
-  text: PropTypes.string.isRequired,
-  save: PropTypes.func.isRequired,
-};
 
 export default TextEditor;

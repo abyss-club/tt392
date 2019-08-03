@@ -7,15 +7,26 @@ import config from 'config';
 
 export default new ApolloClient({
   link: ApolloLink.from([
-    onError(({ graphQLErrors, networkError }) => {
+    onError(({
+      forward, graphQLErrors, networkError, operation,
+    }) => {
       if (graphQLErrors) {
-        graphQLErrors.map(({ message, locations, path }) =>
-          console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`));
+        graphQLErrors.forEach(({ message, locations, path }) => {
+          /* eslint-disable */
+          console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
+          /* eslint-enable */
+          // TODO: global error components
+        });
       }
-      if (networkError) console.log(`[Network error]: ${networkError}`);
+      if (networkError) {
+        if (networkError.statusCode >= 500) {
+          window.location = '/error/NETWORK_ERROR';
+        }
+        forward(operation);
+      }
     }),
     new HttpLink({
-      uri: `${config.apiPrefix}/graphql/`,
+      uri: `${config.apiPrefix}/graphql`,
       credentials: 'include',
       fetchOptions: {
         mode: 'cors',

@@ -2,8 +2,13 @@ module.exports = {
   "extends": "airbnb",
   "plugins": [
     "react-hooks",
+    "graphql",
   ],
   "rules": {
+    "graphql/template-strings": ['error', {
+      env: 'apollo',
+      schemaJson: require('./schema.json'),
+    }],
     "react/jsx-filename-extension": [1, {
       "extensions": [".js", ".jsx"]
     }],
@@ -17,7 +22,7 @@ module.exports = {
       }
     }],
     "no-use-before-define": [0, {}],
-    "no-underscore-dangle": ["error", {"allow": ["__sharethis__"]}],
+    "no-underscore-dangle": ["error", {"allow": ["__sharethis__", "__typename"]}],
     "strict": 0,
     "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
     "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies

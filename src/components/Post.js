@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Link, withRouter } from 'react-router-dom';
+import { useRouter } from 'utils/routerHooks';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useInView } from 'react-intersection-observer';
 
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
+import QuotedPostsContext from 'providers/QuotedPosts';
 import { breakpoint } from 'styles/MainContent';
+import { HookedCosmeticRouter, useCosmeticRouter } from 'utils/cosmeticHistory';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
-
-import More from 'components/icons/More';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : 'white')};
@@ -21,7 +23,7 @@ const Wrapper = styled.div`
     content: "";
     display: block;
     ${props => (props.inList ? 'width: calc(100% - 2rem);' : 'width: calc(100% - 3rem);')}
-    ${props => props.isThread || `border-bottom: 1px solid ${colors.borderGrey};`}
+    ${props => (((props.inList && !props.hasReplies) && !(!props.isThread && props.inList)) ? '' : `border-bottom: 1px solid ${colors.borderGrey};`)}
     ${props => (props.inList ? 'margin: 0 1rem;' : 'margin: 0 1.5rem;')}
   }
   :last-of-type {
@@ -51,11 +53,12 @@ const TagRow = styled.div`
 
   overflow: scroll hidden;
   scrollbar-width: none;
-
+  /* stylelint-disable no-descending-specificity */
   ::-webkit-scrollbar {
     width: 0;
     height: 0;
   }
+  /* stylelint-enable */
 `;
 
 const MetaRow = styled.div`
@@ -63,18 +66,6 @@ const MetaRow = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: .5rem;
-`;
-
-const MoreBtn = styled.button`
-  margin: 0 0 0 auto;
-  background-color: unset;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  padding: 0;
-  font-size: 1.5em;
-  line-height: 0;
-  visibility: hidden;
 `;
 
 const Title = styled.div`
@@ -144,20 +135,32 @@ const ViewThread = styled.p`
 
 const AuthorWrapper = styled.span`
   color: ${colors.regularBlack};
-  font-family: ${props => (props.anonymous ? '"PT Mono", monospace' : fontFamilies.system)};
+  font-family: ${props => (props.anonymous ? '"Roboto Mono", monospace' : fontFamilies.system)};
   line-height: ${props => (props.anonymous ? '1.3' : 'unset')};
   font-size: .875em;
   font-weight: 600;
 `;
 
-const QuoteSelectorWrapper = ({
-  postID, onQuoteToggle, isQuoted, quotable,
-}) => {
+const QuoteSelectorWrapper = ({ postId }) => {
+  const [quotedPosts, setQuotedPosts] = useContext(QuotedPostsContext);
+  const isQuoted = quotedPosts.has(postId);
+  const quotable = quotedPosts.size < 3;
+  const handleQuoteToggle = useCallback(() => {
+    setQuotedPosts((prevQP) => {
+      const newQuotedPosts = new Set(prevQP);
+      if (newQuotedPosts.has(postId)) {
+        newQuotedPosts.delete(postId);
+      } else {
+        newQuotedPosts.add(postId);
+      }
+      return newQuotedPosts;
+    });
+  }, [postId, setQuotedPosts]);
   const disabled = (!isQuoted) && (!quotable);
   return (
     <QuoteSelectorBtn
       isQuoted={isQuoted}
-      onClick={() => onQuoteToggle({ postID })}
+      onClick={() => handleQuoteToggle({ postId })}
       disabled={disabled}
     >
       引用
@@ -168,58 +171,99 @@ const QuoteSelectorWrapper = ({
   );
 };
 QuoteSelectorWrapper.propTypes = {
-  postID: PropTypes.string,
-  onQuoteToggle: PropTypes.func.isRequired,
-  isQuoted: PropTypes.bool.isRequired,
-  quotable: PropTypes.bool.isRequired,
+  postId: PropTypes.string,
 };
 QuoteSelectorWrapper.defaultProps = {
-  postID: null,
+  postId: null,
 };
 
 const titlePlaceholder = '无题';
+
+const AuthorPosition = ({
+  anonymous, author, postId, threadId, PositionContext,
+}) => {
+  const { history } = useCosmeticRouter();
+  const [ref, inView] = useInView({
+    threshold: 0.5,
+    rootMargin: '0% 0% -60% 0%',
+  });
+
+  const [, setPostId] = useContext(PositionContext);
+  useEffect(() => {
+    if (inView) {
+      if (postId === '') {
+        history.replace(`/t/${threadId}`);
+      }
+      if (postId) {
+        history.replace(`/t/${threadId}/${postId}`);
+        setPostId(postId);
+      }
+    }
+  }, [history, inView, postId, setPostId, threadId]);
+
+  return (
+    <AuthorWrapper anonymous={anonymous} ref={ref}>
+      {anonymous && '匿名'}
+      {author}
+    </AuthorWrapper>
+  );
+};
+AuthorPosition.propTypes = {
+  postId: PropTypes.string.isRequired,
+  threadId: PropTypes.string.isRequired,
+  anonymous: PropTypes.bool.isRequired,
+  author: PropTypes.string.isRequired,
+  PositionContext: PropTypes.shape({}),
+};
+AuthorPosition.defaultProps = {
+  PositionContext: {},
+};
+
 const Post = ({
-  isThread, title, anonymous, author, createdAt, content, quotes, postID, threadID, replyCount,
-  onQuoteToggle, isQuoted, quotable, mainTag, subTags, hasReplies, inList, history,
+  isThread, title, anonymous, author, createdAt, content, quotes, postId, threadId, replyCount,
+  mainTag, subTags, hasReplies, inList, PositionContext,
 }) => {
   const titleRow = isThread ? (
     <Title inList={inList}>
-      <Link to={`/thread/${threadID}`}>{title || titlePlaceholder}</Link>
+      <Link to={`/t/${threadId}`}>{title || titlePlaceholder}</Link>
     </Title>
   ) : null;
-  const authorText = anonymous ? (
-    <AuthorWrapper anonymous>
-      匿名
-      {author}
-    </AuthorWrapper>
-  ) : (
-    <AuthorWrapper>{author}</AuthorWrapper>
+  const quoteSelector = (!isThread && !inList) && (
+    <QuoteSelectorWrapper postId={postId} />
   );
-  const quoteSelector = (!isThread) && onQuoteToggle && (
-    <QuoteSelectorWrapper {...{
-      postID, onQuoteToggle, isQuoted, quotable,
-    }}
-    />
-  );
+
   const viewThread = (isThread) && (inList) && (replyCount > 0) && (
     <ViewThread>
-      <Link to={`/thread/${threadID}`}>
+      <Link to={`/t/${threadId}`}>
         {`查看全部 ${replyCount} 个回复`}
       </Link>
     </ViewThread>
   );
+
+  const authorRow = inList ? (
+    <AuthorWrapper anonymous={anonymous}>
+      {anonymous && '匿名'}
+      {author}
+    </AuthorWrapper>
+  ) : (
+    <HookedCosmeticRouter>
+      <AuthorPosition PositionContext={PositionContext} postId={isThread ? '' : postId} threadId={threadId} anonymous={anonymous} author={author} />
+    </HookedCosmeticRouter>
+  );
+
   const topRow = isThread ? (
     <TopRowWrapper inList={inList}>
       <TagRow>
         <Tag text={mainTag} isMain isCompact />
         {(subTags || []).map(t => <Tag key={t} text={t} isCompact />)}
-        <MoreBtn><More /></MoreBtn>
       </TagRow>
       {titleRow}
       <MetaRow>
-        {authorText}
+        {authorRow}
         <PublishTime>
-&nbsp;·&nbsp;
+          {' '}
+          ·
+          {' '}
           {timeElapsed(createdAt).formatted}
         </PublishTime>
       </MetaRow>
@@ -227,28 +271,38 @@ const Post = ({
   ) : (
     <TopRowWrapper inList={inList}>
       <MetaRow>
-        {authorText}
+        {authorRow}
         <PublishTime>
-&nbsp;·&nbsp;
+          {' '}
+          ·
+          {' '}
           {timeElapsed(createdAt).formatted}
         </PublishTime>
         {quoteSelector}
-        <MoreBtn><More /></MoreBtn>
       </MetaRow>
     </TopRowWrapper>
   );
+
+  const { history } = useRouter();
   const gotoThread = () => {
     if (inList) {
-      history.push(`/thread/${threadID}/`);
+      history.push(`/t/${threadId}/${isThread ? '' : postId}`);
     }
   };
-  return (
-    <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
+
+  const post = (
+    <>
       {topRow}
       <PostContent inList={inList} onClick={gotoThread}>
         <QuotedContent quotes={quotes} inList={inList} />
         <MDPreview text={content} isThread={isThread} inList={inList} />
       </PostContent>
+    </>
+  );
+
+  return (
+    <Wrapper isThread={isThread} inList={inList} hasReplies={hasReplies}>
+      {post}
       {viewThread}
     </Wrapper>
   );
@@ -259,27 +313,21 @@ Post.propTypes = {
   title: PropTypes.string,
   anonymous: PropTypes.bool.isRequired,
   author: PropTypes.string.isRequired,
-  createdAt: PropTypes.string.isRequired,
+  createdAt: PropTypes.number.isRequired,
   content: PropTypes.string.isRequired,
   quotes: PropTypes.arrayOf(PropTypes.shape()),
-  postID: PropTypes.string,
-  threadID: PropTypes.string,
-  onQuoteToggle: PropTypes.func,
-  isQuoted: PropTypes.bool,
-  quotable: PropTypes.bool,
+  postId: PropTypes.string,
+  threadId: PropTypes.string,
   mainTag: PropTypes.string,
   subTags: PropTypes.arrayOf(PropTypes.string),
   inList: PropTypes.bool,
   hasReplies: PropTypes.bool,
   replyCount: PropTypes.number,
-  history: PropTypes.shape({}).isRequired,
+  PositionContext: PropTypes.shape({}),
 };
 Post.defaultProps = {
-  postID: null,
-  threadID: null,
-  onQuoteToggle: null,
-  isQuoted: false,
-  quotable: false,
+  postId: null,
+  threadId: null,
   isThread: false,
   quotes: null,
   title: '',
@@ -288,6 +336,7 @@ Post.defaultProps = {
   inList: false,
   hasReplies: false,
   replyCount: 0,
+  PositionContext: {},
 };
 
-export default withRouter(Post);
+export default Post;

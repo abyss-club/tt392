@@ -1,11 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@apollo/react-hooks';
 
-import Store from 'providers/Store';
-import Query from 'components/Query';
+import NotiContext from 'providers/Noti';
 import Discussion from 'components/icons/Discussion';
 import colors from 'utils/colors';
 
@@ -24,7 +23,7 @@ const Badge = styled.div`
   display: ${props => (props.count === 0 ? 'none' : 'unset')};
   position: absolute;
   left: 1.25em;
-  top: -1.5em;
+  top: -1em;
 
   background-color: ${colors.accentGreen};
   height: 1em;
@@ -43,38 +42,30 @@ const StyledLink = styled(Link)`
   text-decoration: none;
 `;
 
-class NotificationBtn extends React.Component {
-  constructor(props) {
-    super(props);
-    const { setStore, unreadNotiCount } = this.props;
-    const { system, replied, quoted } = unreadNotiCount;
-    const badgeCount = (system || 0) + (replied || 0) + (quoted || 0);
-    setStore({
-      unreadNotiCount: {
-        system: system || 0,
-        replied: replied || 0,
-        quoted: quoted || 0,
-      },
-    });
-    this.state = { badgeCount };
-  }
-  render() {
-    const { badgeCount } = this.state;
-    return (
-      <StyledLink to="/notification/">
-        <IconWrapper />
-        <Badge count={badgeCount}>{badgeCount}</Badge>
-      </StyledLink>
-    );
-  }
-}
-NotificationBtn.propTypes = {
-  setStore: PropTypes.func.isRequired,
-  unreadNotiCount: PropTypes.shape({
-    system: PropTypes.number.isRequired,
-    replied: PropTypes.number.isRequired,
-    quoted: PropTypes.number.isRequired,
-  }).isRequired,
+const NotificationBtn = () => {
+  const { loading, data } = useQuery(GET_UNREADNOTICOUNT);
+  const [, dispatch] = useContext(NotiContext);
+  const [badgeCount, setBadgeCount] = useState(0);
+
+  useEffect(() => {
+    if (!loading) {
+      const { system, replied, quoted } = data.unreadNotiCount;
+      setBadgeCount(system + replied + quoted);
+      dispatch({
+        type: 'SET_NOTI_COUNT',
+        system,
+        replied,
+        quoted,
+      });
+    }
+  }, [data, dispatch, loading]);
+
+  return (
+    <StyledLink title="Notification" to="/notification/">
+      <IconWrapper />
+      <Badge count={badgeCount}>{badgeCount}</Badge>
+    </StyledLink>
+  );
 };
 
 const GET_UNREADNOTICOUNT = gql`
@@ -87,17 +78,4 @@ const GET_UNREADNOTICOUNT = gql`
   }
 `;
 
-export default () => (
-  <Store.Consumer>
-    {({ setStore }) => (
-      <Query query={GET_UNREADNOTICOUNT}>
-        {({ data }) => (
-          <NotificationBtn
-            unreadNotiCount={data.unreadNotiCount}
-            setStore={setStore}
-          />
-        )}
-      </Query>
-    )}
-  </Store.Consumer>
-);
+export default NotificationBtn;

@@ -55,27 +55,35 @@ const CompactTag = styled(Link)`
 `;
 
 const Tag = ({
-  text, isMain, onClick, className, selected, isCompact,
+  text, isMain, onClick, className, isSubbed, isCompact,
 }) => {
-  const selectedTag = selected ? (
-    <SelectedTagWrapper ismain={isMain ? 1 : 0} onClick={onClick} className={className}>
-      {selected ? <Tick /> : null}
+  const isSubbedTag = isSubbed ? (
+    <SelectedTagWrapper
+      title={text}
+      ismain={isMain ? 1 : 0}
+      onClick={onClick}
+      className={className}
+    >
+      {isSubbed ? <Tick /> : null}
       {text}
     </SelectedTagWrapper>
   ) : (
-    <TagWrapper ismain={isMain ? 1 : 0} onClick={onClick} className={className}>
+    <TagWrapper title={text} ismain={isMain ? 1 : 0} onClick={onClick} className={className}>
       {text}
     </TagWrapper>
   );
   return (
     isCompact ? (
-      <CompactTag ismain={isMain ? 1 : 0} to={`/tag/${text}`}>#{text}</CompactTag>
-    ) : selectedTag
+      <CompactTag ismain={isMain ? 1 : 0} to={`/tag/${text}`}>
+        #
+        {text}
+      </CompactTag>
+    ) : isSubbedTag
   );
 };
 
 Tag.propTypes = {
-  selected: PropTypes.bool,
+  isSubbed: PropTypes.bool,
   onClick: PropTypes.func,
   isMain: PropTypes.bool,
   text: PropTypes.string.isRequired,
@@ -83,7 +91,7 @@ Tag.propTypes = {
   isCompact: PropTypes.bool,
 };
 Tag.defaultProps = {
-  selected: false,
+  isSubbed: false,
   isMain: false,
   onClick: () => {},
   className: '',

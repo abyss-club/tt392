@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 
-import Store from 'providers/Store';
+import RequireSignIn from 'components/RequireSignIn';
+import NotiContext from 'providers/Noti';
 import MainContent, { maxWidth } from 'styles/MainContent';
 import colors from 'utils/colors';
 import Panel from './Panel';
@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h2`
-  color: ${colors.regularGrey};
+  color: ${colors.regularBlack};
   width: 100%;
   font-size: 1.125em;
   font-weight: 600;
@@ -38,7 +38,7 @@ const Type = styled.div`
 
 const TypeBar = styled.article`
   max-width: ${maxWidth}rem;
-  margin-bottom: .5rem;
+  margin: 0 auto .5rem;
 
   display: flex;
   flex-flow: row wrap;
@@ -48,53 +48,40 @@ const TypeBar = styled.article`
   border: none;
 `;
 
-class Notifications extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      types: ['replied', 'quoted', 'system'],
-      typeText: { replied: '回复我的', quoted: '引用我的', system: '通告' },
-      currentPanel: 'replied',
-    };
-  }
+const Notifications = () => {
+  const notiTypes = ['replied', 'quoted', 'system'];
+  const [{ unreadNotiCount }] = useContext(NotiContext);
+  const typeText = { replied: '回复我的', quoted: '引用我的', system: '通告' };
+  const [currentPanel, setCurrentPanel] = useState('replied');
 
-  render() {
-    const {
-      currentPanel, types, typeText,
-    } = this.state;
-    const selectableType = types.map(type => (
-      <Type
-        key={type}
-        selected={currentPanel === type}
-        onClick={() => { this.setState({ currentPanel: type }); }}
-      >
-        {typeText[type]}: {this.props.badgeCount[type]}
-      </Type>
-    ));
-    return (
-      <Wrapper>
-        <TypeBar>
-          <Title>消息中心</Title>
-          {selectableType}
-        </TypeBar>
-        <MainContent>
-          <Panel type={this.state.currentPanel} />
-        </MainContent>
-      </Wrapper>
-    );
-  }
-}
-Notifications.propTypes = {
-  badgeCount: PropTypes.shape().isRequired,
+  const selectableType = notiTypes.map(type => (
+    <Type
+      key={type}
+      selected={currentPanel === type}
+      onClick={() => { setCurrentPanel(type); }}
+    >
+      {typeText[type]}
+      :
+      {' '}
+      {unreadNotiCount[type]}
+    </Type>
+  ));
+  return (
+    <Wrapper>
+      <TypeBar>
+        <Title>消息中心</Title>
+        {selectableType}
+      </TypeBar>
+      <MainContent>
+        <Panel type={currentPanel} />
+      </MainContent>
+    </Wrapper>
+  );
 };
 
 export default () => (
-  <Store.Consumer>
-    {({ unreadNotiCount, setStore }) => (
-      <Notifications
-        setStore={setStore}
-        badgeCount={unreadNotiCount}
-      />
-    )}
-  </Store.Consumer>
+  <>
+    <RequireSignIn />
+    <Notifications />
+  </>
 );

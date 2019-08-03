@@ -1,77 +1,104 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {
+  useContext, useEffect, useState, useCallback,
+} from 'react';
 import gql from 'graphql-tag';
 
-import Query from 'components/Query';
-import Store from 'providers/Store';
+// import Query from 'components/Query';
+import { useQuery } from '@apollo/react-hooks';
+import TagsContext from 'providers/Tags';
+import LoginContext from 'providers/Login';
+import { useLoadingBar } from 'styles/Loading';
+import { UNAUTHENTICATED, UNKNOWN_ERROR } from 'utils/errorCodes';
 
-const parseTags = (profile, tags) => {
-  const subscribedTags = profile.tags || tags.recommended || [];
-  const mainTags = new Set(tags.mainTags);
-  const subscribed = {
-    main: new Set(),
-    sub: new Set(),
-  };
-  subscribedTags.forEach((tag) => {
-    if (mainTags.has(tag)) {
-      subscribed.main.add(tag);
-    } else {
-      subscribed.sub.add(tag);
+const Tags = () => {
+  const { loading, data, error } = useQuery(TAGS);
+  const [, dispatchTags] = useContext(TagsContext);
+  const [, { startLoading, stopLoading }] = useLoadingBar();
+
+  useEffect(() => {
+    if (loading) {
+      startLoading();
     }
-  });
-  return { mainTags, subscribed };
+    if (!loading && !error) {
+      const { mainTags, recommended } = data;
+      dispatchTags({ type: 'INIT', tags: { mainTags, recommended } });
+      stopLoading();
+    }
+  }, [data, loading, error, startLoading, stopLoading, dispatchTags]);
+  return null;
 };
+Tags.whyDidYouRender = true;
 
-class Init extends React.Component {
-  constructor(props) {
-    super(props);
-    const { setStore, profile, tags } = this.props;
-    setStore({
-      initialized: true,
-      profile: {
-        isSignedIn: (profile.email || '') !== '',
-        email: profile.email || '',
-        name: profile.name || '',
-      },
-      tags: parseTags(profile, tags),
-    });
-  }
+const Login = () => {
+  const [{ initialized }, dispatchLogin] = useContext(LoginContext);
+  const [, dispatchTags] = useContext(TagsContext);
+  const [, { startLoading, stopLoading }] = useLoadingBar();
+  const [errCode, setErrCode] = useState('');
 
-  render() {
-    return null;
-  }
-}
-Init.propTypes = {
-  profile: PropTypes.shape().isRequired,
-  tags: PropTypes.shape().isRequired,
-  setStore: PropTypes.func.isRequired,
+  const handleOnErr = useCallback((e) => {
+    if (e.graphQLErrors) {
+      setErrCode(e.graphQLErrors[0].extensions.code);
+    } else {
+      setErrCode(UNKNOWN_ERROR);
+    }
+  }, []);
+  const { loading, data } = useQuery(PROFILE, { onError: handleOnErr });
+
+  useEffect(() => {
+    if (!initialized) {
+      if (loading) {
+        startLoading();
+      }
+      if (!loading) {
+        if (errCode === UNAUTHENTICATED) {
+          dispatchLogin({ type: 'INIT' });
+          stopLoading();
+        }
+        if (data && data.profile) {
+          const { profile, mainTags, recommended } = data;
+          dispatchLogin({
+            type: 'INIT_WITH_LOGIN',
+            profile,
+          });
+          dispatchTags({
+            type: 'INIT_WITH_LOGIN',
+            profile,
+            tags: { mainTags, recommended },
+          });
+          stopLoading();
+        }
+      }
+    }
+  }, [loading, errCode, data, startLoading, stopLoading, dispatchLogin, dispatchTags, initialized]);
+
+  return null;
 };
+Login.whyDidYouRender = true;
 
-const INITIAL = gql`
+const Init = () => (
+  <>
+    <Tags />
+    <Login />
+  </>
+);
+
+const PROFILE = gql`
   query {
     profile {
       name
       email
       tags
     }
-    tags {
-      mainTags
-    }
+    mainTags
+    recommended
   }
 `;
 
-export default () => (
-  <Store.Consumer>
-    {({ setStore }) => (
-      <Query query={INITIAL}>
-        {({ data }) => (
-          <Init
-            profile={data.profile}
-            tags={data.tags}
-            setStore={setStore}
-          />
-        )}
-      </Query>
-    )}
-  </Store.Consumer>
-);
+const TAGS = gql`
+  query {
+    mainTags
+    recommended
+  }
+`;
+
+export default Init;
