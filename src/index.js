@@ -13,7 +13,7 @@ import { OffsetPosProvider } from 'providers/OffsetPos';
 import { RefetchProvider } from 'providers/Refetch';
 import { HookedLoadingBar } from 'styles/Loading';
 import {
-  login, draft, notification, tags, refetch,
+  draft, notification, tags, refetch,
 } from 'reducers';
 import { HookedBrowserRouter } from 'utils/routerHooks';
 import ScrollToTop from 'utils/scrollToTop';
@@ -43,7 +43,7 @@ const Root = () => (
         <RefetchProvider reducer={refetch}>
           <TagsProvider reducer={tags}>
             <DraftProvider reducer={draft}>
-              <LoginProvider reducer={login}>
+              <LoginProvider>
                 <NotiProvider reducer={notification}>
                   <QuotedPostsProvider>
                     <OffsetPosProvider>

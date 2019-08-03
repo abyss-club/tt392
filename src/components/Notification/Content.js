@@ -131,7 +131,7 @@ const Repliers = styled.p`
 `;
 
 const StyledMDPreview = styled.div`
-  padding: .5rem 1rem;
+  padding: .5rem 0;
 `;
 
 const titlePlaceholder = '无题';
@@ -219,7 +219,7 @@ const Content = ({ type, notification }) => {
         <TopRowTime>{elapsed(notification.eventTime).formatted}</TopRowTime>
       </TopRow>
       <StyledMDPreview>
-        <MDPreview text={notification.content} isThread />
+        <MDPreview text={notification.content} inList />
       </StyledMDPreview>
     </ContentWrapper>
   );
