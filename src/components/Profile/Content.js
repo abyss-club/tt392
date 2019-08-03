@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import MDPreview from 'components/MDPreview';
 import colors from 'utils/colors';
-import elapsed from 'utils/calculateTime';
 import fontFamilies from 'utils/fontFamilies';
 
 import Tag from 'components/Tag';
@@ -117,10 +115,6 @@ const TimeRow = styled.div`
 
 const PostContentWrapper = styled.div`
   padding: 0 0 1rem;
-`;
-
-const StyledMDPreview = styled.div`
-  padding: .5rem 1rem;
 `;
 
 const titlePlaceholder = '无题';

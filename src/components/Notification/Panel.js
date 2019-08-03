@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
@@ -62,9 +62,7 @@ Notis.propTypes = {
 };
 
 const QueryWrapper = ({ type }) => {
-  const {
-    data, loading, error, fetchMore,
-  } = useQuery(getNotification(type), { variables: { cursor: '' } });
+  const { data, loading, fetchMore } = useQuery(getNotification(type), { variables: { cursor: '' } });
   const sliceInfo = !loading ? data.notification.sliceInfo : {};
   const onLoadMore = () => fetchMore({
     query: getNotification(type),

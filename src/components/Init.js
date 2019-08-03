@@ -12,7 +12,6 @@ import { UNAUTHENTICATED, UNKNOWN_ERROR } from 'utils/errorCodes';
 
 const Tags = () => {
   const { loading, data, error } = useQuery(TAGS);
-  console.log('render init');
   const [, dispatchTags] = useContext(TagsContext);
   const [, { startLoading, stopLoading }] = useLoadingBar();
 
@@ -45,7 +44,6 @@ const Login = () => {
   }, []);
   const { loading, data } = useQuery(PROFILE, { onError: handleOnErr });
 
-  console.log('render login');
   useEffect(() => {
     if (!initialized) {
       if (loading) {

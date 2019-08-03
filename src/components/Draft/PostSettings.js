@@ -25,7 +25,6 @@ const QuotedPost = ({ id }) => {
   useEffect(() => {
     let didCancel = false;
     if (!loading && error && !didCancel) {
-      console.log('removing');
       dispatch({
         type: 'REMOVE_QUOTEID',
         quoteId: id,

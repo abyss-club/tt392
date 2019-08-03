@@ -248,7 +248,6 @@ const Title = () => {
 
 const Navbar = () => {
   const { history } = useRouter();
-  console.log('navbar rendered');
 
   const firstRowRegular = () => (
     <NavWrapper>

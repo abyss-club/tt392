@@ -40,12 +40,6 @@ const GET_POST_CATALOG = gql`
 const ThreadViewQuery = ({ threadId, postId }) => {
   const { history, location } = useRouter();
   const [posMap, setPosMap] = useContext(OffsetPosContext);
-  console.log('render threadqueryview');
-  // const [errCode, setErrCode] = useState('');
-  // const handleOnErr = useCallback((e) => {
-  //   console.log(e);
-  //   setErrCode(e.graphQLErrors[0].extensions.code);
-  // }, []);
 
   useEffect(() => {
     setPosMap(new Map());
@@ -57,15 +51,7 @@ const ThreadViewQuery = ({ threadId, postId }) => {
     variables: { id: threadId, after: postId || '' },
     fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
-    // onError: handleOnErr,
   });
-  // useEffect(() => {
-  //   if (!loading) {
-  //     if (errCode === INTERNAL_ERROR || errCode === NOT_FOUND) {
-  //       history.push('/error/NOT_FOUND');
-  //     }
-  //   }
-  // }, [errCode, history, loading]);
   if (error) {
     history.push('/error/NOT_FOUND');
   }
@@ -145,7 +131,6 @@ const PostQuery = ({ postId, threadId }) => {
   const [errCode, setErrCode] = useState('');
   const [offsetPostId, setOffsetPostId] = useState('');
   const [, { startLoading, stopLoading }] = useLoadingBar();
-  console.log('render PostQuery');
   const handleOnErr = useCallback((e) => {
     setErrCode(e.graphQLErrors[0].extensions.code);
   }, []);
@@ -184,8 +169,6 @@ PostQuery.whyDidYouRender = true;
 
 const ThreadView = ({ match }) => {
   const { params } = match;
-
-  console.log('render threadview');
 
   return (
     <>

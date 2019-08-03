@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import colors from 'utils/colors';
 import {
-  UNAUTHENTICATED, FORBIDDEN, NOT_FOUND, INTERNAL_ERROR, PARAMS_ERROR,
+  FORBIDDEN, NOT_FOUND, INTERNAL_ERROR, PARAMS_ERROR,
 } from 'utils/errorCodes';
-import MainContent, { maxWidth } from 'styles/MainContent';
+import MainContent from 'styles/MainContent';
 
-const ErrorPage = ({ history, match }) => {
+const ErrorPage = ({ match }) => {
   const errCode = match.params.errCode || 'NOT_FOUND';
   const errMsgList = {
     [FORBIDDEN]: 'You are not allowed to access the content.',
@@ -17,8 +15,6 @@ const ErrorPage = ({ history, match }) => {
     UNKNOWN_ERROR: 'Unknown error occured.',
     NETWORK_ERROR: 'Remote server unreachable.',
   };
-
-  console.log('render error');
   return (
     <MainContent>
       <p>
@@ -30,7 +26,6 @@ const ErrorPage = ({ history, match }) => {
   );
 };
 ErrorPage.propTypes = {
-  history: PropTypes.shape().isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       errCode: PropTypes.string.isRequired,

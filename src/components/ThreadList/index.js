@@ -180,8 +180,6 @@ const ThreadList = ({
     THREADSLICE_QUERY, { variables: { tags: filterByTags, cursor: '' } },
   );
 
-  console.log('render threadinlist');
-
   useEffect(() => {
     if (shouldThreadListRefetch && !loading) {
       refetch();

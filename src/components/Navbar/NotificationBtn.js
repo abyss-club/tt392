@@ -48,9 +48,7 @@ const NotificationBtn = () => {
   const [badgeCount, setBadgeCount] = useState(0);
 
   useEffect(() => {
-    console.log({ loading, data });
     if (!loading) {
-      console.log('dispatch notibtn');
       const { system, replied, quoted } = data.unreadNotiCount;
       setBadgeCount(system + replied + quoted);
       dispatch({

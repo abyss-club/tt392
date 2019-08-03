@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useRef, useContext, useState, useLayoutEffect,
+  useEffect, useRef, useState, useLayoutEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 import { useInView } from 'react-intersection-observer';
@@ -30,6 +30,7 @@ const ScrollForMore = ({
     </>
   );
 };
+
 ScrollForMore.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   onLoadMore: PropTypes.func.isRequired,
@@ -68,15 +69,10 @@ const ScrollForMorePosts = ({
 
   useLayoutEffect(() => {
     if (!loading && !prevBeforeInView.current && beforeInView) {
-      console.log('loadmore before');
       if (entries.length < 1) {
         onLoadMore({ type: 'before' });
       } else {
         onLoadMore({ type: 'before' });
-        // window.scrollTo({
-        //   behavior: 'auto',
-        //   top: document.body.scrollHeight - curScrollPos - 48,
-        // });
       }
     }
     if (prevBeforeInView.current && beforeInView) {
@@ -112,7 +108,6 @@ ScrollForMorePosts.propTypes = {
   })).isRequired,
   onLoadMore: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  // hasNext: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
   catalog: PropTypes.arrayOf(PropTypes.shape({
     postId: PropTypes.string.isRequired,

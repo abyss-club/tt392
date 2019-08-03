@@ -1,6 +1,4 @@
-import React, {
-  useState, useContext, useRef,
-} from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
@@ -10,7 +8,6 @@ import MDPreview from 'components/MDPreview';
 import LinkIcon from 'components/icons/Link';
 import Image from 'components/icons/Image';
 import colors from 'utils/colors';
-import LoginContext from 'providers/Login';
 import { maxWidth } from 'styles/MainContent';
 import ThreadSettings from './ThreadSettings';
 import PostSettings from './PostSettings';
@@ -63,24 +60,11 @@ const PreviewBtn = styled(IconWrapper)`
   font-size: .875em;
 `;
 
-const CheckLogin = ({ history }) => {
-  const [{ profile }] = useContext(LoginContext);
-  // if (!profile.isSignedIn) {
-  //   history.push('/sign_in/');
-  // }
-  return null;
-};
-CheckLogin.propTypes = {
-  history: PropTypes.shape({}).isRequired,
-};
-
-const Draft = ({ history, match }) => {
+const Draft = ({ match }) => {
   const [preview, setPreview] = useState(false);
   const editorRef = useRef();
 
   const { mode } = match.params;
-  console.log('draft rendered');
-
   const togglePreview = () => {
     setPreview(prevState => !prevState);
   };
@@ -113,7 +97,6 @@ const Draft = ({ history, match }) => {
 
   return (
     <DraftArea>
-      <CheckLogin history={history} />
       {mode === 'thread' ? (
         <ThreadComposer />
       ) : (

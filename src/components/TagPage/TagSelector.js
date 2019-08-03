@@ -34,12 +34,9 @@ const TagSelector = () => {
   const [addSubbedTag, addState] = useMutation(ADD_TAG, { variables: { tag: currentTag } });
   const [delSubbedTag, delState] = useMutation(DEL_TAG, { variables: { tag: currentTag } });
 
-  console.log(tags.subscribed);
-
   const handleClick = ({ tag, isAdd, isMain }, e) => {
     e.preventDefault();
     setCurrentTag(tag);
-    console.log({ tag, isAdd, isMain });
     if (isAdd) {
       addSubbedTag();
       if (!addState.error) {

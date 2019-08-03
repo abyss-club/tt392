@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 
 import { useQuery } from '@apollo/react-hooks';
 import colors from 'utils/colors';
-import Content from './Content';
 import ScrollForMore from 'components/ScrollForMore';
+import Content from './Content';
 
 const EmptyPanel = styled.div`
   background-color: white;
@@ -63,9 +63,7 @@ Entries.propTypes = {
 
 const QueryWrapper = ({ type }) => {
   const currentQuery = type === 'threads' ? GET_THREADS : GET_POSTS;
-  const {
-    data, loading, error, fetchMore,
-} = useQuery(currentQuery, { variables: { cursor: '' } });
+  const { data, loading, fetchMore } = useQuery(currentQuery, { variables: { cursor: '' } });
   const sliceInfo = !loading ? data.profile[type].sliceInfo : {};
   const onLoadMore = () => fetchMore({
     query: currentQuery,

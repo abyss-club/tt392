@@ -131,13 +131,21 @@ const Thread = ({
   data, loading, onLoadMore, setCursor, threadId,
 }) => {
   const { thread } = data;
-  console.log({ thread });
-  const showOp = thread && (thread.replies.posts.length < 1 || thread.replies.posts[0].id === thread.catalog[0].postId);
+  const showOp = thread && (
+    thread.replies.posts.length < 1
+    || thread.replies.posts[0].id === thread.catalog[0].postId);
   return (
     <ThreadMainContent>
       <PositionProvider thread={thread} threadId={threadId} setCursor={setCursor}>
         <ThreadViewWrapper>
-          {showOp && <Post isThread {...thread} threadId={threadId} PositionContext={PositionContext} />}
+          {showOp && (
+          <Post
+            isThread
+            {...thread}
+            threadId={threadId}
+            PositionContext={PositionContext}
+          />
+          )}
           <PostWrapper
             loading={loading}
             entries={thread ? thread.replies.posts : []}

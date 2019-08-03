@@ -76,8 +76,6 @@ const useLoadingBar = () => {
 
 const LoadingBar = () => {
   const { show } = useContext(LoadingContext);
-  console.log({ show });
-
   if (show < 1) return null;
   return <LoadingWrapper />;
 };

@@ -1,8 +1,7 @@
 import React, {
   useState, useEffect, useCallback, useContext,
 } from 'react';
-import PropTypes from 'prop-types';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import colors from 'utils/colors';

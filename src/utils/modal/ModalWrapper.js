@@ -57,46 +57,53 @@ class ModalWrapper extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.onClose) {
+    const { onClose } = this.props;
+    if (onClose) {
       window.addEventListener('keydown', this.listenKeyboard.bind(this), true);
     }
   }
 
   componentWillUnmount() {
-    if (this.props.onClose) {
+    const { onClose } = this.props;
+    if (onClose) {
       window.removeEventListener('keydown', this.listenKeyboard.bind(this), true);
     }
   }
 
   onOverlayClick() {
-    if (this.props.onClose) {
-      this.props.onClose();
+    const { onClose } = this.props;
+    if (onClose) {
+      onClose();
     }
   }
 
   onDialogClick = (event) => {
-    if (this.props.onClose) {
+    const { onClose } = this.props;
+    if (onClose) {
       event.stopPropagation();
     }
   }
 
   listenKeyboard(event) {
     if (event.key === 'Escape' || event.keyCode === 27) {
-      this.props.onClose();
+      const { onClose } = this.props;
+      onClose();
     }
   }
 
-  render = () => (
-    <div>
-      <Overlay />
-      <Content onClick={this.onOverlayClick}>
-        <Dialog onClick={this.onDialogClick}>
-          {this.props.children}
-        </Dialog>
-      </Content>
-    </div>
-
-  )
+  render = () => {
+    const { children } = this.props;
+    return (
+      <div>
+        <Overlay />
+        <Content onClick={this.onOverlayClick}>
+          <Dialog onClick={this.onDialogClick}>
+            {children}
+          </Dialog>
+        </Content>
+      </div>
+    );
+  }
 }
 
 ModalWrapper.propTypes = {

@@ -1,14 +1,10 @@
-import React, {
-  useState, useEffect, useCallback, useContext,
-} from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import isEmail from 'validator/lib/isEmail';
 
 import Caution from 'components/icons/Caution';
-import LoginContext from 'providers/Login';
 import { maxWidth } from 'styles/MainContent';
 import colors from 'utils/colors';
 
