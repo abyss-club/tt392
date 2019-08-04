@@ -131,7 +131,7 @@ const Repliers = styled.p`
 `;
 
 const StyledMDPreview = styled.div`
-  padding: .5rem 1rem;
+  padding: .5rem 0;
 `;
 
 const titlePlaceholder = '无题';
@@ -219,7 +219,7 @@ const Content = ({ type, notification }) => {
         <TopRowTime>{elapsed(notification.eventTime).formatted}</TopRowTime>
       </TopRow>
       <StyledMDPreview>
-        <MDPreview text={notification.content} isThread />
+        <MDPreview text={notification.content} inList />
       </StyledMDPreview>
     </ContentWrapper>
   );
@@ -235,4 +235,16 @@ Content.propTypes = {
   notification: PropTypes.shape().isRequired,
 };
 
+const EmptyContent = ({ text }) => (
+  <ContentWrapper>
+    <StyledMDPreview>
+      <MDPreview text={text} inList />
+    </StyledMDPreview>
+  </ContentWrapper>
+);
+EmptyContent.propTypes = {
+  text: PropTypes.string.isRequired,
+};
+
 export default Content;
+export { EmptyContent };

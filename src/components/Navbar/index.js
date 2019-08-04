@@ -12,6 +12,7 @@ import AbyssLogo from 'components/icons/AbyssLogo';
 import Tick from 'components/icons/Tick';
 import Cross from 'components/icons/Cross';
 import colors from 'utils/colors';
+import { ContentWrapper } from 'styles/MainContent';
 
 import LoginContext from 'providers/Login';
 import DraftContext from 'providers/Draft';
@@ -22,14 +23,15 @@ import NotificationBtn from './NotificationBtn';
 const NavWrapper = styled.nav`
   position: sticky;
   top: 0;
+  z-index: 10;
 
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  background-color: ${props => (props.compose ? 'white' : colors.titleBlack)};
+  background-color: ${props => (props.compose ? 'transparent' : colors.titleBlack)};
 `;
 
-const NavFirstRow = styled.div`
+const NavFirstRow = styled(ContentWrapper)`
   height: 3.5rem;
   display: flex;
   flex-flow: row nowrap;
@@ -43,6 +45,7 @@ const NavFirstRow = styled.div`
 const NavFirstRowCompose = styled(NavFirstRow)`
   padding: 0 .5rem;
   color: #36393F;
+  background: white;
 `;
 
 const NavFirstRowError = styled(NavFirstRow)`
@@ -98,7 +101,7 @@ const SelectWrapper = styled.div`
   }
 
   :after {
-    z-index: 1;
+    z-index: 15;
     display: block;
     content: "";
     position: absolute;

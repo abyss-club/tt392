@@ -10,7 +10,7 @@ const Overlay = styled.div`
   left: 0;
   height: 100%;
   width: 100%;
-  z-index: 1000;
+  z-index: 40;
   background-color: rgba(0, 0, 0, .65);
 `;
 
@@ -20,7 +20,7 @@ const Content = styled.div`
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 10000;
+  z-index: 50;
   overflow: auto;
   text-align: center;
   padding: 4px;

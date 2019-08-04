@@ -33,7 +33,7 @@ const Badge = styled.div`
   border-radius: .5em;
   padding: .75em .5em;
   text-decoration: none;
-  z-index: 10;
+  z-index: 15;
   line-height: 0;
 `;
 
@@ -58,7 +58,7 @@ const NotificationBtn = () => {
         quoted,
       });
     }
-  }, [data, dispatch, loading]);
+  }, [dispatch, loading]);
 
   return (
     <StyledLink title="Notification" to="/notification/">

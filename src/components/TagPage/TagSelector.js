@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import TagsContext from 'providers/Tags';
@@ -27,36 +27,84 @@ const TagInList = styled(Tag)`
   margin: .125rem;
 `;
 
-const TagSelector = () => {
-  const [{ profile }] = useContext(LoginContext);
-  const [{ tags }, dispatch] = useContext(TagsContext);
-  const [currentTag, setCurrentTag] = useState('');
-  const [addSubbedTag, addState] = useMutation(ADD_TAG, { variables: { tag: currentTag } });
-  const [delSubbedTag, delState] = useMutation(DEL_TAG, { variables: { tag: currentTag } });
+const TagTypeWrapper = styled.div`
+  margin-bottom: .5rem;
+`;
 
-  const handleClick = ({ tag, isAdd, isMain }, e) => {
-    e.preventDefault();
-    setCurrentTag(tag);
-    if (isAdd) {
-      addSubbedTag();
-      if (!addState.error) {
-        dispatch({
-          type: 'ADD_TAG',
-          isMain,
-          tag,
-        });
-      }
-    } else {
-      delSubbedTag();
-      if (!delState.error) {
-        dispatch({
-          type: 'DEL_TAG',
-          isMain,
-          tag,
-        });
-      }
+const UpdateProfile = () => {
+  const {
+    data, error, loading,
+  } = useQuery(PROFILE_TAGS);
+  console.log({ data, error, loading });
+  const [, dispatch] = useContext(TagsContext);
+  const { profile } = data;
+
+  useEffect(() => {
+    if (!loading) {
+      dispatch({
+        type: 'UPDATE_SUBSCRIBED_TAGS',
+        profile,
+      });
     }
+  }, [dispatch, loading, profile]);
+  return (
+    <TagSelector loading={loading} />
+  );
+};
+
+const TagSelector = ({ loading }) => {
+  const [{ profile }] = useContext(LoginContext);
+  const [currentTag, setCurrentTag] = useState('');
+  // const [loadingTags, setLoadingTags] = useState(new Set());
+  const [type, setType] = useState(null);
+  const subTagsState = useQuery(GET_SUBTAGS);
+  const [{ tags }] = useContext(TagsContext);
+  const [addSubbedTag, addState] = useMutation(ADD_TAG, {
+    variables: { tag: currentTag },
+    // refetchQueries: PROFILE_TAGS,
+    update: (cache, data) => {
+      cache.writeQuery({
+        query: PROFILE_TAGS,
+        data: { profile: { __typename: 'User', tags: data.data.addSubbedTag.tags } },
+      });
+    },
+  });
+  const [delSubbedTag, delState] = useMutation(DEL_TAG, {
+    variables: { tag: currentTag },
+    // refetchQueries: PROFILE_TAGS,
+    update: (cache, data) => {
+      cache.writeQuery({
+        query: PROFILE_TAGS,
+        data: { profile: { __typename: 'User', tags: data.data.delSubbedTag.tags } },
+      });
+    },
+  });
+
+  console.log({ addState });
+
+  const subTags = (subTagsState.data.tags
+    && subTagsState.data.tags.length > 0)
+    ? subTagsState.data.tags.filter(tag => !tag.isMain).map(tag => tag.name) : [];
+
+  console.log('render tagselector');
+  const handleClick = ({ tag, isAdd }) => {
+    setCurrentTag(tag);
+    setType(isAdd ? 'add' : 'del');
   };
+
+  useEffect(() => {
+    if (currentTag !== '') {
+      if (type === 'add') {
+        addSubbedTag();
+        setType(null);
+      }
+      if (type === 'del') {
+        delSubbedTag();
+        setType(null);
+      }
+      setCurrentTag('');
+    }
+  }, [addSubbedTag, currentTag, delSubbedTag, type]);
 
   const SelectableTag = ({ tag, isMain = false, isSubbed }) => (
     <TagInList
@@ -64,7 +112,7 @@ const TagSelector = () => {
       text={tag}
       isMain={isMain}
       isSubbed={isSubbed}
-      disabled={!profile.isSignedIn}
+      disabled={!profile.isSignedIn && !loading}
       onClick={(e) => { handleClick({ tag, isAdd: !isSubbed, isMain }, e); }}
     />
   );
@@ -77,19 +125,31 @@ const TagSelector = () => {
   return (
     <MainContent>
       <Wrapper>
-        <SelectableTagWrapper>
-          {[...tags.mainTags].map(tag => (tags.subscribed.main.has(tag)
-            ? SelectableTag({ tag, isMain: true, isSubbed: true })
-            : SelectableTag({ tag, isMain: true }))) }
-          {[...tags.subTags].map(tag => (tags.subscribed.sub.has(tag)
-            ? SelectableTag({ tag, isSubbed: true })
-            : SelectableTag({ tag }))) }
-        </SelectableTagWrapper>
+        <TagTypeWrapper>
+          <h2>MainTags</h2>
+          <SelectableTagWrapper>
+            {[...tags.mainTags].map(tag => (tags.subscribed.main.has(tag)
+              ? SelectableTag({ tag, isMain: true, isSubbed: true })
+              : SelectableTag({ tag, isMain: true }))) }
+          </SelectableTagWrapper>
+        </TagTypeWrapper>
+        <TagTypeWrapper>
+          <h2>SubTags</h2>
+          <SelectableTagWrapper>
+            {subTags.map(tag => (tags.subscribed.sub.has(tag)
+              ? SelectableTag({ tag, isSubbed: true })
+              : SelectableTag({ tag })))}
+          </SelectableTagWrapper>
+          <p>{subTagsState.loading && 'Loading...'}</p>
+        </TagTypeWrapper>
       </Wrapper>
     </MainContent>
   );
 };
-
+TagSelector.propTypes = {
+  loading: PropTypes.bool.isRequired,
+};
+TagSelector.whyDidYouRender = true;
 
 const ADD_TAG = gql`
   mutation addSubbedTag($tag: String!) {
@@ -107,9 +167,25 @@ const DEL_TAG = gql`
   }
 `;
 
+const GET_SUBTAGS = gql`
+  query getSubTags {
+    tags(limit: 20) {
+      name, isMain, belongsTo
+    }
+  }
+`;
+
+const PROFILE_TAGS = gql`
+  query {
+    profile {
+      tags
+    }
+  }
+`;
+
 export default () => (
   <>
     <RequireSignIn />
-    <TagSelector />
+    <UpdateProfile />
   </>
 );

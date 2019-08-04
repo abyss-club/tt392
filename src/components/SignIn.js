@@ -29,6 +29,7 @@ const EmailInput = styled.input`
   border: none;
   border-radius: 1.5rem;
   background-color: ${colors.mainBg};
+  outline: none;
 
   ::placeholder {
     color: ${colors.regularGrey};

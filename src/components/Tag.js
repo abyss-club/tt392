@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Tick from 'components/icons/Tick';
 
 import { Link } from 'react-router-dom';
@@ -18,7 +18,7 @@ const TagWrapper = styled.button`
   `)}
   border: 1px solid ${colors.tagGrey};
   outline: none;
-  font-size: 1em;
+  font-size: .75em;
   border-radius: 1rem;
   height: 2rem;
   padding: .25em 1.5em;
@@ -55,7 +55,7 @@ const CompactTag = styled(Link)`
 `;
 
 const Tag = ({
-  text, isMain, onClick, className, isSubbed, isCompact,
+  text, isMain, onClick, className, isSubbed, isCompact, isLoading,
 }) => {
   const isSubbedTag = isSubbed ? (
     <SelectedTagWrapper
@@ -64,11 +64,13 @@ const Tag = ({
       onClick={onClick}
       className={className}
     >
-      {isSubbed ? <Tick /> : null}
+      {isLoading && <FontAwesomeIcon icon="spinner" spin />}
+      {(!isLoading && isSubbed) ? <Tick /> : null}
       {text}
     </SelectedTagWrapper>
   ) : (
     <TagWrapper title={text} ismain={isMain ? 1 : 0} onClick={onClick} className={className}>
+      {isLoading && <FontAwesomeIcon icon="spinner" spin />}
       {text}
     </TagWrapper>
   );
@@ -89,10 +91,12 @@ Tag.propTypes = {
   text: PropTypes.string.isRequired,
   className: PropTypes.string,
   isCompact: PropTypes.bool,
+  isLoading: PropTypes.bool,
 };
 Tag.defaultProps = {
   isSubbed: false,
   isMain: false,
+  isLoading: false,
   onClick: () => {},
   className: '',
   isCompact: false,

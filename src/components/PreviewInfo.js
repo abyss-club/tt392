@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import colors from 'utils/colors';
 
 const Wrapper = styled.article`
@@ -28,23 +27,19 @@ const Title = styled.div`
 
 const PreviewInfo = () => (
   <Wrapper>
-    <Title>本站尚处于开发初期</Title>
+    <Title>Abyss in beta</Title>
     <p>
-      Powered by Projects of
-      {' '}
+      {'Powered by Projects of '}
       <a href="https://gitlab.com/abyss.club/abyss">abyss</a>
     </p>
     <p>
-      Abyss 使用 GraphQL API (
-      <a href="https://graphql.org/">了解 GraphQL</a>
-    )
+      {'欢迎提交 PR 和 issue'}
     </p>
     <p>
-      <Link to="/graphiql/"> GraphiQL </Link>
-      /
-      <Link to="/voyager/"> GraphQL Voyager </Link>
-      /
-      <a href="https://gitlab.com/abyss.club/abyss/blob/master/api.gql"> Schema</a>
+      {'Abyss 使用 '}
+      <a href="https://graphql.org/">GraphQL API</a>
+      {', schema 描述'}
+      <a href="https://gitlab.com/abyss.club/uexky/tree/master/src/schema">见此</a>
     </p>
   </Wrapper>
 );

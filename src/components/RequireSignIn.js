@@ -5,7 +5,7 @@ import LoginContext from 'providers/Login';
 const RequireSignIn = () => {
   const { history } = useRouter();
   const [{ profile }] = useContext(LoginContext);
-  if (!profile.isSignedIn) history.replace('/sign_in');
+  if (profile.initialized && !profile.isSignedIn) history.replace('/sign_in');
   return null;
 };
 

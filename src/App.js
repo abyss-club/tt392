@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Loadable from 'react-loadable';
+// import Loadable from 'react-loadable';
 import { Switch, Route } from 'react-router-dom';
 
 import faLib from 'utils/fontAwesomeLib';
@@ -17,7 +17,7 @@ import TagSelector from 'components/TagPage/TagSelector';
 import TagView from 'components/TagPage/TagView';
 import Notification from 'components/Notification';
 import NavTags from 'components/Navbar/NavTags';
-import { LoadingWrapper, LoadingBar } from 'styles/Loading';
+import { /* LoadingWrapper, */LoadingBar } from 'styles/Loading';
 import colors from 'utils/colors';
 
 faLib.loadFa();
@@ -28,15 +28,15 @@ const Wrapper = styled.div`
   background-color: ${colors.mainBg};
 `;
 
-const GraphiQL = Loadable({
-  loader: () => import('components/GraphiQL'),
-  loading: LoadingWrapper,
-});
-
-const GQLVoyager = Loadable({
-  loader: () => import('components/Voyager'),
-  loading: LoadingWrapper,
-});
+// const GraphiQL = Loadable({
+//   loader: () => import('components/GraphiQL'),
+//   loading: LoadingWrapper,
+// });
+//
+// const GQLVoyager = Loadable({
+//   loader: () => import('components/Voyager'),
+//   loading: LoadingWrapper,
+// });
 
 const App = () => (
   <Wrapper>
@@ -62,11 +62,14 @@ const App = () => (
       <Route path={['/t/:threadId/', '/t/:threadId/:postId']} component={ThreadView} exact />
       <Route path="/notification/" component={Notification} exact />
       <Route path="/draft/:mode" component={Draft} exact />
-      <Route path="/graphiql/" component={GraphiQL} exact />
-      <Route path="/voyager/" component={GQLVoyager} exact />
       <Route component={Error} />
     </Switch>
   </Wrapper>
 );
+
+/*
+<Route path="/graphiql/" component={GraphiQL} exact />
+<Route path="/voyager/" component={GQLVoyager} exact />
+*/
 
 export default App;

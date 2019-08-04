@@ -172,7 +172,7 @@ const Profile = () => {
     } else {
       setStatus('LOADING');
     }
-  }, [data, loading, error, setStatus, setDisabled, dispatchSetName]);
+  }, [loading, error, setStatus, setDisabled, dispatchSetName]);
 
   useEffect(() => {
     if (profile.name) {

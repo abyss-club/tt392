@@ -1,39 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
 import gql from 'graphql-tag';
 
 import ScrollForMore from 'components/ScrollForMore';
 import { useQuery } from '@apollo/react-hooks';
-import colors from 'utils/colors';
-import Content from './Content';
-
-const EmptyPanel = styled.div`
-  background-color: white;
-  padding: 1rem;
-  border-radius: 1rem;
-`;
-
-const EmptyHint = styled.p`
-  text-align: center;
-  font-size: 1.25em;
-  font-weight: 300;
-  color: ${colors.textGrey};
-`;
-
-const EmptyPlaceholder = ({ type }) => (
-  <EmptyPanel>
-    <EmptyHint>
-      You currently don&#39;t have any notification of type:
-      {' '}
-      {`“${type}”`}
-      .
-    </EmptyHint>
-  </EmptyPanel>
-);
-EmptyPlaceholder.propTypes = {
-  type: PropTypes.string.isRequired,
-};
+import Content, { EmptyContent } from './Content';
 
 const Notis = ({
   entries, loading, onLoadMore, hasNext, type,
@@ -50,7 +21,7 @@ const Notis = ({
         type={type}
         notification={noti}
       />
-    )) : <EmptyPlaceholder type={type} />}
+    )) : <EmptyContent text="暂无此类消息" />}
   </ScrollForMore>
 );
 Notis.propTypes = {

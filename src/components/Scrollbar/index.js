@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   bottom: 0;
   width: 100%;
   background: ${colors.mainBg};
-  z-index: 15;
+  z-index: 20;
 `;
 
 const Content = styled(ContentWrapper)`
@@ -66,6 +66,9 @@ const Scrollbar = ({
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
   }, []);
+  if (catalog.length < 1) {
+    return null;
+  }
   let content;
   if (!showSlider) {
     const pageNum = `${idx + 1} of ${catalog.length} posts`;

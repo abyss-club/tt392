@@ -12,9 +12,6 @@ import { QuotedPostsProvider } from 'providers/QuotedPosts';
 import { OffsetPosProvider } from 'providers/OffsetPos';
 import { RefetchProvider } from 'providers/Refetch';
 import { HookedLoadingBar } from 'styles/Loading';
-import {
-  login, draft, notification, tags, refetch,
-} from 'reducers';
 import { HookedBrowserRouter } from 'utils/routerHooks';
 import ScrollToTop from 'utils/scrollToTop';
 import * as serviceWorker from './serviceWorker';
@@ -40,11 +37,11 @@ const Root = () => (
   <>
     <HookedBrowserRouter>
       <HookedLoadingBar>
-        <RefetchProvider reducer={refetch}>
-          <TagsProvider reducer={tags}>
-            <DraftProvider reducer={draft}>
-              <LoginProvider reducer={login}>
-                <NotiProvider reducer={notification}>
+        <RefetchProvider>
+          <TagsProvider>
+            <DraftProvider>
+              <LoginProvider>
+                <NotiProvider>
                   <QuotedPostsProvider>
                     <OffsetPosProvider>
                       <ApolloProvider client={client}>

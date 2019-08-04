@@ -48,14 +48,13 @@ const DEL_TAG = gql`
   }
 `;
 
-const TagPanel = styled.div`
+const TagPanel = styled.article`
   width: 100%;
-  position: relative;
 
   background-color: white;
-  margin: 0.5rem 0 0rem;
+  margin: .5rem 0;
   padding: 1.75rem 1rem 0;
-  border-radius: .5rem .5rem 0 0;
+  border-radius: .5rem;
 
   display: inline-flex;
   flex-flow: row wrap;
@@ -65,13 +64,11 @@ const TagPanel = styled.div`
     content: "";
     display: block;
     width: calc(100% - 2rem);
-    border-bottom: 1px solid ${colors.borderGrey};
     margin: 0 1rem;
     padding-top: 1.75rem;
   }
   + article {
-    border-radius: 0 0 .5rem .5rem;
-    margin: 0 0 1rem;
+    border-radius: .5rem;
   }
 `;
 
