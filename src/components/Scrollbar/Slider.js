@@ -20,6 +20,7 @@ const Head = styled.div`
   height: 1rem;
   font-size: 0.75rem;
   color: ${colors.textGrey};
+  cursor: pointer;
   margin-left: -0.25em;
   > * {
     margin-right: 0.25rem;

@@ -66,6 +66,9 @@ const Scrollbar = ({
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
   }, []);
+  if (catalog.length < 1) {
+    return null;
+  }
   let content;
   if (!showSlider) {
     const pageNum = `${idx + 1} of ${catalog.length} posts`;
