@@ -235,4 +235,16 @@ Content.propTypes = {
   notification: PropTypes.shape().isRequired,
 };
 
+const EmptyContent = ({ text }) => (
+  <ContentWrapper>
+    <StyledMDPreview>
+      <MDPreview text={text} inList />
+    </StyledMDPreview>
+  </ContentWrapper>
+);
+EmptyContent.propTypes = {
+  text: PropTypes.string.isRequired,
+};
+
 export default Content;
+export { EmptyContent };
