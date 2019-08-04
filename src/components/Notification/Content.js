@@ -109,6 +109,13 @@ const AuthorWrapper = styled.span`
 const PostContent = styled.p`
   padding: .5rem 1rem;
   font-size: .875rem;
+
+  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const PublishTime = styled.div`

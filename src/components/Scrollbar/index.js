@@ -66,7 +66,7 @@ const Scrollbar = ({
   const handleClick = useCallback(() => {
     setShowSlider(prev => !prev);
   }, []);
-  if (catalog.length < 1) {
+  if (catalog.length < 3) {
     return null;
   }
   let content;

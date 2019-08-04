@@ -92,9 +92,16 @@ const AuthorWrapper = styled.span`
 `;
 
 const PostContent = styled.p`
-  padding: 0 1rem;
+  padding: 0 1rem .5rem;
   font-size: .875rem;
   color: ${colors.textRegular};
+
+  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const PostTopRow = styled.div`

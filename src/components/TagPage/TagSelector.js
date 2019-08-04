@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import TagsContext from 'providers/Tags';
 import LoginContext from 'providers/Login';
 import MainContent from 'styles/MainContent';
+import { useRouter } from 'utils/routerHooks';
 import Tag from 'components/Tag';
 import RequireSignIn from 'components/RequireSignIn';
 
@@ -32,11 +33,15 @@ const TagTypeWrapper = styled.div`
 `;
 
 const UpdateProfile = () => {
+  const { history } = useRouter();
   const {
     data, error, loading,
   } = useQuery(PROFILE_TAGS);
   console.log({ data, error, loading });
   const [, dispatch] = useContext(TagsContext);
+  if (!data || !data.profile) {
+    history.push('/sign_in');
+  }
   const { profile } = data;
 
   useEffect(() => {

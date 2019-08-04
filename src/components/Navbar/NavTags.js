@@ -73,10 +73,8 @@ const NavTags = () => {
       <AddBtn onClick={() => { history.push('/tags'); }}>
         <Plus />
       </AddBtn>
-      <>
-        {([...main]).map(tag => SubbedTag(tag, true))}
-        {([...sub]).map(tag => SubbedTag(tag))}
-      </>
+      {([...main]).map(tag => SubbedTag(tag, true))}
+      {([...sub]).map(tag => SubbedTag(tag))}
     </NavTagsWrapper>
   );
 };
