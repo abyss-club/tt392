@@ -50,6 +50,16 @@ const reducer = (state, action) => {
         tags: parseTags({ profile, tags }),
       };
     }
+    case 'UPDATE_SUBSCRIBED_TAGS': {
+      const { profile } = action;
+      return {
+        ...state,
+        tags: {
+          ...state.tags,
+          subscribed: parseTags({ profile, tags: state.tags }).subscribed,
+        },
+      };
+    }
     case 'ADD_TAG': {
       const { tag, isMain } = action;
       const newSubscribed = { ...state.tags.subscribed };

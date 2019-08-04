@@ -12,7 +12,6 @@ import Plus from 'components/icons/Plus';
 
 const NavTagsWrapper = styled(ContentWrapper)`
   width: 100%;
-  font-size: .75rem;
   display: flex;
   flex-flow: row wrap;
   align-items: center;
@@ -23,7 +22,7 @@ const NavTagsWrapper = styled(ContentWrapper)`
 const AddBtnWrapper = styled.button`
   color: white;
   background-color: ${colors.iconGrey};
-  font-size: 1em;
+  font-size: .75em;
   font-family: ${fontFamilies.system};
   border: 0;
   outline: 0;
@@ -40,7 +39,7 @@ const AddBtnWrapper = styled.button`
 const DescriptionText = styled.p`
   color: ${colors.textOnBg};
   width: 100%;
-  font-size: ${11 / 12}em;
+  font-size: .6875em;
   font-family: ${fontFamilies.system};
   padding-bottom: .5rem;
 `;
