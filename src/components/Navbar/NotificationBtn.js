@@ -58,7 +58,7 @@ const NotificationBtn = () => {
         quoted,
       });
     }
-  }, [data, dispatch, loading]);
+  }, [dispatch, loading]);
 
   return (
     <StyledLink title="Notification" to="/notification/">
