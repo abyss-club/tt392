@@ -61,7 +61,7 @@ const NotificationBtn = () => {
   }, [dispatch, loading]);
 
   return (
-    <StyledLink title="Notification" to="/notification/">
+    <StyledLink title="Notification" to="/notification">
       <IconWrapper />
       <Badge count={badgeCount}>{badgeCount}</Badge>
     </StyledLink>

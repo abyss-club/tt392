@@ -55,12 +55,12 @@ const App = () => (
     <Route path={['/', '/t/:id']} exact component={NavTags} />
     <Switch>
       <Route path="/" component={Home} exact />
-      <Route path="/sign_in/" component={SignIn} exact />
-      <Route path="/profile/" component={Profile} exact />
-      <Route path="/tags/" component={TagSelector} exact />
+      <Route path="/sign_in" component={SignIn} exact />
+      <Route path="/profile" component={Profile} exact />
+      <Route path="/tags" component={TagSelector} exact />
       <Route path="/tag/:slug" component={TagView} exact />
-      <Route path={['/t/:threadId/', '/t/:threadId/:postId']} component={ThreadView} exact />
-      <Route path="/notification/" component={Notification} exact />
+      <Route path={['/t/:threadId', '/t/:threadId/:postId']} component={ThreadView} exact />
+      <Route path="/notification" component={Notification} exact />
       <Route path="/draft/:mode" component={Draft} exact />
       <Route component={Error} />
     </Switch>
@@ -68,8 +68,8 @@ const App = () => (
 );
 
 /*
-<Route path="/graphiql/" component={GraphiQL} exact />
-<Route path="/voyager/" component={GQLVoyager} exact />
+<Route path="/graphiql" component={GraphiQL} exact />
+<Route path="/voyager" component={GQLVoyager} exact />
 */
 
 export default App;

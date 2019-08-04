@@ -64,13 +64,13 @@ const NavTags = () => {
       key={tag}
       text={tag}
       isMain={isMain}
-      onClick={() => { history.push(`/tag/${tag}/`); }}
+      onClick={() => { history.push(`/tag/${tag}`); }}
     />
   );
   return (
     <NavTagsWrapper>
       <DescriptionText>已关注标签</DescriptionText>
-      <AddBtn onClick={() => { history.push('/tags/'); }}>
+      <AddBtn onClick={() => { history.push('/tags'); }}>
         <Plus />
       </AddBtn>
       <>

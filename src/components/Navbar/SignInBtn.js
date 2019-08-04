@@ -24,13 +24,13 @@ const SignInText = styled.p`
 const SignInBtn = ({ profile }) => {
   if ((profile.email || '') !== '') {
     return (
-      <Link to="/profile/" title="Profile">
+      <Link to="/profile" title="Profile">
         <IconWrapper />
       </Link>
     );
   }
   return (
-    <Link to="/sign_in/">
+    <Link to="/sign_in">
       <SignInText>注册/登录</SignInText>
     </Link>
   );
