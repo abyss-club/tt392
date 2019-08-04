@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   bottom: 0;
   width: 100%;
   background: ${colors.mainBg};
-  z-index: 15;
+  z-index: 20;
 `;
 
 const Content = styled(ContentWrapper)`

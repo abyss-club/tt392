@@ -22,6 +22,7 @@ import NotificationBtn from './NotificationBtn';
 const NavWrapper = styled.nav`
   position: sticky;
   top: 0;
+  z-index: 10;
 
   display: flex;
   flex-flow: row wrap;
@@ -98,7 +99,7 @@ const SelectWrapper = styled.div`
   }
 
   :after {
-    z-index: 1;
+    z-index: 15;
     display: block;
     content: "";
     position: absolute;
