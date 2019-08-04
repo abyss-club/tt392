@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 `;
 
 function graphQLFetcher(graphQLParams) {
-  return fetch(`${Config.apiPrefix}/graphql/`, {
+  return fetch(`${Config.apiPrefix}/graphql`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(graphQLParams),

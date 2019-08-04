@@ -6,10 +6,11 @@ import { useRouter } from 'utils/routerHooks';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import TagsContext from 'providers/Tags';
+import { ContentWrapper } from 'styles/MainContent';
 import Tag from 'components/Tag';
 import Plus from 'components/icons/Plus';
 
-const NavTagsWrapper = styled.div`
+const NavTagsWrapper = styled(ContentWrapper)`
   width: 100%;
   font-size: .75rem;
   display: flex;
@@ -31,6 +32,7 @@ const AddBtnWrapper = styled.button`
   height: 2rem;
   padding: 0;
   margin: 0.25em;
+  margin-left: 0;
   line-height: 0;
   cursor: pointer;
 `;

@@ -29,6 +29,7 @@ const EmailInput = styled.input`
   border: none;
   border-radius: 1.5rem;
   background-color: ${colors.mainBg};
+  outline: none;
 
   ::placeholder {
     color: ${colors.regularGrey};
@@ -110,7 +111,7 @@ const SignIn = () => {
       setStatus('ERROR');
       setDisabled(false);
     }
-  }, [loading, error]);
+  }, [loading, error, data]);
   // TODO: adding data to dep list would cause infinite rerender in apollo hooks beta
 
   const handleSubmit = (e) => {
