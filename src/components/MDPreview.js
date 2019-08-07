@@ -34,7 +34,38 @@ const PreviewWrapper = styled.div`
   }
 
   img {
+    position: relative;
     max-width: 100%;
+    min-height: 3em;
+  }
+
+  img:before {
+    content: " ";
+    display: block;
+
+    position: absolute;
+    top: -.5em;
+    left: 0;
+    height: calc(100% + 1em);
+    width: 100%;
+    background-color: rgb(230, 230, 230);
+    border: 2px dashed rgb(200, 200, 200);
+    border-radius: .5em;
+  }
+
+  img:after {
+    content: "Image " attr(alt) "(url: " attr(src) ")" " is broken.";
+
+    display: block;
+    font-size: 1em;
+    font-style: normal;
+    color: rgb(100, 100, 100);
+
+    position: absolute;
+    top: .75em;
+    left: 0;
+    width: 100%;
+    text-align: center;
   }
 
   ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
