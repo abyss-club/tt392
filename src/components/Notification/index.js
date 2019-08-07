@@ -11,13 +11,27 @@ const Wrapper = styled.div`
   margin: 0;
 `;
 
-const Title = styled.h2`
-  color: ${colors.regularBlack};
+const UpperArea = styled.div`
+  /* hack */
+  margin: 0 auto .5rem;
+  max-width: ${maxWidth}rem;
+
+  display: flex;
+  flex-flow: row wrap;
+  background-color: white;
+  border: none;
+`;
+
+const TitleText = styled.h2`
   width: 100%;
-  font-size: 1.125em;
+  height: 3.5rem;
+
   font-weight: 600;
-  margin: 1rem 0;
-  text-align: center;
+  font-size: 1.125em;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Type = styled.div`
@@ -26,7 +40,6 @@ const Type = styled.div`
   text-align: center;
   font-size: .8em;
   padding: .625rem 0 .5rem;
-  margin: 0 1em;
   ${props => (props.selected ? `border-bottom: 2px solid ${colors.accentGreen};` : 'border: none')}
   color: ${props => (props.selected ? colors.regularBlack : colors.regularGrey)};
 
@@ -37,12 +50,10 @@ const Type = styled.div`
 `;
 
 const TypeBar = styled.article`
-  max-width: ${maxWidth}rem;
-  margin: 0 auto .5rem;
+  width: 100%;
 
   display: flex;
-  flex-flow: row wrap;
-  justify-content: space-around;
+  justify-content: space-evenly;
 
   background-color: white;
   border: none;
@@ -68,10 +79,12 @@ const Notifications = () => {
   ));
   return (
     <Wrapper>
-      <TypeBar>
-        <Title>消息中心</Title>
-        {selectableType}
-      </TypeBar>
+      <UpperArea>
+        <TitleText>消息中心</TitleText>
+        <TypeBar>
+          {selectableType}
+        </TypeBar>
+      </UpperArea>
       <MainContent>
         <Panel type={currentPanel} />
       </MainContent>
