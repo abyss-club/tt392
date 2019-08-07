@@ -112,7 +112,6 @@ const SignIn = () => {
       setDisabled(false);
     }
   }, [loading, error, data]);
-  // TODO: adding data to dep list would cause infinite rerender in apollo hooks beta
 
   const handleSubmit = (e) => {
     e.preventDefault();

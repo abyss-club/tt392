@@ -118,7 +118,7 @@ const ThreadViewQuery = ({ threadId, postId }) => {
       threadId={threadId}
       onLoadMore={onLoadMore}
     />
-  ), [error, loading, onLoadMore, refetch, setCursor, threadId]);
+  ), [data, error, loading, onLoadMore, refetch, setCursor, threadId]);
 };
 ThreadViewQuery.propTypes = {
   threadId: PropTypes.string.isRequired,

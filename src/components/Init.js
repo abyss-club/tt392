@@ -24,7 +24,7 @@ const Tags = () => {
       dispatchTags({ type: 'INIT', tags: { mainTags, recommended } });
       stopLoading();
     }
-  }, [loading, error, startLoading, stopLoading, dispatchTags]);
+  }, [data, loading, error, startLoading, stopLoading, dispatchTags]);
   return null;
 };
 Tags.whyDidYouRender = true;
@@ -69,7 +69,7 @@ const Login = () => {
         }
       }
     }
-  }, [loading, errCode, startLoading, stopLoading, dispatchLogin, dispatchTags, initialized]);
+  }, [data, loading, errCode, startLoading, stopLoading, dispatchLogin, dispatchTags, initialized]);
 
   return null;
 };
