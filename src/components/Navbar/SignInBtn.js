@@ -21,18 +21,22 @@ const SignInText = styled.p`
   font-weight: bold;
 `;
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+`;
+
 const SignInBtn = ({ profile }) => {
   if ((profile.email || '') !== '') {
     return (
-      <Link to="/profile" title="Profile">
+      <StyledLink to="/profile" title="Profile">
         <IconWrapper />
-      </Link>
+      </StyledLink>
     );
   }
   return (
-    <Link to="/sign_in">
+    <StyledLink to="/sign_in">
       <SignInText>注册/登录</SignInText>
-    </Link>
+    </StyledLink>
   );
 };
 SignInBtn.propTypes = {
