@@ -91,10 +91,14 @@ const Slider = ({
   useEffect(() => {
     scrollRef.current.rect = scrollRef.current.getBoundingClientRect();
     handleRef.current.rect = handleRef.current.getBoundingClientRect();
-    scrollRef.current.addEventListener('touchmove', (e) => {
+    function handleTouchMove(e) {
       dragMove(e.touches[0]);
       e.preventDefault();
-    }, { passive: false });
+    }
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    return function cleanup() {
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
   });
 
   // drag events
@@ -157,6 +161,7 @@ const Slider = ({
         onMouseUp={dragEnd}
         onTouchStart={(e) => { dragStart(e.touches[0]); }}
         onTouchEnd={dragEnd}
+        onTouchCancel={dragEnd}
       >
         <PlaceHolder height={`calc(17rem * ${progress})`} />
         <Handle
