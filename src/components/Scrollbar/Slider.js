@@ -95,9 +95,10 @@ const Slider = ({
       dragMove(e.touches[0]);
       e.preventDefault();
     }
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    const scroll = scrollRef.current;
+    scroll.addEventListener('touchmove', handleTouchMove, { passive: false });
     return function cleanup() {
-      document.removeEventListener('touchmove', handleTouchMove);
+      scroll.removeEventListener('touchmove', handleTouchMove);
     };
   });
 
