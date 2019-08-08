@@ -58,6 +58,8 @@ const DropdownWrapper = styled.div`
 `;
 
 const Dropdown = styled.select`
+  line-height: normal;
+
   display: block;
   position: relative;
   appearance: none;
@@ -127,6 +129,8 @@ const DelBtn = styled(IconWrapper)`
 `;
 
 const ListInput = styled.input`
+  line-height: normal;
+
   color: white;
   background-color: ${colors.tagGrey};
   border: none;
@@ -135,13 +139,14 @@ const ListInput = styled.input`
   margin-right: .5em;
 
   font-size: .6875em;
-  line-height: unset;
 
   appearance: none;
   cursor: pointer;
 
   ::placeholder {
     color: white;
+    line-height: 1.4;
+    /* TODO: Temporary hack for Safari */
   }
 `;
 

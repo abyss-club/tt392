@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback, useContext,
+} from 'react';
 import styled from 'styled-components';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import isEmail from 'validator/lib/isEmail';
 
+import LoginContext from 'providers/Login';
 import Caution from 'components/icons/Caution';
 import { maxWidth } from 'styles/MainContent';
 import colors from 'utils/colors';
+import { useRouter } from 'utils/routerHooks';
 
 const Wrapper = styled.div`
   max-width: ${maxWidth}em;
@@ -98,6 +102,10 @@ const SignIn = () => {
   const [disabled, setDisabled] = useState(true);
   const [info, setInfo] = useState('');
 
+  const [{ initialized, profile }] = useContext(LoginContext);
+  const { history } = useRouter();
+  if (initialized && profile.isSignedIn) history.replace('/profile');
+
   const [auth, { error, loading, data }] = useMutation(SIGN_IN, { variables: { email } });
 
   useEffect(() => {
@@ -134,8 +142,6 @@ const SignIn = () => {
       setDisabled(true);
     }
   }, []);
-
-  // if (profile.isSignedIn) history.replace('/profile');
 
   const completed = (
     <div>

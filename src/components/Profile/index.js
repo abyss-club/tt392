@@ -111,14 +111,16 @@ const ErrInfo = styled.p`
   color: white;
 `;
 
-const Type = styled.div`
-  /* flex: 0 1 calc((100% - 4em) / 2); */
-  flex: 0 1 auto;
+const TypeWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+`;
 
+const Type = styled.div`
   text-align: center;
   font-size: .8em;
   padding: .625rem 0 .5rem;
-  margin: 0 calc(25% - 3em);
   ${props => (props.selected ? `border-bottom: 2px solid ${colors.accentGreen};` : 'border: none')}
   color: ${props => (props.selected ? colors.regularBlack : colors.regularGrey)};
 
@@ -212,8 +214,10 @@ const Profile = () => {
             {errInfo}
           </ErrInfo>
         )}
-        <Type selected={currentPanel === 'threads'} onClick={() => { setCurrentPanel('threads'); }}>我发出的主题</Type>
-        <Type selected={currentPanel === 'posts'} onClick={() => { setCurrentPanel('posts'); }}>我回复的帖子</Type>
+        <TypeWrapper>
+          <Type selected={currentPanel === 'threads'} onClick={() => { setCurrentPanel('threads'); }}>我发出的主题</Type>
+          <Type selected={currentPanel === 'posts'} onClick={() => { setCurrentPanel('posts'); }}>我回复的帖子</Type>
+        </TypeWrapper>
       </UpperArea>
       <MainContent>
         <Panel type={currentPanel} />
