@@ -35,9 +35,9 @@ const TagTypeWrapper = styled.div`
 const UpdateProfile = () => {
   const { history } = useRouter();
   const {
-    data, error, loading,
+    data, loading,
   } = useQuery(PROFILE_TAGS);
-  console.log({ data, error, loading });
+
   const [, dispatch] = useContext(TagsContext);
   if (!data || !data.profile) {
     history.push('/sign_in');
@@ -64,7 +64,7 @@ const TagSelector = ({ loading }) => {
   const [type, setType] = useState(null);
   const subTagsState = useQuery(GET_SUBTAGS);
   const [{ tags }] = useContext(TagsContext);
-  const [addSubbedTag, addState] = useMutation(ADD_TAG, {
+  const [addSubbedTag] = useMutation(ADD_TAG, {
     variables: { tag: currentTag },
     // refetchQueries: PROFILE_TAGS,
     update: (cache, data) => {
@@ -74,7 +74,7 @@ const TagSelector = ({ loading }) => {
       });
     },
   });
-  const [delSubbedTag, delState] = useMutation(DEL_TAG, {
+  const [delSubbedTag] = useMutation(DEL_TAG, {
     variables: { tag: currentTag },
     // refetchQueries: PROFILE_TAGS,
     update: (cache, data) => {
@@ -85,13 +85,10 @@ const TagSelector = ({ loading }) => {
     },
   });
 
-  console.log({ addState });
-
   const subTags = (subTagsState.data.tags
     && subTagsState.data.tags.length > 0)
     ? subTagsState.data.tags.filter(tag => !tag.isMain).map(tag => tag.name) : [];
 
-  console.log('render tagselector');
   const handleClick = ({ tag, isAdd }) => {
     setCurrentTag(tag);
     setType(isAdd ? 'add' : 'del');
