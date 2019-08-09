@@ -52,7 +52,7 @@ const App = () => (
       />
     </Switch>
     <Route path="/error/:errCode" component={Error} />
-    <Route path={['/', '/t/:id']} exact component={NavTags} />
+    <Route path="/" exact component={NavTags} />
     <Switch>
       <Route path="/" component={Home} exact />
       <Route path="/sign_in" component={SignIn} exact />
