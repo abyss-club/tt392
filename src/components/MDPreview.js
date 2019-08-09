@@ -43,6 +43,7 @@ const PreviewWrapper = styled.div`
     content: " ";
     display: block;
 
+    box-sizing: border-box;
     position: absolute;
     top: -.5em;
     left: 0;
@@ -54,18 +55,30 @@ const PreviewWrapper = styled.div`
   }
 
   img:after {
-    content: "Image " attr(alt) "(url: " attr(src) ")" " is broken.";
+    content: "Broken image: " attr(alt) "(url: " attr(src) ")";
 
     display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    justify-content: center;
+    align-items: center;
     font-size: 1em;
     font-style: normal;
     color: rgb(100, 100, 100);
 
+    box-sizing: border-box;
     position: absolute;
-    top: .75em;
+    top: -.5em;
     left: 0;
     width: 100%;
+    height: calc(100% + 1em);
+    padding: 0 1em;
     text-align: center;
+    word-break: break-all;
+    hyphens: none;
   }
 
   ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
