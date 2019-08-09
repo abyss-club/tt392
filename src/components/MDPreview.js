@@ -77,18 +77,17 @@ const PreviewWrapper = styled.div`
     height: calc(100% + 1em);
     padding: 0 1em;
     text-align: center;
+    overflow-wrap: break-word;
     word-break: break-all;
     hyphens: none;
   }
-
-  ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
 `;
 
 const ImageHack = styled.span`
   display: inline-block;
   padding: .5em 0;
-  margin-left: ${props => (props.inList ? '-1rem' : '-1.5rem')};
-  width: ${props => (props.inList ? 'calc(100% + 2rem)' : 'calc(100% + 3rem)')};
+  margin-left: -1rem;
+  width: calc(100% + 2rem);
 
   > img {
     display: block;

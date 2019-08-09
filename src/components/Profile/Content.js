@@ -101,6 +101,7 @@ const PostContent = styled.p`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: break-word;
   text-overflow: ellipsis;
 `;
 

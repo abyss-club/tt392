@@ -138,7 +138,7 @@ const Repliers = styled.p`
 `;
 
 const StyledMDPreview = styled.div`
-  padding: .5rem 0;
+  padding: .5rem 1rem;
 `;
 
 const titlePlaceholder = '无题';
