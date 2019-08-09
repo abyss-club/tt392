@@ -33,6 +33,10 @@ const PreviewWrapper = styled.div`
     font-size: 1rem;
   }
 
+  li {
+    line-height: 1.5;
+  }
+
   img {
     position: relative;
     max-width: 100%;
