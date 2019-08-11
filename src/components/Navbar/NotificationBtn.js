@@ -23,7 +23,7 @@ const Badge = styled.div`
   display: ${props => (props.count === 0 ? 'none' : 'unset')};
   position: absolute;
   left: 1.25em;
-  top: -1em;
+  top: -.5em;
 
   background-color: ${colors.accentGreen};
   height: 1em;
