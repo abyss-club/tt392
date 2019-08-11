@@ -140,6 +140,10 @@ const Title = styled.button`
   font-weight: 600;
   cursor: pointer;
   color: white;
+  margin-right: 2rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const NavRight = styled.div`
