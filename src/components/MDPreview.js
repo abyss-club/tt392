@@ -1,15 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
 import colors from 'utils/colors';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import DraftContext from 'providers/Draft';
 
 const PreviewWrapper = styled.div`
   * {
     font-size: .875rem;
-    color: ${colors.textRegular};
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -29,58 +29,63 @@ const PreviewWrapper = styled.div`
     hyphens: auto;
   }
 
+  h1, h2, h3, h4, h5, h6, p, span, li, a {
+    color: ${colors.textRegular};
+  }
+
   h1 {
     font-size: 1rem;
+  }
+
+  li {
+    line-height: 1.5;
   }
 
   img {
     position: relative;
     max-width: 100%;
-    min-height: 3em;
   }
 
-  img:before {
-    content: " ";
-    display: block;
-
-    position: absolute;
-    top: -.5em;
-    left: 0;
-    height: calc(100% + 1em);
-    width: 100%;
-    background-color: rgb(230, 230, 230);
-    border: 2px dashed rgb(200, 200, 200);
-    border-radius: .5em;
-  }
-
-  img:after {
-    content: "Image " attr(alt) "(url: " attr(src) ")" " is broken.";
-
-    display: block;
-    font-size: 1em;
-    font-style: normal;
-    color: rgb(100, 100, 100);
-
-    position: absolute;
-    top: .75em;
-    left: 0;
-    width: 100%;
-    text-align: center;
-  }
-
-  ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
 `;
 
 const ImageHack = styled.span`
   display: inline-block;
   padding: .5em 0;
-  margin-left: ${props => (props.inList ? '-1rem' : '-1.5rem')};
-  width: ${props => (props.inList ? 'calc(100% + 2rem)' : 'calc(100% + 3rem)')};
+  margin-left: -1rem;
+  width: calc(100% + 2rem);
 
   > img {
     display: block;
     margin: auto;
     max-width: 100%;
+  }
+`;
+
+const ImgPlaceHolder = styled.span`
+  display: inline-flex;
+  align-items: center;
+  margin-left: 1rem;
+
+  line-height: 0;
+  padding: .5rem;
+  border-radius: .5em;
+  background-color: ${props => (props.loader ? colors.secondaryBg : colors.lightRed)};
+
+  > span {
+    font-size: .875em;
+    color: ${colors.textGrey};
+
+    > a {
+      color: ${colors.textGrey};
+      font-size: .875em;
+    }
+  }
+
+  > svg {
+    margin-right: .5em;
+    > path {
+      fill: ${colors.regularGrey};
+    }
   }
 `;
 
@@ -90,14 +95,51 @@ const MDPreview = ({
 }) => {
   const [{ content }] = useContext(DraftContext);
 
-  const customImg = props => (
-    <ImageHack inList={inList}>
-      <img {...props} />
-    </ImageHack>
-  );
+  const CustomImg = (props) => {
+    const { alt = '', src = '' } = props;
+    const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const handleOnError = () => {
+      setError(true);
+    };
+    const handleOnLoad = () => {
+      setLoading(false);
+    };
+    return (
+      <ImageHack inList={inList}>
+        {!error && loading && (
+          <ImgPlaceHolder loader>
+            <FontAwesomeIcon icon="spinner" spin />
+            <span>Loading image...</span>
+          </ImgPlaceHolder>
+        )}
+        {error && (
+          <ImgPlaceHolder>
+            <FontAwesomeIcon icon="image" color={colors.regularGrey} />
+            <span>
+              {'Image '}
+              <a href={src}>{alt}</a>
+              {' failed to load.'}
+            </span>
+          </ImgPlaceHolder>
+        )}
+        <img
+          style={{ display: (error || loading) ? 'none' : 'block' }}
+          onError={handleOnError}
+          onLoad={handleOnLoad}
+          {...props}
+        />
+      </ImageHack>
+    );
+  };
+  CustomImg.propTypes = {
+    alt: PropTypes.string.isRequired,
+    src: PropTypes.string.isRequired,
+  };
+
   return (
     <PreviewWrapper isThread={isThread} inList={inList}>
-      <ReactMarkdown source={inDraft ? content : text} renderers={{ image: customImg }} />
+      <ReactMarkdown source={inDraft ? content : text} renderers={{ image: CustomImg }} />
     </PreviewWrapper>
   );
 };

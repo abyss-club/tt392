@@ -54,17 +54,14 @@ const QuotedContentArea = styled.article`
     `;
   }}
   ${(props) => {
-    if (props.inList) return 'margin: 0 1rem .75rem;';
-    if (props.inDraft) return 'margin: 0 0 .75rem;';
-    if (props.inUser) return 'margin: 0 1rem .75rem;';
+    if (props.inList || props.inDraft || props.inUser) return 'margin: 0 0 .75rem;';
     if (props.inNotiReply || props.inNotiQuote) return 'margin: 0 1rem;';
-    return 'margin: 0 1.5rem .75rem;';
+    return 'margin: 0 .5rem .75rem;';
   }}
   ${(props) => {
-    if (props.inList) return 'width: calc(100% - 2rem);';
-    if (props.inDraft) return 'width: 100%;';
+    if (props.inList || props.inDraft) return 'width: 100%;';
     if (props.inNotiReply || props.inNotiQuote || props.inUser) return 'width: calc(100% - 2rem);';
-    return 'width: calc(100% - 3rem);';
+    return 'width: calc(100% - 1rem);';
   }}
 `;
 

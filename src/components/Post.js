@@ -18,21 +18,20 @@ import timeElapsed from 'utils/calculateTime';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : 'white')};
-  padding: 1rem 0 0;
+  padding: 1rem 1rem 0;
   :not(:last-of-type):after {
     content: "";
     display: block;
-    ${props => (props.inList ? 'width: calc(100% - 2rem);' : 'width: calc(100% - 3rem);')}
+    ${props => (props.inList ? 'width: 100%;' : 'width: calc(100% - 1rem);')}
     ${props => (((props.inList && !props.hasReplies) && !(!props.isThread && props.inList)) ? '' : `border-bottom: 1px solid ${colors.borderGrey};`)}
-    ${props => (props.inList ? 'margin: 0 1rem;' : 'margin: 0 1.5rem;')}
+    ${props => (props.inList ? 'margin: 0;' : 'margin: 0 .5rem;')}
   }
   :last-of-type {
     ${props => (props.inList ? 'padding-bottom: 0;' : 'padding-bottom: 1rem;')}
     border-bottom: none;
   }
   @media (min-width: ${breakpoint}em) {
-    padding-left: 0;
-    padding-right: 0;
+    padding: unset 1rem;
   }
 `;
 
@@ -41,7 +40,6 @@ const IconWrapper = styled.span`
 `;
 
 const TopRowWrapper = styled.div`
-  ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
   width: 100%;
 `;
 
@@ -113,17 +111,10 @@ const PostContent = styled.div`
   padding-bottom: 1.125rem;
   font-family: ${fontFamilies.system};
   ${props => props.inList && 'cursor: pointer;'}
-  > div {
-    > div {
-      > h1, > h2, > h3, > h4, > h5, > h6, > p {
-        ${props => (props.inList ? 'padding: 0 1rem;' : 'padding: 0 1.5rem;')}
-      }
-    }
-  }
 `;
 
 const ViewThread = styled.p`
-  padding: 0 1rem 1rem;
+  padding: 0 0 1rem;
   font-size: .75em;
   line-height: 1.5;
   color: ${colors.accentGreen};
