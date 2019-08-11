@@ -22,6 +22,7 @@ HookedBrowserRouter.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
+/* eslint-disable-next-line jsdoc/require-jsdoc */
 export function useRouter() {
   return React.useContext(RouterContext);
 }

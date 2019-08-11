@@ -11,6 +11,7 @@ const Wrapper = styled.div`
   overflow-y: hidden;
 `;
 
+/* eslint-disable-next-line jsdoc/require-jsdoc */
 function introspectionProvider(query) {
   return fetch(`${Config.apiPrefix}/graphql`, {
     method: 'POST',

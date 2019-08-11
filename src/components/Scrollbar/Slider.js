@@ -91,10 +91,10 @@ const Slider = ({
   useEffect(() => {
     scrollRef.current.rect = scrollRef.current.getBoundingClientRect();
     handleRef.current.rect = handleRef.current.getBoundingClientRect();
-    function handleTouchMove(e) {
+    const handleTouchMove = (e) => {
       dragMove(e.touches[0]);
       e.preventDefault();
-    }
+    };
     const scroll = scrollRef.current;
     scroll.addEventListener('touchmove', handleTouchMove, { passive: false });
     return function cleanup() {

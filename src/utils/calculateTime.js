@@ -1,3 +1,10 @@
+
+/**
+ *
+ *
+ * @param {Date} origTime Original Date to be parsed
+ * @returns {object.<string, string>} elapsed Contains elapsed day, hours, minute, formatted
+ */
 function timeElapsed(origTime) {
   const now = Date.now();
   const origDate = new Date(origTime);

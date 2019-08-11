@@ -9,8 +9,9 @@ import Config from 'config';
 const Wrapper = styled.div`
   height: calc(100vh - 3.5rem);
   overflow-y: hidden;
-`;
 
+`;
+/* eslint-disable-next-line jsdoc/require-jsdoc */
 function graphQLFetcher(graphQLParams) {
   return fetch(`${Config.apiPrefix}/graphql`, {
     method: 'POST',

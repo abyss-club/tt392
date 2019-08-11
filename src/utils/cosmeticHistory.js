@@ -23,6 +23,7 @@ HookedCosmeticRouter.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
+/* eslint-disable-next-line jsdoc/require-jsdoc */
 export function useCosmeticRouter() {
   return React.useContext(CosmeticRouterContext);
 }
