@@ -15,7 +15,6 @@ const NavTagsWrapper = styled(ContentWrapper)`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  margin: 0 -0.25rem;
   padding: 1rem 1rem .5rem;
 `;
 
