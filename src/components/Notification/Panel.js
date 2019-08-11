@@ -66,6 +66,12 @@ QueryWrapper.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
+/**
+ *
+ *
+ * @param {string} type One of 'system', 'replied' or 'quoted'
+ * @returns {string} graphql template
+ */
 function getNotification(type) {
   const fields = {
     system: 'id, type, eventTime, hasRead, title, content',

@@ -1,7 +1,8 @@
 module.exports = {
-  "extends": "airbnb",
+  "extends": ["eslint:recommended", "airbnb", "plugin:jsdoc/recommended"],
   "plugins": [
     "react-hooks",
+    "jsdoc",
     "graphql",
   ],
   "rules": {
