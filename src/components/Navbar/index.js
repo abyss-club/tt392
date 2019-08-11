@@ -3,10 +3,13 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Route, Link, Switch } from 'react-router-dom';
+import {
+  Route, Link, Switch, matchPath,
+} from 'react-router-dom';
 import { useRouter } from 'utils/routerHooks';
 import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { useInView } from 'react-intersection-observer';
 
 import AbyssLogo from 'components/icons/AbyssLogo';
 import Tick from 'components/icons/Tick';
@@ -127,8 +130,20 @@ const NavText = styled.p`
   margin: 1.0625rem 0 0;
 `;
 
-const NavTitle = styled(AbyssLogo)`
+const NavLogo = styled(AbyssLogo)`
   font-size: 1em;
+`;
+
+const Title = styled.button`
+  border: 0;
+  background: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  margin-right: 2rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const NavRight = styled.div`
@@ -221,11 +236,11 @@ const LoginWrapper = () => {
   );
 };
 
-const Title = () => {
+const Logo = () => {
   const { history, location } = useRouter();
   const [{ threadList }, dispatch] = useContext(RefetchContext);
 
-  const titleOnClick = useCallback(() => {
+  const logoOnClick = useCallback(() => {
     if (location.pathname !== ('/')) {
       history.push('/');
     } else {
@@ -244,35 +259,84 @@ const Title = () => {
 
   return (
     <Link to="/" title="Home">
-      <NavTitle onClick={titleOnClick} />
+      <NavLogo onClick={logoOnClick} />
     </Link>
   );
 };
 
 const Navbar = () => {
-  const { history } = useRouter();
+  const { history, location } = useRouter();
+  const matchThread = matchPath(location.pathname, {
+    path: '/t/:threadId',
+    exact: false,
+    strict: true,
+  });
+  const matchTag = matchPath(location.pathname, {
+    path: '/tag/:slug',
+    exact: true,
+    strict: true,
+  });
+  const FirstRowRegular = () => {
+    const [title, setTitle] = useState('Loading...');
+    const [getThread, { loading, data }] = useLazyQuery(
+      GET_THREAD,
+      { variables: { id: matchThread ? matchThread.params.threadId : '' } },
+    );
+    const [ref, inView] = useInView({
+      threshold: 1.0,
+    });
+    useEffect(() => {
+      if (title === 'Loading...') {
+        if (matchTag) {
+          setTitle(`#${matchTag.params.slug}`);
+        }
+        if (matchThread) {
+          getThread();
+          if (!loading && data && data.thread) {
+            setTitle(data.thread.title);
+          }
+        }
+      }
+    }, [data, getThread, loading, title]);
 
-  const firstRowRegular = () => (
-    <NavWrapper>
-      <NavFirstRow>
-        <Title />
-        <Switch>
-          <Route path="/tags" exact render={() => <TickBtn onClick={() => { history.push('/'); }} />} />
-          <Route
-            path="/"
-            render={() => (
-              <NavRight>
-                <LoginWrapper />
-              </NavRight>
-            )}
-          />
-        </Switch>
-      </NavFirstRow>
-    </NavWrapper>
-  );
+    const titleOnClick = () => {
+      try {
+        // trying to use new API - https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
+        window.scroll({ top: 0, left: 0, behavior: 'smooth' });
+      } catch (error) {
+        // just a fallback for older browsers
+        window.scrollTo(0, 0);
+      }
+    };
+    const shouldChange = !inView && (matchThread || matchTag);
+    const titleArea = shouldChange ? <Title title="Back to top" onClick={titleOnClick}>{title}</Title> : <Logo />;
 
-  const FirstRowComposing = ({ match }) => {
+    return (
+      <>
+        <NavWrapper>
+          <NavFirstRow>
+            {titleArea}
+            <Switch>
+              <Route path="/tags" exact render={() => <TickBtn onClick={() => { history.push('/'); }} />} />
+              <Route
+                path="/"
+                render={() => (
+                  <NavRight>
+                    <LoginWrapper />
+                  </NavRight>
+                )}
+              />
+            </Switch>
+          </NavFirstRow>
+        </NavWrapper>
+        <div ref={ref} />
+      </>
+    );
+  };
+
+  const FirstRowComposing = () => {
     const [{ profile }] = useContext(LoginContext);
+    const { match } = useRouter();
     const { mode } = match.params;
     const [{
       anonymous, title, content, mainTag, subTags, quoteIds, threadId,
@@ -425,7 +489,7 @@ const Navbar = () => {
   return (
     <Switch>
       <Route path="/draft/:mode" exact component={FirstRowComposing} />
-      <Route path={['/', '/tags', '/thread', '/profile']} component={firstRowRegular} />
+      <Route path={['/', '/tags', '/t', '/profile']} component={FirstRowRegular} />
     </Switch>
   );
 };
@@ -442,6 +506,14 @@ const PUB_POST = gql`
   mutation PubPost($post: PostInput!) {
     pubPost(post: $post) {
       id
+    }
+  }
+`;
+
+const GET_THREAD = gql`
+  query getThread($id: String!) {
+    thread(id: $id) {
+      title
     }
   }
 `;
