@@ -4,15 +4,21 @@
   "description": "Fall Into Abyss",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/icons/AbyssLogo-64.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "/favicon.png",
+      "src": "/icons/AbyssLogo-192.png",
       "type": "image/png",
-      "sizes": "128x128"
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/AbyssLogo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
+  
   ],
   "start_url": "./",
   "display": "standalone",
