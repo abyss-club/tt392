@@ -9,7 +9,7 @@ const ScrollForMore = ({
   entries, onLoadMore, loading, hasNext, children,
 }) => {
   const [afterRef, afterInView] = useInView({
-    threshold: 1.0,
+    threshold: 0.9,
   });
 
   const prevAfterInView = useRef(false);
