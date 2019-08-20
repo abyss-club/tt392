@@ -24,6 +24,9 @@ import {
   faSort,
   faAngleDoubleUp,
   faAngleDoubleDown,
+  faUnlock,
+  faLock,
+  faBan,
 } from '@fortawesome/free-solid-svg-icons';
 
 const faLib = {
@@ -53,6 +56,9 @@ const faLib = {
       faSort,
       faAngleDoubleUp,
       faAngleDoubleDown,
+      faUnlock,
+      faLock,
+      faBan,
     );
   },
 };

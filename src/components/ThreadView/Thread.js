@@ -143,6 +143,8 @@ const Thread = ({
             isThread
             {...thread}
             threadId={threadId}
+            postId=""
+            locked={thread.locked}
             PositionContext={PositionContext}
           />
           )}

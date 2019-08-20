@@ -11,6 +11,7 @@ const initialState = {
     isSignedIn: false,
     name: '',
     email: '',
+    role: '',
   },
 };
 
@@ -32,6 +33,7 @@ const reducer = (state, action) => {
           isSignedIn: (profile.email || '') !== '',
           email: profile.email || '',
           name: profile.name || '',
+          role: profile.role || null,
         },
       };
     }
