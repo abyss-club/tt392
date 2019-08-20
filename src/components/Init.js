@@ -88,6 +88,7 @@ const PROFILE = gql`
       name
       email
       tags
+      role
     }
     mainTags
     recommended

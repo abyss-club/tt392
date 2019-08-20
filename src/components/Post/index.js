@@ -1,20 +1,22 @@
-import React, { useContext, useEffect, useCallback } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { useRouter } from 'utils/routerHooks';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useInView } from 'react-intersection-observer';
 
 import MDPreview from 'components/MDPreview';
 import QuotedContent from 'components/QuotedContent';
 import Tag from 'components/Tag';
-import QuotedPostsContext from 'providers/QuotedPosts';
 import { breakpoint } from 'styles/MainContent';
+import LoginContext from 'providers/Login';
 import { HookedCosmeticRouter, useCosmeticRouter } from 'utils/cosmeticHistory';
 import colors from 'utils/colors';
 import fontFamilies from 'utils/fontFamilies';
 import timeElapsed from 'utils/calculateTime';
+
+import QuoteSelector from './QuoteSelector';
+import AdminActions from './AdminActions';
 
 const Wrapper = styled.div`
   background-color: ${props => (props.isThread ? 'unset' : 'white')};
@@ -33,10 +35,6 @@ const Wrapper = styled.div`
   @media (min-width: ${breakpoint}em) {
     padding: unset 1rem;
   }
-`;
-
-const IconWrapper = styled.span`
-  padding-right: .5em;
 `;
 
 const TopRowWrapper = styled.div`
@@ -85,25 +83,12 @@ const Title = styled.div`
   }
 `;
 
-const QuoteSelectorBtn = styled.button`
-  color: ${props => (props.isQuoted ? 'white' : colors.regularGrey)};
-  background-color: ${props => (props.isQuoted ? colors.skyblue : 'unset')};
-  border: none;
-  cursor: pointer;
-  outline: none;
-  padding: .25em .5em;
-  margin: 0 0 0 .25em;
-  border-radius: .3125rem;
-  font-size: .75em;
-  :disabled {
-    color: ${colors.aluminiumLight};
-  }
-`;
-
-const PublishTime = styled.span`
+const PublishTime = styled.button`
   font-family: ${fontFamilies.system};
   color: ${colors.regularGrey};
   font-size: .75em;
+  border: none;
+  appearance: none;
 `;
 
 const PostContent = styled.div`
@@ -131,42 +116,6 @@ const AuthorWrapper = styled.span`
   font-size: .875em;
   font-weight: 600;
 `;
-
-const QuoteSelectorWrapper = ({ postId }) => {
-  const [quotedPosts, setQuotedPosts] = useContext(QuotedPostsContext);
-  const isQuoted = quotedPosts.has(postId);
-  const quotable = quotedPosts.size < 3;
-  const handleQuoteToggle = useCallback(() => {
-    setQuotedPosts((prevQP) => {
-      const newQuotedPosts = new Set(prevQP);
-      if (newQuotedPosts.has(postId)) {
-        newQuotedPosts.delete(postId);
-      } else {
-        newQuotedPosts.add(postId);
-      }
-      return newQuotedPosts;
-    });
-  }, [postId, setQuotedPosts]);
-  const disabled = (!isQuoted) && (!quotable);
-  return (
-    <QuoteSelectorBtn
-      isQuoted={isQuoted}
-      onClick={() => handleQuoteToggle({ postId })}
-      disabled={disabled}
-    >
-      引用
-      <IconWrapper>
-        {isQuoted ? (<FontAwesomeIcon icon="check-square" />) : (<FontAwesomeIcon icon="reply" />)}
-      </IconWrapper>
-    </QuoteSelectorBtn>
-  );
-};
-QuoteSelectorWrapper.propTypes = {
-  postId: PropTypes.string,
-};
-QuoteSelectorWrapper.defaultProps = {
-  postId: null,
-};
 
 const titlePlaceholder = '无题';
 
@@ -212,16 +161,17 @@ AuthorPosition.defaultProps = {
 
 const Post = ({
   isThread, title, anonymous, author, createdAt, content, quotes, postId, threadId, replyCount,
-  mainTag, subTags, hasReplies, inList, PositionContext,
+  mainTag, subTags, hasReplies, inList, PositionContext, locked,
 }) => {
+  const [{ profile }] = useContext(LoginContext);
+  const [showAdmin, setShowAdmin] = useState(false);
+
   const titleRow = isThread ? (
     <Title inList={inList}>
       <Link to={`/t/${threadId}`}>{title || titlePlaceholder}</Link>
     </Title>
   ) : null;
-  const quoteSelector = (!isThread && !inList) && (
-    <QuoteSelectorWrapper postId={postId} />
-  );
+  const quoteSelector = (!isThread && !inList) && <QuoteSelector postId={postId} />;
 
   const viewThread = (isThread) && (inList) && (replyCount > 0) && (
     <ViewThread>
@@ -229,6 +179,20 @@ const Post = ({
         {`查看全部 ${replyCount} 个回复`}
       </Link>
     </ViewThread>
+  );
+
+  const timeOnClick = () => {
+    if (profile.role === 'admin' || profile.role === 'mod') {
+      setShowAdmin(prev => !prev);
+    }
+  };
+  const publishTime = (
+    <>
+      <PublishTime type="button" onClick={timeOnClick}>
+        {` · ${timeElapsed(createdAt).formatted}`}
+      </PublishTime>
+      {showAdmin && <AdminActions postId={postId} threadId={threadId} locked={locked} />}
+    </>
   );
 
   const authorRow = inList ? (
@@ -251,24 +215,14 @@ const Post = ({
       {titleRow}
       <MetaRow>
         {authorRow}
-        <PublishTime>
-          {' '}
-          ·
-          {' '}
-          {timeElapsed(createdAt).formatted}
-        </PublishTime>
+        {publishTime}
       </MetaRow>
     </TopRowWrapper>
   ) : (
     <TopRowWrapper inList={inList}>
       <MetaRow>
         {authorRow}
-        <PublishTime>
-          {' '}
-          ·
-          {' '}
-          {timeElapsed(createdAt).formatted}
-        </PublishTime>
+        {publishTime}
         {quoteSelector}
       </MetaRow>
     </TopRowWrapper>
@@ -315,6 +269,7 @@ Post.propTypes = {
   hasReplies: PropTypes.bool,
   replyCount: PropTypes.number,
   PositionContext: PropTypes.shape({}),
+  locked: PropTypes.bool,
 };
 Post.defaultProps = {
   postId: null,
@@ -328,6 +283,7 @@ Post.defaultProps = {
   hasReplies: false,
   replyCount: 0,
   PositionContext: {},
+  locked: false,
 };
 
 export default Post;
