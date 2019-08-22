@@ -83,12 +83,23 @@ const Title = styled.div`
   }
 `;
 
-const PublishTime = styled.button`
+const PublishTimeAdmin = styled.button`
   font-family: ${fontFamilies.system};
   color: ${colors.regularGrey};
   font-size: .75em;
   border: none;
   appearance: none;
+  background: none;
+  line-height: none;
+  padding: 0 0 0 .4em;
+`;
+
+const PublishTime = styled.span`
+  font-family: ${fontFamilies.system};
+  color: ${colors.regularGrey};
+  font-size: .75em;
+  padding: 0 0 0 .4em;
+  line-height: none;
 `;
 
 const PostContent = styled.div`
@@ -182,15 +193,17 @@ const Post = ({
   );
 
   const timeOnClick = () => {
-    if (profile.role === 'admin' || profile.role === 'mod') {
-      setShowAdmin(prev => !prev);
-    }
+    setShowAdmin(prev => !prev);
   };
   const publishTime = (
     <>
-      <PublishTime type="button" onClick={timeOnClick}>
-        {` · ${timeElapsed(createdAt).formatted}`}
-      </PublishTime>
+      {(profile.role === 'admin' || profile.role === 'mod') ? (
+        <PublishTimeAdmin type="button" onClick={timeOnClick}>
+          {`· ${timeElapsed(createdAt).formatted}`}
+        </PublishTimeAdmin>
+      ) : (
+        <PublishTime>{` · ${timeElapsed(createdAt).formatted}`}</PublishTime>
+      )}
       {showAdmin && <AdminActions postId={postId} threadId={threadId} locked={locked} />}
     </>
   );
