@@ -3,6 +3,9 @@ const configs = {
   dev: {
     apiPrefix: 'http://api.uexky.com',
   },
+  uat: {
+    apiPrefix: 'https://api-uat.abyss.club',
+  },
   prod: {
     apiPrefix: 'https://api.abyss.club',
   },
