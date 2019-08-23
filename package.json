@@ -42,7 +42,7 @@
     "lint:js": "eslint './src/**/*.js'",
     "start": "REACT_APP_ENV=dev react-scripts start",
     "build-sw": "node ./src/sw-build.js && rm build/service-worker.js",
-    "build": "REACT_APP_ENV=prod react-scripts build && yarn build-sw",
+    "build": "react-scripts build && yarn build-sw",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
