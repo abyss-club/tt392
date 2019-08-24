@@ -184,7 +184,14 @@ const ThreadList = ({
     }
   }, [dispatch, loading, refetch, shouldThreadListRefetch]);
 
-  const addThread = () => { history.push('/draft/thread'); };
+  const [{ initialized, profile }] = useContext(LoginContext);
+  const addThread = () => {
+    if (profile.isSignedIn) {
+      history.push('/draft/thread');
+    } else {
+      history.push('/sign_in');
+    }
+  };
   const threads = !loading ? data.threadSlice.threads : [];
   const sliceInfo = !loading ? data.threadSlice.sliceInfo : {};
   const onLoadMore = () => fetchMore({
@@ -220,9 +227,11 @@ const ThreadList = ({
         hasNext={sliceInfo.hasNext || false}
         onLoadMore={onLoadMore}
       />
+      {initialized && (
       <FloatButton title="Compose new thread" onClick={addThread}>
         <Pen />
       </FloatButton>
+      )}
     </>
   );
 };
