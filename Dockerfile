@@ -15,6 +15,6 @@ ENV REACT_APP_ENV=${REACT_APP_ENV}
 COPY src/config_sample.js src/config.js
 RUN yarn build
 
-FROM nginx:alpine
+FROM nginx
 
 COPY --from=0 /usr/app/build /usr/share/nginx/html
