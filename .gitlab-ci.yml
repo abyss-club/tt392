@@ -26,7 +26,7 @@ build-uat:
   services:
     - docker:dind
   script:
-    - docker build . -t "${IMAGE_NAME}" --build-arg REACT_APP_ENV=uat
+    - docker build . -t "${IMAGE_NAME}:${CI_COMMIT_REF_NAME}" -t "${IMAGE_NAME}:uat" --build-arg REACT_APP_ENV=uat
     - docker push "${IMAGE_NAME}:${CI_COMMIT_REF_NAME}"
     - docker push "${IMAGE_NAME}:uat"
   only:
@@ -40,7 +40,7 @@ build-prod:
     - docker:dind
   stage: build
   script:
-    - docker build . -t "${IMAGE_NAME}"
+    - docker build . -t "${IMAGE_NAME}:${CI_COMMIT_REF_NAME}" -t "${IMAGE_NAME}:prod"
     - docker push "${IMAGE_NAME}:${CI_COMMIT_REF_NAME}"
     - docker push "${IMAGE_NAME}:prod"
   only:
