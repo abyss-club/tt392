@@ -69,7 +69,7 @@ const ImgPlaceHolder = styled.span`
   line-height: 0;
   padding: .5rem;
   border-radius: .5em;
-  background-color: ${props => (props.loader ? colors.secondaryBg : colors.lightRed)};
+  background-color: ${colors.lightRed};
 
   > span {
     font-size: .875em;
@@ -98,21 +98,11 @@ const MDPreview = ({
   const CustomImg = (props) => {
     const { alt = '', src = '' } = props;
     const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(true);
     const handleOnError = () => {
       setError(true);
     };
-    const handleOnLoad = () => {
-      setLoading(false);
-    };
     return (
       <ImageHack inList={inList}>
-        {!error && loading && (
-          <ImgPlaceHolder loader>
-            <FontAwesomeIcon icon="spinner" spin />
-            <span>Loading image...</span>
-          </ImgPlaceHolder>
-        )}
         {error && (
           <ImgPlaceHolder>
             <FontAwesomeIcon icon="image" color={colors.regularGrey} />
@@ -124,9 +114,8 @@ const MDPreview = ({
           </ImgPlaceHolder>
         )}
         <img
-          style={{ display: (error || loading) ? 'none' : 'block' }}
+          style={{ display: error ? 'none' : 'block' }}
           onError={handleOnError}
-          onLoad={handleOnLoad}
           {...props}
         />
       </ImageHack>
