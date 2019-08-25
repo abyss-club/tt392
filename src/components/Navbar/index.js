@@ -334,9 +334,8 @@ const Navbar = () => {
     );
   };
 
-  const FirstRowComposing = () => {
+  const FirstRowComposing = ({ match }) => {
     const [{ profile }] = useContext(LoginContext);
-    const { match } = useRouter();
     const { mode } = match.params;
     const [{
       anonymous, title, content, mainTag, subTags, quoteIds, threadId,
