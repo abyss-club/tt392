@@ -1,5 +1,5 @@
 import React, {
-  forwardRef, useState, useImperativeHandle, createRef, useContext,
+  forwardRef, useState, useImperativeHandle, createRef, useContext, useEffect, useCallback,
 } from 'react';
 import isURL from 'validator/lib/isURL';
 import styled from 'styled-components';
@@ -40,10 +40,14 @@ const TextEditor = forwardRef((_, ref) => {
     dispatch({ type: 'SET_CONTENT', content: e.target.value });
   };
 
-  const resize = () => {
+  const resize = useCallback(() => {
     const { scrollHeight, clientHeight } = textareaRef.current;
     setRow(row + (scrollHeight - clientHeight) / 16);
-  };
+  }, [row, textareaRef]);
+
+  useEffect(() => {
+    resize();
+  }, [resize]);
 
   // Get selection range of the textarea
   const getSelection = () => {
@@ -111,5 +115,6 @@ const TextEditor = forwardRef((_, ref) => {
     </Wrapper>
   );
 });
+TextEditor.whyDidYouRender = true;
 
 export default TextEditor;
