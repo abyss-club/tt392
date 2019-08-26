@@ -201,7 +201,7 @@ const Content = ({ type, notification }) => {
     <ContentWrapper>
       {tags}
       <Repliers>
-        {notification.quotedPost.anonymous ? `匿名${notification.quoter}` : notification.quoter}
+        {notification.quotedPost.anonymous ? `匿名${notification.post.author}` : notification.post.author}
         {' 引用了你的帖'}
       </Repliers>
       <Title>{notification.thread.title || titlePlaceholder}</Title>
