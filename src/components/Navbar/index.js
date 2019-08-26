@@ -49,6 +49,7 @@ const NavFirstRowCompose = styled(NavFirstRow)`
   padding: 0 .5rem;
   color: #36393F;
   background: white;
+  border-bottom: 1px solid ${colors.borderGrey};
 `;
 
 const NavFirstRowError = styled(NavFirstRow)`
@@ -127,7 +128,6 @@ const NavText = styled.p`
   width: 100%;
   text-align: center;
   font-size: .875em;
-  margin: 1.0625rem 0 0;
 `;
 
 const NavLogo = styled(AbyssLogo)`
