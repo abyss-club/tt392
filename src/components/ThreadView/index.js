@@ -18,7 +18,7 @@ const THREAD_VIEW = gql`
   query Thread($id: String!, $before: String, $after: String) {
     thread(id: $id) {
       id, anonymous, title, author, content, createdAt, mainTag, subTags, catalog { postId, createdAt }
-      replies(query: { before: $before, after: $after, limit: 5}) {
+      replies(query: { before: $before, after: $after, limit: 10 }) {
         posts {
           id, anonymous, author, content, createdAt, quotes { id, author, content, createdAt }
         }
