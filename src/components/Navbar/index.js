@@ -135,6 +135,8 @@ const NavLogo = styled(AbyssLogo)`
 `;
 
 const Title = styled.button`
+  flex: 0 1 auto;
+
   border: 0;
   background: none;
   font-weight: 600;
@@ -148,6 +150,7 @@ const Title = styled.button`
 
 const NavRight = styled.div`
   margin-left: auto;
+  flex: 0 0 auto;
 
   display: flex;
   align-items: center;
