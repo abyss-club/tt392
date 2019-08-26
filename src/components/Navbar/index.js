@@ -49,6 +49,7 @@ const NavFirstRowCompose = styled(NavFirstRow)`
   padding: 0 .5rem;
   color: #36393F;
   background: white;
+  border-bottom: 1px solid ${colors.borderGrey};
 `;
 
 const NavFirstRowError = styled(NavFirstRow)`
