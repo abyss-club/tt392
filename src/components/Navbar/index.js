@@ -128,7 +128,6 @@ const NavText = styled.p`
   width: 100%;
   text-align: center;
   font-size: .875em;
-  margin: 1.0625rem 0 0;
 `;
 
 const NavLogo = styled(AbyssLogo)`
