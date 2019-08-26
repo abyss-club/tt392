@@ -18,3 +18,4 @@ RUN yarn build
 FROM nginx
 
 COPY --from=0 /usr/app/build /usr/share/nginx/html
+COPY nginx/default.conf /etc/nginx/conf.d/
