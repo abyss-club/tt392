@@ -46,6 +46,55 @@ const PreviewWrapper = styled.div`
     max-width: 100%;
   }
 
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    padding: 0;
+    border-collapse: collapse;
+
+    tr {
+      border-top: 1px solid #CCCCCC;
+      background-color: white;
+      margin: 0;
+      padding: 0;
+
+      :nth-child(2n) {
+        background-color: #F8F8F8;
+      }
+
+      th {
+        font-weight: 700;
+        border: 1px solid #CCCCCC;
+        margin: 0;
+        padding: 6px 13px;
+
+        :first-child {
+          margin-top: 0;
+        }
+
+        :last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      td {
+        border: 1px solid #CCCCCC;
+        margin: 0;
+        padding: 6px 13px;
+
+        :first-child {
+          margin-top: 0;
+        }
+
+        :last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
 `;
 
 const ImageHack = styled.span`
