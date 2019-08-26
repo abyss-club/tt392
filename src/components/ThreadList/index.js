@@ -18,10 +18,10 @@ import ThreadInList from './ThreadInList';
 
 const THREADSLICE_QUERY = gql`
   query getThreadSlice($tags: [String!], $cursor: String!) {
-    threadSlice(tags: $tags,  query: { after: $cursor, limit: 2 }) {
+    threadSlice(tags: $tags,  query: { after: $cursor, limit: 10 }) {
       threads {
         id, anonymous, title, author, content, createdAt, mainTag, subTags, replyCount,
-        replies(query: { before: "", limit: 5}) {
+        replies(query: { before: "", limit: 5 }) {
           posts {
             id, anonymous, author, content, createdAt, quotes { id, author, content, createdAt }
           }

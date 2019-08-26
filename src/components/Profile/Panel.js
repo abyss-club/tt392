@@ -74,7 +74,7 @@ QueryWrapper.propTypes = {
 const GET_THREADS = gql`
   query profile($cursor: String!) {
     profile {
-      threads(query: { after: $cursor, limit: 1 }) {
+      threads(query: { after: $cursor, limit: 5 }) {
         threads { id, content, createdAt, mainTag, subTags, title }
         sliceInfo { firstCursor, lastCursor, hasNext }
       }
@@ -85,7 +85,7 @@ const GET_THREADS = gql`
 const GET_POSTS = gql`
   query profile($cursor: String!) {
     profile {
-      posts(query: { after: $cursor, limit: 1 }) {
+      posts(query: { after: $cursor, limit: 5 }) {
         posts { id, author, anonymous, content, createdAt, quotes { id, createdAt, anonymous, author, content } }
         sliceInfo { firstCursor, lastCursor, hasNext }
       }
