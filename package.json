@@ -35,7 +35,7 @@
     "react-transition-group": "^4.2.1",
     "styled-components": "^4.3.2",
     "typeface-roboto-mono": "^0.0.75",
-    "validator": "^11.1.0"
+    "validator": "^13.7.0"
   },
   "scripts": {
     "lint:css": "stylelint './src/**/*.js'",
